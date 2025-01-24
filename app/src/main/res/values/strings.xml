@@ -43,6 +43,7 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
-    <string name="title_activity_main">MainActivity</string>
+    <!-- main activity -->
+    <string name="title_activity_main">Sound Palette</string>
     <string name="it_works">It Works!</string>
 </resources>

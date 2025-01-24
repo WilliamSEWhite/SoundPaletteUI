@@ -5,22 +5,74 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".Activities.MainActivity"
-        android:orientation="vertical">
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
-        android:orientation="vertical">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/it_works">
-
-        </TextView>
+        tools:context=".Main.Activities.apiTest.MainActivity"
+        android:orientation="vertical"
+    android:layout_margin="@dimen/main_margin">
+        <!-- top main app bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_top_toolbar"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="3"
+                android:gravity="center"
+                android:text="@string/title_activity_main"
+                android:textSize="@dimen/main_title_text"/>
+        </LinearLayout>
+        <!-- filter post buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_filter_toolbar"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+        </LinearLayout>
+        <!-- main middle content area -->
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <!-- bottom main app bar -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_bottom_toolbar"
+            android:orientation="horizontal"
+            android:gravity="center">
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/btn_main_height"
+                android:layout_weight="1"
+                android:padding="@dimen/btn_padding"
+                app:srcCompat="@drawable/baseline_home_48"
+                android:id="@+id/btnHome"/>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/btn_main_height"
+                android:layout_weight="1"
+                android:padding="@dimen/btn_padding"
+                app:srcCompat="@drawable/baseline_add_48"
+                android:id="@+id/btnAdd"/>
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/btn_main_height"
+                android:layout_weight="1"
+                android:padding="@dimen/btn_padding"
+                app:srcCompat="@drawable/baseline_search_48"
+                android:id="@+id/btnSearch"/>
+        </LinearLayout>
     </LinearLayout>
-
-</LinearLayout>
 

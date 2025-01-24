@@ -1,4 +1,4 @@
-package com.soundpaletteui.Activities;
+package com.soundpaletteui.Main.Activities.apiTest;
 
 import androidx.appcompat.app.AppCompatActivity;
 
