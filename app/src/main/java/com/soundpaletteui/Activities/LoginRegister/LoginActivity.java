@@ -51,6 +51,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+
     private class LoginUserAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             EditText usernameBox = findViewById(R.id.username);

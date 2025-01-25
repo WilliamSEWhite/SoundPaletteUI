@@ -26,4 +26,5 @@ public class LoginRegisterClient {
         Response<Object> response = call.execute();
         return response.body();
     }
+
 }
