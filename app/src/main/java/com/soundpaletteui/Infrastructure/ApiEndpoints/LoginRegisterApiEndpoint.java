@@ -8,10 +8,11 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface LoginRegisterApiEndpoint {
-        @GET("api/login/login_user")
-        Call<UserModel> loginUser(@Query("username") String user, @Query("password") String password);
-        @GET("api/login")
-        Call<Object> login();
+        @GET("api/login/login-user")
+        Call<UserModel> loginUser(@Query("username") String username, @Query("password") String password);
+        @GET("api/login/register")
+        Call<UserModel> registerUser(@Query("username") String username, @Query("password") String password);
+
 
 
 }

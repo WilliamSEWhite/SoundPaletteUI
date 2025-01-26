@@ -2,14 +2,25 @@ package com.soundpaletteui.Infrastructure.Models;
 
 public class UserModel {
 
-    private String username;
-    private String password;
+    int Id;
+    private String Username;
+    private String Password;
 
+    public int getId(){
+        return Id;
+    }
     public String getUsername(){
-        return username;
+        return Username;
     }
     public String getPassword(){
-        return username;
+        return Password;
+    }
+
+    public UserModel(int id, String username, String password){
+        this.Id = id;
+        this.Username = username;
+        this.Password = password;
+
     }
 
 }

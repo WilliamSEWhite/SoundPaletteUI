@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
@@ -39,18 +40,26 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void register(){
-        EditText usernameBox = findViewById(R.id.username);
-        EditText passwordBox = findViewById(R.id.password);
-
+        new RegisterUserAsync().execute();
     }
     private void login() throws IOException {
         new LoginUserAsync().execute();
     }
 
     void loginUser(){
+        if(user != null)
+            Toast.makeText(this, "User logged in with Id " + user.getId(), Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(this, "Failed to log in user", Toast.LENGTH_SHORT).show();
+
 
     }
-
+    void registerUser(){
+        if(user != null)
+            Toast.makeText(this, "User registered with Id " + user.getId(), Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(this, "Failed to register user", Toast.LENGTH_SHORT).show();
+    }
 
     private class LoginUserAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
@@ -64,10 +73,25 @@ public class LoginActivity extends AppCompatActivity {
             return null;
         }//end doInBackground
 
-        //after player is updated. reload player
         protected void onPostExecute(Void v) {
-            // go back to practice setup
             loginUser();
         }//end onPostExecute
     }
+    private class RegisterUserAsync extends AsyncTask<Void,Void, Void> {
+        protected Void doInBackground(Void... d) {
+            EditText usernameBox = findViewById(R.id.username);
+            EditText passwordBox = findViewById(R.id.password);
+            try {
+                user = loginRegisterClient.registerUser(usernameBox.getText().toString(), passwordBox.getText().toString());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }//end doInBackground
+
+        protected void onPostExecute(Void v) {
+            registerUser();
+        }//end onPostExecute
+    }
+
 }

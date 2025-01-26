@@ -21,10 +21,9 @@ public class LoginRegisterClient {
         Response<UserModel> response = call.execute();
         return response.body();
     }
-    public Object login() throws IOException {
-        Call<Object> call = loginRegisterApiEndpoint.login();
-        Response<Object> response = call.execute();
+    public UserModel registerUser(String username, String password) throws IOException {
+        Call<UserModel> call = loginRegisterApiEndpoint.registerUser(username, password);
+        Response<UserModel> response = call.execute();
         return response.body();
     }
-
 }
