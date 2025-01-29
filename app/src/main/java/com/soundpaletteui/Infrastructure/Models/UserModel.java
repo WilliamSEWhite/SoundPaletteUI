@@ -16,6 +16,14 @@ public class UserModel {
         return Password;
     }
 
+    public void setUsername(String username) {
+        this.Username = username;
+    }
+
+    public void setPassword(String password) {
+        this.Password = password;
+    }
+
     public UserModel(int id, String username, String password){
         this.Id = id;
         this.Username = username;

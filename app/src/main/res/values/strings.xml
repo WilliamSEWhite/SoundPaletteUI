@@ -43,6 +43,15 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
-    <string name="title_activity_main">MainActivity</string>
+
+    <!-- home activity -->
+    <string name="title_activity_main">Sound Palette</string>
+    <string name="btn_explore">EXPLORE</string>
+    <string name="btn_followers">FOLLOWERS</string>
+    <string name="btn_home">HOME</string>
+    <string name="btn_add">ADD POST</string>
+    <string name="btn_search">SEARCH</string>
+    <string name="btn_profile">USER PROFILE</string>
+    <!-- /home activity -->
     <string name="it_works">It Works!</string>
 </resources>

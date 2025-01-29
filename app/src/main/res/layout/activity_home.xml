@@ -1,10 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activities.Home.HomeActivity">
+    tools:context=".Activities.Home.HomeActivity"
+    android:orientation="vertical"
+    >
+    <!-- top main app bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_top_toolbar"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@color/title_bar">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/btn_profile"
+            android:layout_margin="@dimen/main_margin"
+            app:srcCompat="@drawable/baseline_music_note_48"
+            android:id="@+id/btnProfile"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:gravity="center"
+            android:text="@string/title_activity_main"
+            android:textSize="@dimen/main_title_text"/>
+    </LinearLayout>
+    <!-- filter post buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_filter_toolbar"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/btn_explore"
+            android:padding="@dimen/btn_padding"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="@string/btn_followers"
+            android:padding="@dimen/btn_padding"/>
+    </LinearLayout>
+    <!-- main middle content area -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:id="@+id/mainContent">
+    </androidx.recyclerview.widget.RecyclerView>
+    <!-- bottom main app bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_bottom_toolbar"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@color/title_bar">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/btn_main_height"
+            android:layout_weight="1"
+            android:contentDescription="@string/btn_home"
+            android:padding="@dimen/btn_padding"
+            app:srcCompat="@drawable/baseline_home_48"
+            android:id="@+id/btnHome"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/btn_main_height"
+            android:layout_weight="1"
+            android:contentDescription="@string/btn_add"
+            android:padding="@dimen/btn_padding"
+            app:srcCompat="@drawable/baseline_add_48"
+            android:id="@+id/btnAdd"/>
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/btn_main_height"
+            android:layout_weight="1"
+            android:contentDescription="@string/btn_search"
+            android:padding="@dimen/btn_padding"
+            app:srcCompat="@drawable/baseline_search_48"
+            android:id="@+id/btnSearch"/>
+    </LinearLayout>
+</LinearLayout>
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
