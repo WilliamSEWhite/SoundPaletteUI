@@ -4,18 +4,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.ListActivity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.widget.EditText;
 import android.widget.Toast;
 
+import com.soundpaletteui.Activities.LoginRegister.LoginActivity;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.MainTestApiClient;
-import com.soundpaletteui.Infrastructure.ApiEndpoints.MainContentApiTest;
+import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 
+import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +32,10 @@ public class HomeActivity extends AppCompatActivity {
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
     private Intent intent;
-    private String user, pass;
+    private int userId;
+    private UserModel user;
+
+    private UserClient userClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +47,7 @@ public class HomeActivity extends AppCompatActivity {
     private void initComponents() {
         // Get the Intent that started this activity
         intent = getIntent();
-        user = intent.getStringExtra("Username");
-        pass = intent.getStringExtra("Password");
+        userId = intent.getIntExtra("Id", 0);
 
         recyclerView = findViewById(R.id.mainContent);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -50,41 +55,32 @@ public class HomeActivity extends AppCompatActivity {
         mainContentAdapter = new MainContentAdapter(userList);
         recyclerView.setAdapter(mainContentAdapter);
 
-        fetchUser();
+        userClient = SPWebApiRepository.getInstance().getUserClient();
+        getUser();
     }
 
-    private void fetchUser() {
-
-        MainContentApiTest loginApi = MainTestApiClient.getRetrofitInstance()
-                .create(MainContentApiTest.class);
-        Call<UserModel> call = loginApi.loginUser(user, pass);
-        // print GET URL for testing
-        System.out.println("Request URL: " + call.request().url());
-        call.enqueue(new Callback<UserModel>() {
-            @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                if(response.isSuccessful() && response.body() != null) {
-                    userList.clear();
-                    userList.add(response.body());
-                    mainContentAdapter.notifyDataSetChanged();
-                }
-                else {
-                    System.out.println("Response Code: " + response.code());
-                    System.out.println("Response Message: " + response.message());
-                    System.out.println("Response Error Body: " + response.errorBody());
-                    System.out.println("Response Body: " + response.body());
-                    Toast.makeText(HomeActivity.this, "No data found!",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Error: "
-                        + t.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+    private void getUser() {
+        new HomeActivity.GetUserAsync().execute();
 
     }
 
+    private void populateView(){
+        userList.clear();
+        userList.add(user);
+    }
+
+    private class GetUserAsync extends AsyncTask<Void,Void, Void> {
+        protected Void doInBackground(Void... d) {
+            try {
+                user = userClient.getUser(userId);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }//end doInBackground
+
+        protected void onPostExecute(Void v) {
+            populateView();
+        }//end onPostExecute
+    }
 }

@@ -3,6 +3,7 @@ package com.soundpaletteui.Infrastructure;
 import android.util.Log;
 
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
+import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -39,5 +40,7 @@ public class SPWebApiRepository {
     public static LoginRegisterClient getLoginRegisterClient(){
         return new LoginRegisterClient(retrofit);
     }
-
+    public static UserClient getUserClient(){
+        return new UserClient(retrofit);
+    }
 }

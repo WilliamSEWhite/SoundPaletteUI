@@ -1,6 +1,6 @@
 package com.soundpaletteui.Infrastructure.ApiClients;
 
-import com.soundpaletteui.Infrastructure.ApiEndpoints.LoginRegisterApiEndpoint;
+import com.soundpaletteui.Infrastructure.ApiEndpoints.LoginRegisterApiEndpoints;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 
 import java.io.IOException;
@@ -10,10 +10,10 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class LoginRegisterClient {
-    private static LoginRegisterApiEndpoint loginRegisterApiEndpoint;
+    private static LoginRegisterApiEndpoints loginRegisterApiEndpoint;
 
     public LoginRegisterClient(Retrofit retrofit) {
-        loginRegisterApiEndpoint = retrofit.create(LoginRegisterApiEndpoint.class);
+        loginRegisterApiEndpoint = retrofit.create(LoginRegisterApiEndpoints.class);
     }
 
     public UserModel loginUser(String username, String password) throws IOException {

@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         if(user != null) {
             Toast.makeText(this, "User logged in with Id " + user.getId(),
                     Toast.LENGTH_SHORT).show();
-            homeActivity(user.getUsername(), user.getPassword());
+            homeActivity(user.getId());
         }
         else {
             Toast.makeText(this, "Failed to log in user", Toast.LENGTH_SHORT).show();
@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         if(user != null) {
             Toast.makeText(this, "User registered with Id " + user.getId(),
                     Toast.LENGTH_SHORT).show();
-            homeActivity(user.getUsername(), user.getPassword());
+            homeActivity(user.getId());
         }
         else {
             Toast.makeText(this, "Failed to register user", Toast.LENGTH_SHORT).show();
@@ -105,11 +105,12 @@ public class LoginActivity extends AppCompatActivity {
         }//end onPostExecute
     }
 
-    private void homeActivity(String user, String pass) {
-        Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
-        intent.putExtra("Username", user);
-        intent.putExtra("Password", pass);
-        startActivity(intent);
+    private void homeActivity(int Id) {
+        Intent i = new Intent(LoginActivity.this, HomeActivity.class);
+        Bundle param = new Bundle();
+        param.putInt("userId", user.getId());
+        i.putExtras(param);
+        startActivity(i);
         finish();
     }
 
