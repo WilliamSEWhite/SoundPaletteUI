@@ -5,11 +5,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.style.BulletSpan;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.soundpaletteui.Activities.Home.HomeActivity;
+import com.soundpaletteui.Activities.Profile.Register;
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
@@ -52,7 +54,7 @@ public class LoginActivity extends AppCompatActivity {
         if(user != null) {
             Toast.makeText(this, "User logged in with Id " + user.getId(),
                     Toast.LENGTH_SHORT).show();
-            homeActivity(user.getId());
+            nextActivity(user.getId(), 2);
         }
         else {
             Toast.makeText(this, "Failed to log in user", Toast.LENGTH_SHORT).show();
@@ -63,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         if(user != null) {
             Toast.makeText(this, "User registered with Id " + user.getId(),
                     Toast.LENGTH_SHORT).show();
-            homeActivity(user.getId());
+            nextActivity(user.getId(), 1);
         }
         else {
             Toast.makeText(this, "Failed to register user", Toast.LENGTH_SHORT).show();
@@ -107,6 +109,23 @@ public class LoginActivity extends AppCompatActivity {
 
     private void homeActivity(int Id) {
         Intent i = new Intent(LoginActivity.this, HomeActivity.class);
+        Bundle param = new Bundle();
+        param.putInt("userId", user.getId());
+        i.putExtras(param);
+        startActivity(i);
+        finish();
+    }
+
+    private void nextActivity(int Id, int aId) {
+        Intent i = null;
+        switch(aId) {
+            case 1:
+                i = new Intent(LoginActivity.this, Register.class);
+                break;
+            case 2:
+                i = new Intent(LoginActivity.this, HomeActivity.class);
+                break;
+        }
         Bundle param = new Bundle();
         param.putInt("userId", user.getId());
         i.putExtras(param);

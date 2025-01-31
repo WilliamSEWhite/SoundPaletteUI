@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=""
+    tools:context=".Activities.Profile.Register"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -46,21 +46,33 @@
             android:layout_margin="@dimen/edit_text_margin"
             android:hint="@string/register_name"
             android:id="@+id/registerUsername"
-            android:background="@color/white"/>
+            android:background="@color/white"
+            android:focusable="true"/>
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/edit_text"
+            android:layout_margin="@dimen/edit_text_margin"
+            android:hint="@string/register_password"
+            android:id="@+id/registerPassword"
+            android:background="@color/white"
+            android:inputType="textPassword"
+            android:focusable="true"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="@dimen/edit_text"
             android:layout_margin="@dimen/edit_text_margin"
             android:hint="@string/register_email_address"
             android:id="@+id/registerEmail"
-            android:background="@color/white"/>
+            android:background="@color/white"
+            android:focusable="true"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="@dimen/edit_text"
             android:layout_margin="@dimen/edit_text_margin"
             android:hint="@string/register_phone"
             android:id="@+id/registerPhone"
-            android:background="@color/white"/>
+            android:background="@color/white"
+            android:focusable="true"/>
         <!-- Date of birth picker -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -82,7 +94,8 @@
                 android:layout_weight="1"
                 android:layout_margin="@dimen/edit_text_margin"
                 android:src="@drawable/baseline_calendar_month_40"
-                android:id="@+id/btnDatePicker"/>
+                android:id="@+id/btnDatePicker"
+                android:focusable="true"/>
         </LinearLayout>
         <!-- Profile picture picker -->
         <LinearLayout
@@ -91,42 +104,28 @@
             android:orientation="horizontal"
             android:gravity="center">
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="6"
                 android:orientation="vertical"
                 android:gravity="center">
-                <androidx.appcompat.widget.AppCompatImageView
+                <ImageView
                     android:layout_width="@dimen/profile_pic"
                     android:layout_height="@dimen/profile_pic"
-                    android:layout_weight="6"
                     android:layout_margin="@dimen/edit_text_margin"
-                    android:src="@drawable/baseline_person_150"
+                    android:src="@drawable/baseline_person_100"
                     android:id="@+id/registerProfilePicture"
-                    android:background="@color/white"/>
+                    android:background="@color/white"
+                    android:focusable="true"
+                    android:clickable="true"/>
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_margin="@dimen/edit_text_margin"
-                android:orientation="vertical">
-                <ImageButton
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-
-                    android:src="@drawable/baseline_file_upload_40"
-                    android:id="@+id/btnProfilePic"/>
-            </LinearLayout>
-
         </LinearLayout>
         <Spinner
             android:layout_width="match_parent"
             android:layout_height="@dimen/spinner_height"
             android:layout_margin="@dimen/edit_text_margin"
             android:id="@+id/registerLocation"
-            android:background="@color/white"/>
+            android:background="@color/white"
+            android:focusable="true"/>
     </LinearLayout>
     <!-- bottom buttons -->
     <LinearLayout

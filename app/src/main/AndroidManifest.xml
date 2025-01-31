@@ -17,6 +17,9 @@
             android:name=".Activities.Home.HomeActivity"
             android:exported="false" />
         <activity
+            android:name=".Activities.Profile.Register"
+            android:exported="false" />
+        <activity
             android:name=".Activities.LoginRegister.LoginActivity"
             android:exported="true"
             android:label="@string/title_activity_main"

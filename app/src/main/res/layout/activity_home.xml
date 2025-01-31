@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.Home.HomeActivity"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
     <!-- top main app bar -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,7 +28,7 @@
             android:layout_weight="3"
             android:gravity="center"
             android:text="@string/title_activity_main"
-            android:textColor="@color/black"
+            android:textColor="@color/sp_tan"
             android:textSize="@dimen/main_title_text"/>
     </LinearLayout>
     <!-- filter post buttons -->
@@ -56,7 +55,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:id="@+id/mainContent">
+        android:id="@+id/mainContent"
+        android:layout_margin="@dimen/edit_text_margin">
     </androidx.recyclerview.widget.RecyclerView>
     <!-- bottom main app bar -->
     <LinearLayout

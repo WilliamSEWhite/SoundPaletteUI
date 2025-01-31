@@ -56,6 +56,7 @@
     <!-- register activity -->
     <string name="register_title">Register Profile</string>
     <string name="register_name">username</string>
+    <string name="register_password">password</string>
     <string name="register_email_address">email address</string>
     <string name="register_phone">phone number (optional)</string>
     <string name="register_dob">date of birth</string>

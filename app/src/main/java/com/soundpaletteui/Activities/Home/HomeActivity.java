@@ -48,7 +48,7 @@ public class HomeActivity extends AppCompatActivity {
     private void initComponents() {
         // Get the Intent that started this activity
         intent = getIntent();
-        userId = intent.getIntExtra("Id", 0);
+        userId = intent.getIntExtra("userId", 0);
 
         recyclerView = findViewById(R.id.mainContent);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
