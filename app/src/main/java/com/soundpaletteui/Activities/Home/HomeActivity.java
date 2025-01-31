@@ -44,6 +44,7 @@ public class HomeActivity extends AppCompatActivity {
         initComponents();
     }
 
+    /** initializes components in the activity */
     private void initComponents() {
         // Get the Intent that started this activity
         intent = getIntent();

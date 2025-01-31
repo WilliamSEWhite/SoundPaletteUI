@@ -8,10 +8,18 @@
     <dimen name="main_filter_toolbar">70dp</dimen>
     <!-- text dimensions -->
     <dimen name="main_title_text">40dp</dimen>
+    <dimen name="edit_text">40dp</dimen>
     <dimen name="row_text">25dp</dimen>
+    <dimen name="edit_text_margin">10dp</dimen>
     <!-- button dimensions -->
     <dimen name="btn_main_height">60dp</dimen>
+    <dimen name="btn_text_size">20dp</dimen>
     <!-- padding  -->
     <dimen name="btn_padding">15dp</dimen>
     <dimen name="row_text_padding">5dp</dimen>
+    <dimen name="register_fields">20dp</dimen>
+
+    <!-- registration page -->
+    <dimen name="spinner_height">45dp</dimen>
+    <dimen name="profile_pic">150dp</dimen>
 </resources>

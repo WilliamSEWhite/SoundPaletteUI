@@ -53,5 +53,17 @@
     <string name="btn_search">SEARCH</string>
     <string name="btn_profile">USER PROFILE</string>
     <!-- /home activity -->
+    <!-- register activity -->
+    <string name="register_title">Register Profile</string>
+    <string name="register_name">username</string>
+    <string name="register_email_address">email address</string>
+    <string name="register_phone">phone number (optional)</string>
+    <string name="register_dob">date of birth</string>
+    <string name="register_location">location</string>
+    <string name="register_profilePicture">profile picture</string>
+    <string name="btn_clear">CLEAR</string>
+    <string name="btn_save">SAVE</string>
+    <!-- /register activity -->
+
     <string name="it_works">It Works!</string>
 </resources>
