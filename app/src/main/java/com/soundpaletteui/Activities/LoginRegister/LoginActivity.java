@@ -107,6 +107,7 @@ public class LoginActivity extends AppCompatActivity {
         }//end onPostExecute
     }
 
+    /* not a fan of redundant code :)
     private void homeActivity(int Id) {
         Intent i = new Intent(LoginActivity.this, HomeActivity.class);
         Bundle param = new Bundle();
@@ -115,6 +116,7 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(i);
         finish();
     }
+    */
 
     private void nextActivity(int Id, int aId) {
         Intent i = null;

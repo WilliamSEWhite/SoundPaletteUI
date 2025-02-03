@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="SoundPaletteUI">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-01-29T21:00:43.343663600Z">
+        <DropdownSelection timestamp="2025-02-01T19:26:50.268838100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\capleton\.android\avd\Pixel_4_API_23.avd" />

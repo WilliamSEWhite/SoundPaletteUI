@@ -142,7 +142,7 @@
             android:layout_marginRight="@dimen/edit_text_margin"
             android:padding="@dimen/btn_padding"
             android:backgroundTint="@color/sp_brown"
-            android:textColor="@color/black"
+            android:textColor="@color/white"
             android:text="@string/btn_clear"
             android:textSize="@dimen/btn_text_size"
             android:id="@+id/btnClear"/>
@@ -153,7 +153,7 @@
             android:layout_marginLeft="@dimen/edit_text_margin"
             android:padding="@dimen/btn_padding"
             android:backgroundTint="@color/sp_tan"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:text="@string/btn_save"
             android:textSize="@dimen/btn_text_size"
             android:id="@+id/btnSave"/>
