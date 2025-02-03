@@ -6,4 +6,7 @@
     </style>
 
     <style name="Theme.SoundPaletteUI" parent="Base.Theme.SoundPaletteUI" />
+
+    <style name="Theme.FixedButton" parent="Theme.AppCompat.Light.NoActionBar"/>
+
 </resources>

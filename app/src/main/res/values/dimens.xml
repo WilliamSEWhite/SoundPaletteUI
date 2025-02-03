@@ -22,4 +22,5 @@
     <!-- registration page -->
     <dimen name="spinner_height">45dp</dimen>
     <dimen name="profile_pic">100dp</dimen>
+    <dimen name="text_margin">16dp</dimen>
 </resources>
