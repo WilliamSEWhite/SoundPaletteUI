@@ -5,12 +5,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.style.BulletSpan;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.soundpaletteui.Activities.Home.HomeActivity;
+import com.soundpaletteui.Activities.MainScreenActivity;
 import com.soundpaletteui.Activities.Profile.Register;
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
@@ -109,7 +108,8 @@ public class LoginActivity extends AppCompatActivity {
 
     /* not a fan of redundant code :)
     private void homeActivity(int Id) {
-        Intent i = new Intent(LoginActivity.this, HomeActivity.class);
+//        Intent i = new Intent(LoginActivity.this, HomeActivity.class);
+        Intent i = new Intent(LoginActivity.this, MainScreenActivity.class);
         Bundle param = new Bundle();
         param.putInt("userId", user.getId());
         i.putExtras(param);
@@ -125,7 +125,8 @@ public class LoginActivity extends AppCompatActivity {
                 i = new Intent(LoginActivity.this, Register.class);
                 break;
             case 2:
-                i = new Intent(LoginActivity.this, HomeActivity.class);
+//                i = new Intent(LoginActivity.this, HomeActivity.class);
+                i = new Intent(LoginActivity.this, MainScreenActivity.class);
                 break;
         }
         Bundle param = new Bundle();

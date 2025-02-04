@@ -7,30 +7,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-    <!-- top main app bar -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/main_top_toolbar"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:background="@color/title_bar">
-        <ImageButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@string/btn_profile"
-            android:layout_margin="@dimen/main_margin"
-            android:src="@drawable/baseline_person_48"
-            android:id="@+id/btnProfile"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="3"
-            android:gravity="center"
-            android:text="@string/register_title"
-            android:textColor="@color/sp_tan"
-            android:textSize="@dimen/main_title_text"/>
-    </LinearLayout>
+
+    <!--     TOOLBAR AND HEADER     -->
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/header"/>
+
     <!-- main content -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -93,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_margin="@dimen/edit_text_margin"
-                android:src="@drawable/baseline_calendar_month_40"
+                android:src="@drawable/icon_calendar"
                 android:id="@+id/btnDatePicker"
                 android:focusable="true"/>
         </LinearLayout>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="userid1_images">
+        <item>image1.png</item>
+        <item>image12.png</item>
+        <item>image33.png</item>
+        <item>image11.png</item>
+        <item>image22.png</item>
+        <item>image3.png</item>
+        <item>image31.png</item>
+        <item>image13.png</item>
+        <item>image21.png</item>
+        <item>image11.png</item>
+        <item>image32.png</item>
+        <item>image2.png</item>
+    </string-array>
+
+    <string-array name="userid2_images">
+        <item>image1.png</item>
+        <item>image2.png</item>
+        <item>image3.png</item>
+    </string-array>
+
+    <string-array name="userid3_images">
+        <item>image21.png</item>
+        <item>image22.png</item>
+        <item>image23.png</item>
+    </string-array>
+
+    <string-array name="userid4_images">
+        <item>image31.png</item>
+        <item>image32.png</item>
+        <item>image33.png</item>
+    </string-array>
+
+</resources>

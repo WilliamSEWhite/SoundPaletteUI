@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activities.Profile.ProfileFragment">
+
+    <!-- PROFILE BIO -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:backgroundTint="@color/colorBackgroundLight"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:id="@+id/profile_picture"
+            android:src="@drawable/baseline_person_100">
+        </ImageView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="75dp"
+                android:layout_gravity="left"
+                android:id="@+id/profile_bio"
+                android:textSize="12dp"
+                android:padding="15dp"
+                android:text="Hello! This is going to be the bio for the profile."
+                >
+            </TextView>
+
+            <!-- TAGS CONTAINER INSIDE OF BIO -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="25dp"
+                android:fillViewport="true">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_tag"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- POST AND SAVED BUTTON -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/main_filter_toolbar"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/button_posts"
+                android:layout_width="1000dp"
+                android:layout_height="1000dp"
+                android:layout_weight="1"
+                android:text="POSTS"
+                android:contentDescription="POSTS"
+                android:backgroundTint="@color/button_pressed"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <Button
+                android:id="@+id/button_saved"
+                android:layout_width="1000dp"
+                android:layout_height="1000dp"
+                android:layout_weight="1"
+                android:text="SAVED"
+                android:backgroundTint="@color/button_default"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Content area -->
+    <FrameLayout
+        android:id="@+id/postFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

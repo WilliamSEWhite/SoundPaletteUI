@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="100dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/create_text"
+            android:layout_width="1000dp"
+            android:layout_height="1000dp"
+            android:layout_weight="1"
+            android:text="POSTS"
+            android:contentDescription="TEXT"
+            android:backgroundTint="@color/colorSecondaryVariant"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/colorBackground" />  <!-- Black line, change the color as needed -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/create_image"
+            android:layout_width="1000dp"
+            android:layout_height="1000dp"
+            android:layout_weight="1"
+            android:text="IMAGE"
+            android:backgroundTint="@color/colorSecondaryVariant"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:textSize="18sp" />
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@color/colorBackground" />  <!-- Black line, change the color as needed -->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/create_sound"
+            android:layout_width="1000dp"
+            android:layout_height="1000dp"
+            android:layout_weight="1"
+            android:text="SOUND"
+            android:backgroundTint="@color/colorSecondaryVariant"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+</LinearLayout>

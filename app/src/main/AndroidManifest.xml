@@ -33,7 +33,7 @@
             android:name=".Activities.Home.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.Profile.Register"
+            android:name=".Activities.MainScreenActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.LoginRegister.LoginActivity"
