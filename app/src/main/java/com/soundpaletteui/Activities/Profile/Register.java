@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -14,11 +15,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
+import java.util.Date;
 
 public class Register extends AppCompatActivity {
 
@@ -56,6 +59,8 @@ public class Register extends AppCompatActivity {
         profileImage = findViewById(R.id.registerProfilePicture);
         location = findViewById(R.id.registerLocation);
         initCountries();
+        Button saveBtn = findViewById(R.id.btnSave);
+        saveBtn.setOnClickListener(v -> saveUserProfile());
 
         intent = getIntent();
         userId = intent.getIntExtra("userId", 0);
@@ -69,6 +74,10 @@ public class Register extends AppCompatActivity {
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, countries);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         location.setAdapter(adapter);
+    }
+
+    private void saveUserProfile(){
+        new UpdateUserInfoAsync().execute();
     }
 
     @Override
@@ -97,6 +106,27 @@ public class Register extends AppCompatActivity {
         protected Void doInBackground(Void... d) {
             try {
                 user = userClient.getUser(userId);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }//end doInBackground
+
+        protected void onPostExecute(Void v) {
+            //populateView();
+        }//end onPostExecute
+    }
+    private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {
+        protected Void doInBackground(Void... d) {
+            try {
+                txtEmail = findViewById(R.id.registerEmail);
+                txtPhone = findViewById(R.id.registerPhone);
+
+                String email = txtEmail.getText().toString();
+                String phone = txtPhone.getText().toString();
+
+                UserInfoModel newUserInfo = new UserInfoModel(0, user.getId(), 0, email, phone, new Date(), new Date());
+                UserInfoModel userInfo = userClient.updateUserInfo(newUserInfo);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
