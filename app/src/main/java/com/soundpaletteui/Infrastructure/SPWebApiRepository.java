@@ -2,6 +2,7 @@ package com.soundpaletteui.Infrastructure;
 
 import android.util.Log;
 
+import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 
@@ -43,4 +44,8 @@ public class SPWebApiRepository {
     public static UserClient getUserClient(){
         return new UserClient(retrofit);
     }
+    public static LocationClient getLocationClient(){
+        return new LocationClient(retrofit);
+    }
+
 }

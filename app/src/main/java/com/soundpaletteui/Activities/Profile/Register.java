@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,14 +16,19 @@ import android.widget.Spinner;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
+import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.Models.LocationModel;
 import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Register extends AppCompatActivity {
 
@@ -35,8 +42,8 @@ public class Register extends AppCompatActivity {
     private Uri imageUri;                   // image URI from external source
     private ImageView profileImage;         // object to display the image
     private Spinner location;               // country
-    private String[] countries;             // list of countries
-    private ArrayAdapter<String> adapter;   // adapter for country list
+    private ArrayList<LocationModel> countries;             // list of countries
+
     private Intent intent;
     private UserModel user;
     private UserClient userClient;
@@ -58,22 +65,29 @@ public class Register extends AppCompatActivity {
         btnCalendar = findViewById(R.id.btnDatePicker);
         profileImage = findViewById(R.id.registerProfilePicture);
         location = findViewById(R.id.registerLocation);
-        initCountries();
         Button saveBtn = findViewById(R.id.btnSave);
         saveBtn.setOnClickListener(v -> saveUserProfile());
 
         intent = getIntent();
         userId = intent.getIntExtra("userId", 0);
         userClient = SPWebApiRepository.getInstance().getUserClient();
+        getCountries();
         getUser();
     }
 
     /** initialize Spinner with list of countries */
-    private void initCountries() {
-        countries = getResources().getStringArray(R.array.countries);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, countries);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        location.setAdapter(adapter);
+    private void getCountries() {
+        new GetLocationsAsync().execute();
+    }
+
+    private void initCountries(){
+        CountrySelectAdapter adapter = new CountrySelectAdapter(this,
+                android.R.layout.simple_spinner_item,
+                countries);
+        location = (Spinner) findViewById(R.id.registerLocation);
+        location.setAdapter(adapter); // Set the custom adapter to the spinner
+        // You can create an anonymous listener to handle the event when is selected an spinner item
+        location.setSelection(0);                              //retain previously selected value
     }
 
     private void saveUserProfile(){
@@ -116,6 +130,22 @@ public class Register extends AppCompatActivity {
             //populateView();
         }//end onPostExecute
     }
+    private class GetLocationsAsync extends AsyncTask<Void,Void, Void> {
+        protected Void doInBackground(Void... d) {
+            try {
+                LocationClient client = SPWebApiRepository.getInstance().getLocationClient();
+                List<LocationModel> locations = client.getLocations();
+                countries = new ArrayList<>(locations);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }//end doInBackground
+
+        protected void onPostExecute(Void v) {
+            initCountries();
+        }//end onPostExecute
+    }
     private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             try {
@@ -125,7 +155,11 @@ public class Register extends AppCompatActivity {
                 String email = txtEmail.getText().toString();
                 String phone = txtPhone.getText().toString();
 
-                UserInfoModel newUserInfo = new UserInfoModel(0, user.getId(), 0, email, phone, new Date(), new Date());
+                CountrySelectAdapter adapter = (CountrySelectAdapter) location.getAdapter();
+                LocationModel selectedLocation = adapter.getItem(location.getSelectedItemPosition());
+
+
+                UserInfoModel newUserInfo = new UserInfoModel(0, user.getId(), selectedLocation.LocationId, email, phone, new Date(), new Date());
                 UserInfoModel userInfo = userClient.updateUserInfo(newUserInfo);
             } catch (IOException e) {
                 throw new RuntimeException(e);
