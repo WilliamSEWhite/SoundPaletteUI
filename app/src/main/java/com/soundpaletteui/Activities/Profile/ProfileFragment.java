@@ -94,7 +94,7 @@ public class ProfileFragment extends Fragment {
 
             buttonSaved.setBackgroundTintList(ColorStateList.valueOf(colour_pressed));
             buttonPosts.setBackgroundTintList(ColorStateList.valueOf(colour_default));
-            replaceFragment(3);
+            replaceFragment(userId+1);
         });
 
 
@@ -141,24 +141,9 @@ public class ProfileFragment extends Fragment {
 
     private void replaceFragment(int userId) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        PostFragment postFragment = PostFragment.newInstance(getArrayResourceId(String.valueOf(userId)));
-        Toast.makeText(requireContext(), "replaceFragment("+String.valueOf(getArrayResourceId(String.valueOf(userId)))+")", Toast.LENGTH_SHORT).show();
+        PostFragment postFragment = PostFragment.newInstance(userId);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
     }
 
-    private int getArrayResourceId(String userId) {
-        switch (userId.toLowerCase()) {
-            case "1":
-                return R.array.userid1_images;
-            case "2":
-                return R.array.userid2_images;
-            case "3":
-                return R.array.userid3_images;
-            case "4":
-                return R.array.userid4_images;
-            default:
-                return 0;
-        }
-    }
 }
