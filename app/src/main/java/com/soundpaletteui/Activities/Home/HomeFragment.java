@@ -1,7 +1,11 @@
 package com.soundpaletteui.Activities.Home;
 
 import android.content.res.ColorStateList;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -75,13 +79,13 @@ public class HomeFragment extends Fragment {
         Button buttonFollower = rootView.findViewById(R.id.button_follower);
 
         Random random = new Random();
-        int randomNumber = random.nextInt(6) + 10;
-        Log.d("HomeFragment", "Initial randomNumber: " + randomNumber);
-        replaceFragment(randomNumber);
 
         buttonExplore.setOnClickListener(v -> {
             buttonExplore.setBackgroundTintList(ColorStateList.valueOf(colour_pressed));
             buttonFollower.setBackgroundTintList(ColorStateList.valueOf(colour_default));
+
+            setButtonTextUnderline(buttonExplore, true);
+            setButtonTextUnderline(buttonFollower, false);
 
             int randomExploreNumber = random.nextInt(6) + 10;
             Log.d("HomeFragment", "Explore clicked - randomNumber: " + randomExploreNumber);
@@ -92,11 +96,15 @@ public class HomeFragment extends Fragment {
             buttonFollower.setBackgroundTintList(ColorStateList.valueOf(colour_pressed));
             buttonExplore.setBackgroundTintList(ColorStateList.valueOf(colour_default));
 
+            setButtonTextUnderline(buttonFollower, true);
+            setButtonTextUnderline(buttonExplore, false);
+
             int randomFollowerNumber = random.nextInt(9) + 1;
             Log.d("HomeFragment", "Follower clicked - randomNumber: " + randomFollowerNumber);
             replaceFragment(randomFollowerNumber);
         });
 
+        buttonExplore.performClick();
         return rootView;
     }
 
@@ -139,11 +147,27 @@ public class HomeFragment extends Fragment {
         }
     }
 
-
     private void replaceFragment(int userId) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(userId);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
     }
+
+
+    private void setButtonTextUnderline(Button button, boolean isSelected) {
+        String text = button.getText().toString();
+        SpannableString spannableString = new SpannableString(text);
+
+        if (isSelected) {
+            spannableString.setSpan(new UnderlineSpan(), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            button.setTypeface(null, Typeface.BOLD); // Make text bold for emphasis
+        } else {
+            button.setTypeface(null, Typeface.NORMAL); // Reset style
+        }
+
+        button.setText(spannableString);
+    }
+
+
 }
