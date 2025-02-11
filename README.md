@@ -5,7 +5,7 @@ SoundPalette is a social media Android app for artists and musicians to connect,
 
 This GitHub repository hosts the project for Brock University's COSC 4P02 - Software Engineering II course. The course is led by Professor Naser Ezzati-Jivan, with Brendan Park serving as the Teaching Assistant.
 
-## Additional GitHub Repo
+## Main GitHub Repo
 This is the GitHub repo for SoundPalette's UI (Front-End). Please see the main SoundPalette repo below
 1. [SoundPalette](https://github.com/vd19qe/SoundPalette)
 
