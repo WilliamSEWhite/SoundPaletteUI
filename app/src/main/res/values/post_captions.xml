@@ -2,15 +2,14 @@
 <resources>
 
     <string-array name="user1_captions">
-        <item>inspiration.</item>
         <item>How could I not be inspired from this sunlight?!</item>
         <item>Art class schedule will be release on Sunday! Thank you for your patiences</item>
         <item>Brendas work in progress.</item>
+        <item>its incredible how someones art can just hold your mind hostage like this.</item>
     </string-array>
 
     <string-array name="user2_captions">
         <item>Sunday Funday!</item>
-        <item>its incredible how someones art can just hold your mind hostage like this.</item>
         <item>Ill travel to all the places inspired by this gallary one day</item>
         <item>writing. dreaming. thinking.</item>
         <item>a picture of me taking a picture</item>
@@ -120,33 +119,31 @@
 
     <string-array name="art_captions">
         <item>its incredible how someones art can just hold your mind hostage like this.</item>
-        <item>Ill travel to all the places inspired by this gallary one day</item>
         <item>the barista just gave be a whole sleeve of napkins shortly after this was taken.</item>
         <item>inspiration.</item>
         <item>writing. dreaming. thinking.</item>
+        <item>Brendas work in progress.</item>
         <item>How could I not be inspired from this sunlight?!</item>
         <item>yes mom, this is work.</item>
         <item>working on some new album artwork!</item>
         <item>hes such a good doggoooo :)</item>
         <item>concentrating on not spilling my discharge water</item>
         <item>Art class schedule will be release on Sunday! Thank you for your patiences</item>
-        <item>Brendas work in progress.</item>
+        <item>Ill travel to all the places inspired by this gallary one day</item>
     </string-array>
 
     <string-array name="music_captions">
-        <item>had requests on how to write music so i thought id share an easy graph :)</item>
-        <item>new lyrics in the works! just need some good vocals...</item>
-        <item>mic drop but  literalllyyyy???</item>
-        <item>There may or may not be a new song. Share like and comment for an early release!</item>
         <item>in the recording studio! recording studio aka my bedroom</item>
-        <item>This position is wayyy more comfortable than it looks</item>
-        <item>What my Friday nights are looking like..</item>
         <item>Attempting to learn the guitar, looking for some help! DM me please</item>
-        <item>they call this position the birds eye view I believe</item>
+        <item>new lyrics in the works! just need some good vocals...</item>
+        <item>There may or may not be a new song. Share like and comment for an early release!</item>
+        <item>mic drop but  literalllyyyy???</item>
+        <item>This position is wayyy more comfortable than it looks</item>
         <item>I cant wait to share this melody with you guys! Just needs some lyrics… HMU!</item>
-        <item>This concert has officially completed my life. No need to wake up tmr.</item>
-        <item>SOUND CHECK! SEE YOU GUYS TONITE!!!</item>
-        <item>The concert was a blur, just like this photo haha!</item>
+        <item>had requests on how to write music so i thought id share an easy graph :)</item>
+        <item>they call this position the birds eye view I believe</item>
+        <item>just my morning commute guys…</item>
+        <item>What my Friday nights are looking like..</item>
     </string-array>
 
 
