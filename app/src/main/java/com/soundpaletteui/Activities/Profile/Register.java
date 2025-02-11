@@ -11,6 +11,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
@@ -31,8 +33,11 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
-import com.soundpaletteui.Activities.Home.HomeActivity;
+import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
+import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.Models.LocationModel;
+import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
@@ -43,6 +48,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Calendar;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Register extends AppCompatActivity {
 
@@ -59,8 +66,8 @@ public class Register extends AppCompatActivity {
     private ImageView profileImage;         // object to display the image
     private String currentPhotoPath;        // current photo path
     private Spinner location;               // country
-    private String[] countries;             // list of countries
-    private ArrayAdapter<String> adapter;   // adapter for country list
+    private ArrayList<LocationModel> countries;             // list of countries
+
     private Intent intent;
     private UserModel user;
     private UserClient userClient;
@@ -86,6 +93,8 @@ public class Register extends AppCompatActivity {
         btnClear = findViewById(R.id.btnClear);
         btnSave = findViewById(R.id.btnSave);
         initCountries();
+        Button saveBtn = findViewById(R.id.btnSave);
+        saveBtn.setOnClickListener(v -> saveUserProfile());
 
         btnCalendar.setOnClickListener(v -> {
             chooseDate();
@@ -103,6 +112,7 @@ public class Register extends AppCompatActivity {
         intent = getIntent();
         userId = intent.getIntExtra("userId", 0);
         userClient = SPWebApiRepository.getInstance().getUserClient();
+        getCountries();
         getUser();
     }
 
@@ -199,11 +209,22 @@ public class Register extends AppCompatActivity {
     }
 
     /** initialize Spinner with list of countries */
-    private void initCountries() {
-        countries = getResources().getStringArray(R.array.countries);
-        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, countries);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        location.setAdapter(adapter);
+    private void getCountries() {
+        new GetLocationsAsync().execute();
+    }
+
+    private void initCountries(){
+        CountrySelectAdapter adapter = new CountrySelectAdapter(this,
+                android.R.layout.simple_spinner_item,
+                countries);
+        location = (Spinner) findViewById(R.id.registerLocation);
+        location.setAdapter(adapter); // Set the custom adapter to the spinner
+        // You can create an anonymous listener to handle the event when is selected an spinner item
+        location.setSelection(0);                              //retain previously selected value
+    }
+
+    private void saveUserProfile(){
+        new UpdateUserInfoAsync().execute();
     }
 
     /** save information to database */
@@ -268,6 +289,47 @@ public class Register extends AppCompatActivity {
         protected Void doInBackground(Void... d) {
             try {
                 user = userClient.getUser(userId);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }//end doInBackground
+
+        protected void onPostExecute(Void v) {
+            //populateView();
+        }//end onPostExecute
+    }
+    private class GetLocationsAsync extends AsyncTask<Void,Void, Void> {
+        protected Void doInBackground(Void... d) {
+            try {
+                LocationClient client = SPWebApiRepository.getInstance().getLocationClient();
+                List<LocationModel> locations = client.getLocations();
+                countries = new ArrayList<>(locations);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }//end doInBackground
+
+        protected void onPostExecute(Void v) {
+            initCountries();
+        }//end onPostExecute
+    }
+    private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {
+        protected Void doInBackground(Void... d) {
+            try {
+                txtEmail = findViewById(R.id.registerEmail);
+                txtPhone = findViewById(R.id.registerPhone);
+
+                String email = txtEmail.getText().toString();
+                String phone = txtPhone.getText().toString();
+
+                CountrySelectAdapter adapter = (CountrySelectAdapter) location.getAdapter();
+                LocationModel selectedLocation = adapter.getItem(location.getSelectedItemPosition());
+
+
+                UserInfoModel newUserInfo = new UserInfoModel(0, user.getId(), selectedLocation.LocationId, email, phone, new Date(), new Date());
+                UserInfoModel userInfo = userClient.updateUserInfo(newUserInfo);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

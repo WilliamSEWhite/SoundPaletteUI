@@ -1,13 +1,68 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="2dp"
-    android:gravity="center">
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingBottom="10dp">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:layout_gravity="center"
-        android:scaleType="centerCrop" />
-</FrameLayout>
+        <!-- Caption  -->
+        <TextView
+            android:id="@+id/postCaption"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="CAPTION"
+            android:textSize="18sp"
+            android:textColor="@color/colorBackgroundLight"
+            android:background="@color/colorBackground"
+            android:gravity="center"/>
+
+        <!-- ImageView -->
+        <ImageView
+            android:id="@+id/postImage"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop" />
+
+        <!-- Action buttons: Like, Comment, Save -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:orientation="horizontal"
+            android:gravity="left"
+            android:background="@color/colorBackground">
+
+                <!-- Like Button -->
+                <ImageButton
+                    android:id="@+id/postLikeButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/post_fav_empty_24"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:padding="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"/>
+
+                <!-- Comment Button -->
+                <ImageButton
+                    android:id="@+id/postCommentButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/post_comment_24"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:padding="5dp"
+                    android:layout_marginEnd="5dp"/>
+
+                <!-- Save Button -->
+                <ImageButton
+                    android:id="@+id/postSaveButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/post_saved_empty_24"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:padding="5dp"/>
+
+        </LinearLayout>
+
+</LinearLayout>

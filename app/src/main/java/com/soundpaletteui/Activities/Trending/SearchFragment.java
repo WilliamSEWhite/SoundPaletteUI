@@ -28,6 +28,7 @@ package com.soundpaletteui.Activities.Trending;
         import java.io.IOException;
         import java.util.ArrayList;
         import java.util.List;
+        import java.util.Random;
 
 public class SearchFragment extends Fragment {
 
@@ -67,26 +68,48 @@ public class SearchFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
         initComponents(rootView);
 
-        // Log the userId to make sure it is correct
-        Log.d("TAG-  HomeFragment", "Fetching user with ID: " + userId);
-        replaceFragment(1);
+        Random random = new Random();
+        int randomNumber = random.nextInt(6) + 10;
+        Log.d("HomeFragment", "Initial randomNumber: " + randomNumber);
+        replaceFragment(randomNumber);
 
         EditText inputSearch = rootView.findViewById(R.id.edittext_search);
         ImageButton buttonSearch = rootView.findViewById(R.id.button_search);
 
         // Set onClickListener for buttonSearch
         buttonSearch.setOnClickListener(v -> {
-            String searchText = inputSearch.getText().toString(); // Get the text from the EditText
-            if (searchText.equals("2") || searchText.equals("3")  || searchText.equals("4"))  {
-                replaceFragment(Integer.parseInt(searchText));
-            } else {
+            String searchText = inputSearch.getText().toString().trim(); // Trim whitespace
+            Log.d("TAG- SearchFragment", "Fetching new feed with ID: " + searchText);
 
-                Toast.makeText(requireContext(), "I heard you're trying to find " + searchText, Toast.LENGTH_SHORT).show();
+            if (isNumeric(searchText)) {
+                int searchNumber = Integer.parseInt(searchText);
+                if (searchNumber >= 1 && searchNumber <= 9) { // Ensures it's within range
+                    replaceFragment(searchNumber);
+                }
+            } else {
+                if (searchText.toLowerCase().equals("art")) {
+                    replaceFragment(7);
+                } else if (searchText.toLowerCase().equals("music")) {
+                    replaceFragment(8);
+                } else {
+                    Toast.makeText(requireContext(), "I heard you're trying to find " + searchText, Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
         return rootView;
     }
+
+
+
+    // Helper method to check if input is numeric
+    private boolean isNumeric(String str) {
+        if (str == null || str.isEmpty()) {
+            return false;
+        }
+        return str.matches("\\d+"); // Regex: Matches only digits
+    }
+
 
     private void initComponents(View view) {
         // Get arguments instead of Intent
@@ -124,24 +147,8 @@ public class SearchFragment extends Fragment {
 
     private void replaceFragment(int userId) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        PostFragment postFragment = PostFragment.newInstance(getArrayResourceId(String.valueOf(userId)));
-        Toast.makeText(requireContext(), "replaceFragment("+String.valueOf(getArrayResourceId(String.valueOf(userId)))+")", Toast.LENGTH_SHORT).show();
+        PostFragment postFragment = PostFragment.newInstance(userId);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
-    }
-
-    private int getArrayResourceId(String userId) {
-        switch (userId.toLowerCase()) {
-            case "1":
-                return R.array.userid1_images;
-            case "2":
-                return R.array.userid2_images;
-            case "3":
-                return R.array.userid3_images;
-            case "4":
-                return R.array.userid4_images;
-            default:
-                return 0;
-        }
     }
 }
