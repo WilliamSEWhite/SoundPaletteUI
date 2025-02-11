@@ -6,18 +6,54 @@
     android:gravity="center"
     android:paddingBottom="10dp">
 
-        <!-- Caption  -->
-        <TextView
-            android:id="@+id/postCaption"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:text="CAPTION"
-            android:textSize="18sp"
-            android:textColor="@color/colorBackgroundLight"
-            android:background="@color/colorBackground"
-            android:gravity="center"/>
+            android:layout_height="75dp"
+                android:orientation="horizontal">
 
-        <!-- ImageView -->
+                <ImageButton
+                    android:layout_width="75dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/colorBackground"
+                    android:src="@drawable/navigation_profile_24"
+                    android:tint="@color/white"
+                    android:padding="7dp"
+                    android:scaleType="centerCrop" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                        <!-- Username  -->
+                        <TextView
+                            android:id="@+id/postUsername"
+                            android:layout_width="match_parent"
+                            android:layout_height="20dp"
+                            android:text="\@USERNAME"
+                            android:textSize="10dp"
+                            android:textColor="@color/colorSecondary"
+                            android:background="@color/colorBackground"
+                            android:paddingTop="5dp"
+                            android:gravity="left"/>
+
+                        <!-- Caption  -->
+                        <TextView
+                            android:id="@+id/postCaption"
+                            android:layout_width="match_parent"
+                            android:layout_height="55dp"
+                            android:text="CAPTION"
+                            android:textSize="14dp"
+                            android:textColor="@color/colorBackgroundLight"
+                            android:background="@color/colorBackground"
+                            android:gravity="left"/>
+
+                        <!-- Scrollable Container for Tags -->
+
+                </LinearLayout>
+        </LinearLayout>
+
+        <!-- PostImage -->
         <ImageView
             android:id="@+id/postImage"
             android:layout_width="match_parent"
