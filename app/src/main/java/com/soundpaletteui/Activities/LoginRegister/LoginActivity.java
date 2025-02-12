@@ -22,15 +22,29 @@ public class LoginActivity extends AppCompatActivity {
 
     private LoginRegisterClient loginRegisterClient;
     UserModel user;
+    EditText usernameBox;
+    EditText passwordBox;
+    Button registerBtn;
+    Button loginBtn;
+    String username;
+    String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        initComponents();
+    }
 
-        Button registerBtn = findViewById(R.id.register_button);
+    private void initComponents() {
+        loginRegisterClient = SPWebApiRepository.getInstance().getLoginRegisterClient();
+        usernameBox = findViewById(R.id.username);
+        passwordBox = findViewById(R.id.password);
+
+        registerBtn = findViewById(R.id.register_button);
+        loginBtn = findViewById(R.id.login_button);
+
         registerBtn.setOnClickListener(v -> register());
-        Button loginBtn = findViewById(R.id.login_button);
         loginBtn.setOnClickListener(v -> {
             try {
                 login();
@@ -38,18 +52,18 @@ public class LoginActivity extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
         });
-
-        loginRegisterClient = SPWebApiRepository.getInstance().getLoginRegisterClient();
     }
 
     private void register(){
         new RegisterUserAsync().execute();
     }
+
     private void login() throws IOException {
         new LoginUserAsync().execute();
     }
 
     void loginUser(){
+        System.out.println("login username: " + username);
         if(user != null) {
             Toast.makeText(this, "User logged in with Id " + user.getId(),
                     Toast.LENGTH_SHORT).show();
@@ -61,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     void registerUser(){
+        System.out.println("register username: " + user.getUsername());
         if(user != null) {
             Toast.makeText(this, "User registered with Id " + user.getId(),
                     Toast.LENGTH_SHORT).show();
@@ -73,11 +88,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private class LoginUserAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
-            EditText usernameBox = findViewById(R.id.username);
-            EditText passwordBox = findViewById(R.id.password);
+            username = usernameBox.getText().toString();
+            password = passwordBox.getText().toString();
             try {
-                user = loginRegisterClient.loginUser(usernameBox.getText().toString(),
-                        passwordBox.getText().toString());
+                user = loginRegisterClient.loginUser(username,password);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -90,11 +104,10 @@ public class LoginActivity extends AppCompatActivity {
     }
     private class RegisterUserAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
-            EditText usernameBox = findViewById(R.id.username);
-            EditText passwordBox = findViewById(R.id.password);
+            username = usernameBox.getText().toString();
+            password = passwordBox.getText().toString();
             try {
-                user = loginRegisterClient.registerUser(usernameBox.getText().toString(),
-                        passwordBox.getText().toString());
+                user = loginRegisterClient.registerUser(username, password);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -106,17 +119,6 @@ public class LoginActivity extends AppCompatActivity {
         }//end onPostExecute
     }
 
-    /* not a fan of redundant code :)
-    private void homeActivity(int Id) {
-//        Intent i = new Intent(LoginActivity.this, HomeActivity.class);
-        Intent i = new Intent(LoginActivity.this, MainScreenActivity.class);
-        Bundle param = new Bundle();
-        param.putInt("userId", user.getId());
-        i.putExtras(param);
-        startActivity(i);
-        finish();
-    }
-    */
 
     private void nextActivity(int Id, int aId) {
         Intent i = null;

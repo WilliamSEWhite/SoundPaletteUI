@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -67,7 +68,6 @@ public class Register extends AppCompatActivity {
     private String currentPhotoPath;        // current photo path
     private Spinner location;               // country
     private ArrayList<LocationModel> countries;             // list of countries
-
     private Intent intent;
     private UserModel user;
     private UserClient userClient;
@@ -92,7 +92,8 @@ public class Register extends AppCompatActivity {
         location = findViewById(R.id.registerLocation);
         btnClear = findViewById(R.id.btnClear);
         btnSave = findViewById(R.id.btnSave);
-        initCountries();
+        //initCountries();
+
         Button saveBtn = findViewById(R.id.btnSave);
         saveBtn.setOnClickListener(v -> saveUserProfile());
 
@@ -139,7 +140,7 @@ public class Register extends AppCompatActivity {
 
     /** launch intent to choose image from gallery */
     private void pickImageFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.EXTERNAL_CONTENT_URI);
+//        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.EXTERNAL_CONTENT_URI);
         galleryLauncher.launch(intent);
     }
 
@@ -176,7 +177,7 @@ public class Register extends AppCompatActivity {
                 imageUri = FileProvider.getUriForFile(this,
                         "com.soundpaletteui.fileprovider", photo);
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                cameraLauncher.launch(takePictureIntent);
+//                cameraLauncher.launch(takePictureIntent);
             }
         }
     }
@@ -296,7 +297,7 @@ public class Register extends AppCompatActivity {
         }//end doInBackground
 
         protected void onPostExecute(Void v) {
-            //populateView();
+            populateView();
         }//end onPostExecute
     }
     private class GetLocationsAsync extends AsyncTask<Void,Void, Void> {
@@ -304,6 +305,12 @@ public class Register extends AppCompatActivity {
             try {
                 LocationClient client = SPWebApiRepository.getInstance().getLocationClient();
                 List<LocationModel> locations = client.getLocations();
+                // check API response
+                /*if (locations == null) {
+                    Log.e("GetLocationsAsync", "Error: locations returned null");
+                } else {
+                    Log.d("GetLocationsAsync", "Successfully retrieved locations: " + locations.size());
+                }*/
                 countries = new ArrayList<>(locations);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -313,6 +320,13 @@ public class Register extends AppCompatActivity {
 
         protected void onPostExecute(Void v) {
             initCountries();
+            if(countries != null && !countries.isEmpty()) {
+                initCountries();
+            }
+            else {
+                Toast.makeText(Register.this, "Failed to load countries!",
+                        Toast.LENGTH_SHORT).show();
+            }
         }//end onPostExecute
     }
     private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {

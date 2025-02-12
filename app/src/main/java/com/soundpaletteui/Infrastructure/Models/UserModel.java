@@ -6,13 +6,13 @@ public class UserModel {
     private String Username;
     private String Password;
 
-    public int getId(){
+    public int getId() {
         return Id;
     }
-    public String getUsername(){
+    public String getUsername() {
         return Username;
     }
-    public String getPassword(){
+    public String getPassword() {
         return Password;
     }
 
@@ -29,6 +29,11 @@ public class UserModel {
         this.Username = username;
         this.Password = password;
 
+    }
+
+    public UserModel(String username, String password) {
+        this.Username = username;
+        this.Password = password;
     }
 
 }

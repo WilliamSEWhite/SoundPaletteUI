@@ -10,7 +10,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface LocationApiEndpoints {
-    @GET("api/location/get-location")
+    @GET("api/location/get-locations")
     Call<List<LocationModel>> getLocations();
 
 }

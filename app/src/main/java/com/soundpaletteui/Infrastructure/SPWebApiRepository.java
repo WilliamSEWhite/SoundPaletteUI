@@ -12,7 +12,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SPWebApiRepository {
     private static final String BASE_URL = "http://10.0.2.2:14509/";
     private static final String LOG_TAG = SPWebApiRepository.class.getSimpleName();
-
     private static final Object LOCK = new Object();
     private static SPWebApiRepository sInstance;
 
