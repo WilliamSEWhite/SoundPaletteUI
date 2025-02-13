@@ -7,8 +7,8 @@
     <color name="sp_brown">#FF924d0f</color>
     <color name="sp_tan">#FFe28314</color>
 
-    <color name="button_default">#1E3A5F</color>
-    <color name="button_pressed">#14243C</color>
+    <color name="button_default">#252323</color>
+    <color name="button_pressed">#121212</color>
 
     <!-- Primary Colors -->
     <color name="colorPrimary">#1E3A5F</color>

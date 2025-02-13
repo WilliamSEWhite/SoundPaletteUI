@@ -11,11 +11,17 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.res.ColorStateList;
+import android.graphics.Typeface;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.UnderlineSpan;
+import android.widget.Button;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -73,31 +79,37 @@ public class ProfileFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
 
         TextView profile_bio = rootView.findViewById(R.id.profile_bio);
-        profile_bio.setText("HI! This is the profile page for user ID number " +userId+ " but later we will fill it with the database bio");
+        profile_bio.setText("HI! I am Lucy and I am an art instructor located in California. Books are closed for February! Check back for March's availability.");
 
         int colour_pressed = ContextCompat.getColor(requireContext(), R.color.button_pressed);
         int colour_default = ContextCompat.getColor(requireContext(), R.color.button_default);
 
         Button buttonPosts = rootView.findViewById(R.id.button_posts);
         Button buttonSaved = rootView.findViewById(R.id.button_saved);
-        replaceFragment(userId);
 
         // Set onClickListener for buttonPosts
         buttonPosts.setOnClickListener(v -> {
             buttonPosts.setBackgroundTintList(ColorStateList.valueOf(colour_pressed));
             buttonSaved.setBackgroundTintList(ColorStateList.valueOf(colour_default));
-            replaceFragment(userId);
+
+            setButtonTextUnderline(buttonPosts, true);
+            setButtonTextUnderline(buttonSaved, false);
+
+            replaceFragment(1);
         });
 
         // Set onClickListener for buttonSaved
         buttonSaved.setOnClickListener(v -> {
-
             buttonSaved.setBackgroundTintList(ColorStateList.valueOf(colour_pressed));
             buttonPosts.setBackgroundTintList(ColorStateList.valueOf(colour_default));
-            replaceFragment(userId+1);
+
+            setButtonTextUnderline(buttonSaved, true);
+            setButtonTextUnderline(buttonPosts, false);
+
+            replaceFragment(2);
         });
 
-
+        buttonPosts.performClick();
         return rootView;
     }
 
@@ -144,6 +156,20 @@ public class ProfileFragment extends Fragment {
         PostFragment postFragment = PostFragment.newInstance(userId);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
+    }
+
+    private void setButtonTextUnderline(Button button, boolean isSelected) {
+        String text = button.getText().toString();
+        SpannableString spannableString = new SpannableString(text);
+
+        if (isSelected) {
+            spannableString.setSpan(new UnderlineSpan(), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            button.setTypeface(null, Typeface.BOLD); // Make text bold for emphasis
+        } else {
+            button.setTypeface(null, Typeface.NORMAL); // Reset style
+        }
+
+        button.setText(spannableString);
     }
 
 }

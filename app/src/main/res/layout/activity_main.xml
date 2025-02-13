@@ -33,6 +33,13 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:labelVisibilityMode="labeled"
-        app:menu="@menu/menu_navigation"/>
+        app:menu="@menu/menu_navigation"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        style="@style/Widget.MaterialComponents.BottomNavigationView.PrimarySurface"
+        android:background="@color/colorBackground"
+        app:itemIconTint="@color/colorOnSurfaceLight"
+        app:itemBackground="@android:color/transparent"
+        app:itemTextColor="@color/colorOnSurfaceLight"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

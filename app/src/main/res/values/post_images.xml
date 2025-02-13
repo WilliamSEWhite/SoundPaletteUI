@@ -2,15 +2,14 @@
 <resources>
 
     <string-array name="user1_images">
-        <item>image21.png</item>
         <item>image24.png</item>
         <item>image29.png</item>
         <item>image30.png</item>
+        <item>image16.png</item>
     </string-array>
 
     <string-array name="user2_images">
         <item>image14.png</item>
-        <item>image16.png</item>
         <item>image17.png</item>
         <item>image22.png</item>
         <item>image23.png</item>
@@ -120,33 +119,32 @@
 
     <string-array name="art_images">
         <item>image16.png</item>
-        <item>image17.png</item>
         <item>image20.png</item>
         <item>image21.png</item>
         <item>image22.png</item>
+        <item>image30.png</item>
         <item>image24.png</item>
         <item>image25.png</item>
         <item>image26.png</item>
         <item>image27.png</item>
         <item>image28.png</item>
         <item>image29.png</item>
-        <item>image30.png</item>
+        <item>image17.png</item>
     </string-array>
 
     <string-array name="music_images">
-        <item>image01.png</item>
-        <item>image02.png</item>
-        <item>image03.png</item>
-        <item>image04.png</item>
         <item>image05.png</item>
-        <item>image06.png</item>
-        <item>image07.png</item>
         <item>image08.png</item>
-        <item>image09.png</item>
+        <item>image02.png</item>
+        <item>image04.png</item>
+        <item>image03.png</item>
+        <item>image06.png</item>
         <item>image10.png</item>
-        <item>image11.png</item>
-        <item>image12.png</item>
-        <item>image15.png</item>
+        <item>image01.png</item>
+        <item>image09.png</item>
+        <item>image18.png</item>
+        <item>image07.png</item>
+        <item>image19.png</item>
     </string-array>
 
     <string-array name="random_images">
