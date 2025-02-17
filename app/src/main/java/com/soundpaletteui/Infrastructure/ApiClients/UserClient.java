@@ -25,7 +25,6 @@ public class UserClient {
     public UserInfoModel updateUserInfo(UserInfoModel userInfo) throws IOException {
         Call<UserInfoModel> call = userEndpoints.updateUserInfo(userInfo);
         Response<UserInfoModel> response = call.execute();
-        System.out.println("userInfo reponse: " + response.body());
         return response.body();
     }
 }

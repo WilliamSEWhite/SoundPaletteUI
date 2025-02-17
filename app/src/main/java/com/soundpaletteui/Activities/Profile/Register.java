@@ -436,7 +436,7 @@ public class Register extends AppCompatActivity {
         }//end onPostExecute
     }
 
-    /** populates fields with user data
+    /** populates fields with user data - more to come with update user functionality
      * username
      * password
      * */

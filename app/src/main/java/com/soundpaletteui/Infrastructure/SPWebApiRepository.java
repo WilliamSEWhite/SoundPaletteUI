@@ -19,7 +19,6 @@ public class SPWebApiRepository {
 
     private static Retrofit retrofit;
 
-    //global access to room database
     public static SPWebApiRepository getInstance() {
         if (sInstance == null) {
             synchronized (LOCK) {
@@ -33,6 +32,8 @@ public class SPWebApiRepository {
     }//end getInstance
 
     private SPWebApiRepository(){
+        /* set GSON to accept dates as String instead of Date (stops app from crashing)
+           API server doesn't like to accept Date, and I don't want to troubleshoot anymore  */
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss") // custom format for date parsing
