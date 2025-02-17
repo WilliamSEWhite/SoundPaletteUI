@@ -36,6 +36,7 @@ public class LoginActivity extends AppCompatActivity {
         initComponents();
     }
 
+    /** initialize activity components */
     private void initComponents() {
         loginRegisterClient = SPWebApiRepository.getInstance().getLoginRegisterClient();
         usernameBox = findViewById(R.id.username);
@@ -54,10 +55,12 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    /** register new user */
     private void register(){
         new RegisterUserAsync().execute();
     }
 
+    /** login existing user */
     private void login() throws IOException {
         new LoginUserAsync().execute();
     }
@@ -86,6 +89,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    /** pulls data from the database for login */
     private class LoginUserAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             username = usernameBox.getText().toString();
@@ -102,6 +106,8 @@ public class LoginActivity extends AppCompatActivity {
             loginUser();
         }//end onPostExecute
     }
+
+    /** writes username and password to the database for register activity */
     private class RegisterUserAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             username = usernameBox.getText().toString();
@@ -119,7 +125,7 @@ public class LoginActivity extends AppCompatActivity {
         }//end onPostExecute
     }
 
-
+    /** move UX to next activity */
     private void nextActivity(int Id, int aId) {
         Intent i = null;
         switch(aId) {

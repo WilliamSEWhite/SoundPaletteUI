@@ -53,7 +53,7 @@ public class CountrySelectAdapter extends ArrayAdapter<LocationModel> {
         }
 
         TextView label = currentItemView.findViewById(R.id.countryName);
-        label.setText(values.get(position).LocationName);
+        label.setText(values.get(position).getLocationName());
         return currentItemView;
     }
 
@@ -67,7 +67,7 @@ public class CountrySelectAdapter extends ArrayAdapter<LocationModel> {
         }
 
         TextView label = currentItemView.findViewById(R.id.countryName);
-        label.setText(values.get(position).LocationName);
+        label.setText(values.get(position).getLocationName());
 
         return currentItemView;
     }

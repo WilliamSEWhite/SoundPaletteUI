@@ -15,5 +15,4 @@ public interface UserEndpoints {
     Call<UserModel> getUser(@Path("id") int id);
     @POST("api/user/update-user-info")
     Call<UserInfoModel> updateUserInfo(@Body UserInfoModel userInfo);
-
 }

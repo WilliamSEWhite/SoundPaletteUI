@@ -2,6 +2,8 @@ package com.soundpaletteui.Infrastructure;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
@@ -31,9 +33,13 @@ public class SPWebApiRepository {
     }//end getInstance
 
     private SPWebApiRepository(){
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss") // custom format for date parsing
+                .create();
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
 

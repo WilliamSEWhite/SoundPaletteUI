@@ -1,5 +1,7 @@
 package com.soundpaletteui.Activities.Profile;
 
+import static java.util.Calendar.getInstance;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -45,6 +47,7 @@ import com.soundpaletteui.R;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -72,6 +75,9 @@ public class Register extends AppCompatActivity {
     private UserModel user;
     private UserClient userClient;
     private int userId;
+//    private Date dob, dateCreated;
+    private String dob, dateCreated;
+    private String Dob;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +88,7 @@ public class Register extends AppCompatActivity {
 
     /** initializes components in the activity */
     private void initComponents() {
+        // initialise UI objects
         txtUsername = findViewById(R.id.registerUsername);
         txtPassword = findViewById(R.id.registerPassword);
         txtEmail = findViewById(R.id.registerEmail);
@@ -92,11 +99,8 @@ public class Register extends AppCompatActivity {
         location = findViewById(R.id.registerLocation);
         btnClear = findViewById(R.id.btnClear);
         btnSave = findViewById(R.id.btnSave);
-        //initCountries();
 
-        Button saveBtn = findViewById(R.id.btnSave);
-        saveBtn.setOnClickListener(v -> saveUserProfile());
-
+        // clickable listeners
         btnCalendar.setOnClickListener(v -> {
             chooseDate();
         });
@@ -110,11 +114,12 @@ public class Register extends AppCompatActivity {
             saveProfile();
         });
 
+        // get data from previous activity
         intent = getIntent();
         userId = intent.getIntExtra("userId", 0);
         userClient = SPWebApiRepository.getInstance().getUserClient();
-        getCountries();
-        getUser();
+        getCountries();     // load countries from database
+        getUser();          // load user info from database
     }
 
     /** shows a dialog with options Camera or Gallery */
@@ -144,6 +149,7 @@ public class Register extends AppCompatActivity {
         galleryLauncher.launch(intent);
     }
 
+    /** launch gallery to choose image */
     private final ActivityResultLauncher<Intent> galleryLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if(result.getResultCode() == RESULT_OK && result.getData() != null) {
@@ -168,6 +174,7 @@ public class Register extends AppCompatActivity {
         }
     }
 
+    /** takes a picture with the camera - incomplete */
     private void takePicture() throws IOException {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if(takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -192,6 +199,7 @@ public class Register extends AppCompatActivity {
         return image;
     }
 
+    /** checks camera permissions */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -214,6 +222,7 @@ public class Register extends AppCompatActivity {
         new GetLocationsAsync().execute();
     }
 
+    /** pulls countries from the database for the spinner */
     private void initCountries(){
         CountrySelectAdapter adapter = new CountrySelectAdapter(this,
                 android.R.layout.simple_spinner_item,
@@ -224,6 +233,7 @@ public class Register extends AppCompatActivity {
         location.setSelection(0);                              //retain previously selected value
     }
 
+    /** saves user profile - calls save async method */
     private void saveUserProfile(){
         new UpdateUserInfoAsync().execute();
     }
@@ -231,7 +241,8 @@ public class Register extends AppCompatActivity {
     /** save information to database */
     private void saveProfile() {
         // write saving code here
-        Toast.makeText(Register.this, "User profile saved", Toast.LENGTH_SHORT).show();
+        saveUserProfile();
+        Toast.makeText(Register.this, "User profile saved" + userId, Toast.LENGTH_SHORT).show();
     }
 
     /** clear text fields in register activity */
@@ -241,7 +252,7 @@ public class Register extends AppCompatActivity {
         txtDob.setText("");
     }
 
-    /** choose date and save to the DOB rosfield */
+    /** populate datepicker dialogue */
     private void chooseDate() {
         final Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -253,13 +264,58 @@ public class Register extends AppCompatActivity {
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        String selectedDate = dayOfMonth + "/" + (month + 1) + "/" + year;
+                        // set the date for UI
+                        String selectedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
                         txtDob.setText(selectedDate);
+                        // set the date for API call
+                        SimpleDateFormat outputSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
+                                Locale.getDefault());
+                        SimpleDateFormat inputSdf = new SimpleDateFormat("yyyy-MM-dd",
+                                Locale.getDefault());
+                        try {
+                            Date date = inputSdf.parse(selectedDate);
+                            dob = outputSdf.format(date);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 }, year, month, day
         );
         datePickerDialog.show();
     }
+    /*private void chooseDate() {
+        final Calendar calendar = getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                Register.this,
+                new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        SimpleDateFormat inputSdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                        SimpleDateFormat outputSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
+                                Locale.getDefault());
+                        String selectedDate = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth);
+                        try {
+                            Date date = inputSdf.parse(selectedDate);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        String formattedDate = outputSdf.format(selectedDate);
+                        try {
+                            dob = outputSdf.parse(formattedDate);
+                        } catch (ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+                        txtDob.setText(formattedDate);
+
+                    }
+                }, year, month, day
+        );
+        datePickerDialog.show();
+    }*/
 
     /** for pulling image src from the database */
     @Override
@@ -300,6 +356,8 @@ public class Register extends AppCompatActivity {
             populateView();
         }//end onPostExecute
     }
+
+    /** async call to pull countries from the database */
     private class GetLocationsAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             try {
@@ -319,7 +377,7 @@ public class Register extends AppCompatActivity {
         }//end doInBackground
 
         protected void onPostExecute(Void v) {
-            initCountries();
+            //initCountries();
             if(countries != null && !countries.isEmpty()) {
                 initCountries();
             }
@@ -329,9 +387,17 @@ public class Register extends AppCompatActivity {
             }
         }//end onPostExecute
     }
+
+    /** updates user profile information to the database */
     private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
+            System.out.println("UpdateUserInfoAsync");
             try {
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
+                        Locale.getDefault());
+                String dateCreated = sdf.format(calendar.getTime());
+
                 txtEmail = findViewById(R.id.registerEmail);
                 txtPhone = findViewById(R.id.registerPhone);
 
@@ -340,10 +406,23 @@ public class Register extends AppCompatActivity {
 
                 CountrySelectAdapter adapter = (CountrySelectAdapter) location.getAdapter();
                 LocationModel selectedLocation = adapter.getItem(location.getSelectedItemPosition());
-
-
-                UserInfoModel newUserInfo = new UserInfoModel(0, user.getId(), selectedLocation.LocationId, email, phone, new Date(), new Date());
-                UserInfoModel userInfo = userClient.updateUserInfo(newUserInfo);
+                if(selectedLocation != null) {
+                    UserInfoModel newUserInfo = new UserInfoModel(user.getId(),
+                            selectedLocation.getLocationId(), email, phone, dob, dateCreated);
+                    UserInfoModel userInfo = userClient.updateUserInfo(newUserInfo);
+                    System.out.println("--------------");
+                    System.out.println("location Id: " + selectedLocation.getLocationId());
+                    System.out.println("user Id: " + user.getId());
+                    System.out.println("email: " + email);
+                    System.out.println("phone: " + phone);
+                    System.out.println("dob: " + dob);
+                    System.out.println("dateCreated: " + dateCreated);
+                    System.out.println("--------------");
+                }
+                else {
+                    Toast.makeText(Register.this, "Please select a location.",
+                            Toast.LENGTH_SHORT).show();
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -357,7 +436,10 @@ public class Register extends AppCompatActivity {
         }//end onPostExecute
     }
 
-    /** populates fields with user data */
+    /** populates fields with user data
+     * username
+     * password
+     * */
     private void populateView() {
         txtUsername.setText(user.getUsername());
         txtPassword.setText(user.getPassword());
