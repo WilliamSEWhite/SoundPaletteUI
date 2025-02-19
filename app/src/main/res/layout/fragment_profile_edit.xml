@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".Activities.Profile.ProfileEditFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    android:padding="16dp"
+    android:background="@color/colorBackground">
+
+    <!-- Profile Picture Section -->
+    <FrameLayout
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/profile_picture"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:src="@drawable/baseline_person_100"
+            app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+        <ImageButton
+            android:id="@+id/edit_profile_button"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_gravity="bottom|end"
+            android:background="@drawable/icon_edit_24"
+            android:padding="5dp"/>
+    </FrameLayout>
+
+    <!-- Username -->
+    <EditText
+        android:id="@+id/profile_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Username"
+        android:background="@color/white"
+        android:textSize="16sp"
+        android:padding="12dp"/>
+
+    <!-- Email -->
+    <EditText
+        android:id="@+id/profile_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Email Address"
+        android:background="@color/white"
+        android:inputType="textEmailAddress"
+        android:textSize="16sp"
+        android:padding="12dp"/>
+
+    <!-- Phone Number -->
+    <EditText
+        android:id="@+id/profile_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Phone Number"
+        android:background="@color/white"
+        android:inputType="phone"
+        android:textSize="16sp"
+        android:padding="12dp"/>
+
+    <!-- Bio -->
+    <EditText
+        android:id="@+id/profile_bio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:hint="Edit your bio..."
+        android:background="@color/white"
+        android:textSize="16sp"
+        android:padding="12dp"
+        android:inputType="textMultiLine"
+        android:minHeight="100dp"
+        android:maxLines="4"
+        android:gravity="top"/>
+
+    <!-- Location (Dropdown) -->
+    <Spinner
+        android:id="@+id/profile_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@color/white"
+        android:padding="8dp"/>
+
+    <!-- Save & Cancel Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:id="@+id/btnCancel"
+            android:text="CANCEL"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/colorOnSurface"/>
+
+        <Button
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dp"
+            android:id="@+id/btnSave"
+            android:text="@string/btn_save"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/colorOnSurface"/>
+
+    </LinearLayout>
+
+</LinearLayout>
