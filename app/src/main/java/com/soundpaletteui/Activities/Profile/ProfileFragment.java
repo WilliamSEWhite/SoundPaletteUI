@@ -4,6 +4,7 @@ import android.content.res.ColorStateList;
 import android.os.AsyncTask;
 import android.os.Bundle;
 
+import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -25,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundpaletteui.Activities.Home.HomeFragment;
 import com.soundpaletteui.Activities.MainScreenActivity;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
 import com.soundpaletteui.Activities.Posts.PostFragment;
@@ -86,6 +88,7 @@ public class ProfileFragment extends Fragment {
 
         Button buttonPosts = rootView.findViewById(R.id.button_posts);
         Button buttonSaved = rootView.findViewById(R.id.button_saved);
+        AppCompatImageButton buttonEdit = rootView.findViewById(R.id.edit_profile_button);
 
         // Set onClickListener for buttonPosts
         buttonPosts.setOnClickListener(v -> {
@@ -108,6 +111,16 @@ public class ProfileFragment extends Fragment {
 
             replaceFragment(2);
         });
+
+        buttonEdit.setOnClickListener(v -> {
+            ProfileEditFragment profileEditFragment = ProfileEditFragment.newInstance(userId);
+
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.mainScreenFrame, profileEditFragment);
+            transaction.commit();
+        });
+
 
         buttonPosts.performClick();
         return rootView;
