@@ -27,4 +27,10 @@ public class UserClient {
         Response<UserInfoModel> response = call.execute();
         return response.body();
     }
+
+    /*public UserInfoModel getUserInfo(int id) {
+        Call<UserInfoModel> call = userEndpoints.getUser(id);
+        Response<UserInfoModel> response = call.execute();
+        return response.body();
+    }*/
 }

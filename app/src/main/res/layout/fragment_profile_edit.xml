@@ -38,35 +38,35 @@
     <EditText
         android:id="@+id/profile_user"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/edit_text"
         android:layout_marginTop="12dp"
         android:hint="Username"
         android:background="@color/white"
-        android:textSize="16sp"
+        android:textSize="@dimen/row_text"
         android:padding="12dp"/>
 
     <!-- Email -->
     <EditText
         android:id="@+id/profile_email"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/edit_text"
         android:layout_marginTop="12dp"
         android:hint="Email Address"
         android:background="@color/white"
         android:inputType="textEmailAddress"
-        android:textSize="16sp"
+        android:textSize="@dimen/row_text"
         android:padding="12dp"/>
 
     <!-- Phone Number -->
     <EditText
         android:id="@+id/profile_phone"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/edit_text"
         android:layout_marginTop="12dp"
         android:hint="Phone Number"
         android:background="@color/white"
         android:inputType="phone"
-        android:textSize="16sp"
+        android:textSize="@dimen/row_text"
         android:padding="12dp"/>
 
     <!-- Bio -->
@@ -77,10 +77,10 @@
         android:layout_marginTop="12dp"
         android:hint="Edit your bio..."
         android:background="@color/white"
-        android:textSize="16sp"
+        android:textSize="@dimen/row_text"
         android:padding="12dp"
         android:inputType="textMultiLine"
-        android:minHeight="100dp"
+        android:minHeight="@dimen/text_area_height"
         android:maxLines="4"
         android:gravity="top"/>
 
@@ -88,10 +88,12 @@
     <Spinner
         android:id="@+id/profile_location"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/spinner_height"
         android:layout_marginTop="12dp"
+        android:textSize="@dimen/row_text"
         android:background="@color/white"
-        android:padding="8dp"/>
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"/>
 
     <!-- Save & Cancel Buttons -->
     <LinearLayout
@@ -102,24 +104,24 @@
         android:layout_marginTop="16dp">
 
         <Button
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/btn_main_width"
+            android:layout_height="@dimen/btn_main_height"
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:id="@+id/btnCancel"
             android:text="CANCEL"
-            android:textSize="18sp"
+            android:textSize="@dimen/btn_text_size"
             android:textColor="@color/white"
             android:backgroundTint="@color/colorOnSurface"/>
 
         <Button
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
+            android:layout_width="@dimen/btn_main_width"
+            android:layout_height="@dimen/btn_main_height"
             android:layout_gravity="center"
             android:layout_margin="10dp"
             android:id="@+id/btnSave"
             android:text="@string/btn_save"
-            android:textSize="18sp"
+            android:textSize="@dimen/btn_text_size"
             android:textColor="@color/white"
             android:backgroundTint="@color/colorOnSurface"/>
 
