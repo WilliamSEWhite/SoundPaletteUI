@@ -9,57 +9,6 @@
     android:padding="16dp"
     tools:context=".Activities.LoginRegister.LoginActivity">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="10"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true"
-        android:layout_gravity="center"
-        android:paddingTop="125dp"
-        android:paddingStart="125dp"
-        android:paddingEnd="125dp"
-        android:paddingBottom="0dp"
-        android:src="@drawable/baseline_music_note_48"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_weight="5"
-        android:layout_gravity="center"
-        android:text="SoundPalette"
-        android:textSize="42sp"
-        android:textColor="@color/white"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="50dp"/>
-
-    <EditText
-        android:id="@+id/username"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@color/white"
-        android:hint="username"
-        android:inputType="text"
-        android:maxLength="25"
-        android:padding="10dp"
-        android:textSize="20sp"
-        android:layout_marginBottom="16dp"/>
-
-    <EditText
-        android:id="@+id/password"
-        android:layout_width="320dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:background="@color/white"
-        android:hint="password"
-        android:inputType="text"
-        android:maxLength="25"
-        android:padding="10dp"
-        android:textSize="20sp"
-        android:layout_marginBottom="32dp"/>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -68,27 +17,75 @@
         android:paddingBottom="70dp"
         android:orientation="horizontal">
 
-        <Button
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:id="@+id/register_button"
-            android:text="Register"
-            android:textSize="18sp"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/colorOnSurface"/>
-
-        <Button
-            android:layout_width="120dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="10dp"
-            android:id="@+id/login_button"
-            android:text="Login"
-            android:textSize="18sp"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/colorOnSurface"/>
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="368dp"
+        android:layout_weight="5"
+        app:srcCompat="@drawable/logo" />
+
+    <TextView
+        android:layout_width="311dp"
+        android:layout_height="85dp"
+        android:layout_gravity="center"
+        android:layout_weight="5"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="50dp"
+        android:text="SoundPalette"
+        android:textColor="@color/white"
+        android:textSize="42sp" />
+
+    <EditText
+        android:id="@+id/username"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="16dp"
+        android:background="@color/white"
+        android:hint="username"
+        android:inputType="text"
+        android:maxLength="25"
+        android:minHeight="48dp"
+        android:padding="10dp"
+        android:textSize="20sp" />
+
+    <EditText
+        android:id="@+id/password"
+        android:layout_width="320dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="32dp"
+        android:background="@color/white"
+        android:hint="password"
+        android:inputType="text"
+        android:maxLength="25"
+        android:minHeight="48dp"
+        android:padding="10dp"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/colorOnSurface"
+        android:text="Login"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
+
+    <Button
+        android:id="@+id/register_button"
+        android:layout_width="120dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/colorOnSurface"
+        android:text="Register"
+        android:textColor="@color/white"
+        android:textSize="18sp" />
 
 </LinearLayout>
