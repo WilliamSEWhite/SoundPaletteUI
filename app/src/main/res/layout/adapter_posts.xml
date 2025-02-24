@@ -1,59 +1,56 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
     android:gravity="center"
+    android:orientation="vertical"
     android:paddingBottom="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="75dp"
-                android:orientation="horizontal">
+            android:orientation="horizontal">
+
 
                 <ImageButton
                     android:layout_width="75dp"
                     android:layout_height="match_parent"
-                    android:background="@color/colorBackground"
-                    android:src="@drawable/navigation_profile_24"
-                    android:tint="@color/white"
+                    android:background="@drawable/white_translucency_gradient"
                     android:padding="7dp"
-                    android:scaleType="centerCrop" />
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/navigation_profile_24"
+                    android:tint="@color/white" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                        <!-- Username  -->
                         <TextView
                             android:id="@+id/postUsername"
                             android:layout_width="match_parent"
                             android:layout_height="20dp"
-                            android:text="\@USERNAME"
-                            android:textSize="10dp"
-                            android:textColor="@color/colorSecondary"
-                            android:background="@color/colorBackground"
+                            android:background="@drawable/white_translucency_gradient_horizontal"
+                            android:gravity="left"
                             android:paddingTop="5dp"
-                            android:gravity="left"/>
+                            android:text="\@USERNAME"
+                            android:textColor="@android:color/darker_gray"
+                        android:textSize="10dp"
+                        android:textStyle="bold" />
 
-                        <!-- Caption  -->
                         <TextView
                             android:id="@+id/postCaption"
                             android:layout_width="match_parent"
                             android:layout_height="55dp"
+                            android:background="@drawable/white_translucency_gradient_horizontal"
                             android:text="CAPTION"
-                            android:textSize="14dp"
-                            android:textColor="@color/colorBackgroundLight"
-                            android:background="@color/colorBackground"
-                            android:gravity="left"/>
+                            android:textColor="@color/black"
 
-                        <!-- Scrollable Container for Tags -->
+                            android:textSize="14dp" />
+
 
                 </LinearLayout>
         </LinearLayout>
 
-        <!-- PostImage -->
         <ImageView
             android:id="@+id/postImage"
             android:layout_width="match_parent"
@@ -61,50 +58,45 @@
             android:layout_gravity="center"
             android:scaleType="centerCrop" />
 
-        <!-- Action buttons: Like, Comment, Save -->
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="35dp"
-            android:background="@color/colorBackground">
+            android:background="@drawable/white_translucency_gradient_vertical">
 
-                <!-- Like Button -->
                 <ImageButton
                     android:id="@+id/postLikeButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/post_fav_empty_24"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="5dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:paddingStart="10dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true" />
+                    android:src="@drawable/post_fav_empty_24" />
 
-                <!-- Comment Button -->
                 <ImageButton
                     android:id="@+id/postCommentButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/post_comment_24"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:padding="5dp"
+                    android:layout_centerVertical="true"
                     android:layout_marginEnd="5dp"
                     android:layout_toEndOf="@id/postLikeButton"
-                    android:layout_centerVertical="true" />
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:padding="5dp"
+                    android:src="@drawable/post_comment_24" />
 
-                <!-- Save Button -->
                 <ImageButton
                     android:id="@+id/postSaveButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/post_saved_empty_24"
                     android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="5dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:padding="5dp"
                     android:paddingEnd="10dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_centerVertical="true" />
+                    android:src="@drawable/post_saved_empty_24" />
 
         </RelativeLayout>
-
 
 </LinearLayout>

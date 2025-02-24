@@ -1,68 +1,124 @@
 package com.soundpaletteui.Activities.Posts;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.soundpaletteui.R;
-
+import com.soundpaletteui.UISettings;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+/**
+ * Displays a grid or list of posts based on provided resource arrays.
+ */
 public class PostFragment extends Fragment {
     private static final String ARG_IMAGES = "array_images";
     private static final String ARG_CAPTIONS = "array_captions";
+    private static final String ARG_BASE_HUE = "base_hue";
     private int arrayImagesId;
     private int arrayCaptionId;
+    private float baseHue = -1f;
 
-    public static PostFragment newInstance(int userId) {
+    /**
+     * Creates a new instance of PostFragment using default gradient logic.
+     */
+    public static PostFragment newInstance(int id) {
         PostFragment fragment = new PostFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_IMAGES, getImagesArrayResourceId(String.valueOf(userId)));
-        args.putInt(ARG_CAPTIONS, getCaptionArrayResourceId(String.valueOf(userId)));
+        args.putInt(ARG_IMAGES, getImagesArrayResourceId(String.valueOf(id)));
+        args.putInt(ARG_CAPTIONS, getCaptionArrayResourceId(String.valueOf(id)));
         fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     * Creates a new instance of PostFragment with a fixed hue for the background.
+     */
+    public static PostFragment newInstance(int id, float baseHue) {
+        PostFragment fragment = new PostFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_IMAGES, getImagesArrayResourceId(String.valueOf(id)));
+        args.putInt(ARG_CAPTIONS, getCaptionArrayResourceId(String.valueOf(id)));
+        args.putFloat(ARG_BASE_HUE, baseHue);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    /**
+     * Retrieves arguments on fragment creation.
+     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             arrayImagesId = getArguments().getInt(ARG_IMAGES, 0);
             arrayCaptionId = getArguments().getInt(ARG_CAPTIONS, 0);
+            if (getArguments().containsKey(ARG_BASE_HUE)) {
+                baseHue = getArguments().getFloat(ARG_BASE_HUE, -1f);
+            }
         }
     }
 
+    /**
+     * Inflates the layout, sets background, and initializes RecyclerView.
+     */
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post, container, false);
+        if (baseHue >= 0f) {
+            UISettings.applyBrightnessGradientBackground(view, 330f);
+        }
         RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
-
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
         List<String> imagePaths = loadImageArray();
         List<String> captions = loadCaptionsArray();
-
         PostAdapter adapter = new PostAdapter(imagePaths, captions);
         recyclerView.setAdapter(adapter);
-
         return view;
     }
 
+    /**
+     * (Optional) Sets a random vertical gradient background if needed.
+     */
+    private void setRandomGradientBackground(View rootView) {
+        Random random = new Random();
+        int alpha = 128 + random.nextInt(128);
+        int red   = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue  = random.nextInt(256);
+        int randomColor = Color.argb(alpha, red, green, blue);
+        GradientDrawable gradientDrawable = new GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{Color.WHITE, randomColor}
+        );
+        gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+        rootView.setBackground(gradientDrawable);
+    }
+
+    /**
+     * Loads the image resource array into a list of drawable resource URIs.
+     */
     private List<String> loadImageArray() {
         List<String> images = new ArrayList<>();
         if (getContext() != null && arrayImagesId != 0) {
             String[] imageNames = getResources().getStringArray(arrayImagesId);
             for (String name : imageNames) {
-                images.add("android.resource://" + requireContext().getPackageName() + "/drawable/" + name.replace(".png", ""));
+                images.add("android.resource://" +
+                        requireContext().getPackageName() +
+                        "/drawable/" + name.replace(".png", ""));
             }
         } else {
             Toast.makeText(requireContext(), "Invalid image array resource", Toast.LENGTH_SHORT).show();
@@ -70,6 +126,9 @@ public class PostFragment extends Fragment {
         return images;
     }
 
+    /**
+     * Loads the captions resource array into a list of captions.
+     */
     private List<String> loadCaptionsArray() {
         List<String> captions = new ArrayList<>();
         if (getContext() != null && arrayCaptionId != 0) {
@@ -81,8 +140,11 @@ public class PostFragment extends Fragment {
         return captions;
     }
 
-    private static int getImagesArrayResourceId(String userId) {
-        switch (userId) {
+    /**
+     * Returns the appropriate images array resource ID for a given ID.
+     */
+    private static int getImagesArrayResourceId(String id) {
+        switch (id) {
             case "1": return R.array.user1_images;
             case "2": return R.array.user2_images;
             case "3": return R.array.user3_images;
@@ -102,8 +164,11 @@ public class PostFragment extends Fragment {
         }
     }
 
-    private static int getCaptionArrayResourceId(String userId) {
-        switch (userId) {
+    /**
+     * Returns the appropriate captions array resource ID for a given ID.
+     */
+    private static int getCaptionArrayResourceId(String id) {
+        switch (id) {
             case "1": return R.array.user1_captions;
             case "2": return R.array.user2_captions;
             case "3": return R.array.user3_captions;

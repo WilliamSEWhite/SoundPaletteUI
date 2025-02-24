@@ -1,149 +1,181 @@
 package com.soundpaletteui.Activities.Profile;
 
-import android.content.res.ColorStateList;
-import android.os.AsyncTask;
-import android.os.Bundle;
-
-import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Typeface;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.UnderlineSpan;
-import android.widget.Button;
-
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.soundpaletteui.Activities.Home.HomeFragment;
-import com.soundpaletteui.Activities.MainScreenActivity;
-import com.soundpaletteui.Activities.Messages.MessageFragment;
+import com.soundpaletteui.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import pl.droidsonroids.gif.GifDrawable;
+import pl.droidsonroids.gif.GifImageView;
 
+/**
+ * Displays and manages a user's profile, including posts and saved content.
+ */
 public class ProfileFragment extends Fragment {
 
-    private RecyclerView recyclerView;
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
     private int userId;
     private UserModel user;
     private UserClient userClient;
-    private String userName;
+    private View framePosts;
+    private GifImageView gifPosts;
+    private TextView textPosts;
+    private View frameSaved;
+    private GifImageView gifSaved;
+    private TextView textSaved;
+    private Handler gifHandler = new Handler(Looper.getMainLooper());
+    private final int FULL_ALPHA = 255;
+    private final int TRANSPARENT_ALPHA = 77;
 
+    /**
+     * Default constructor for ProfileFragment.
+     */
     public ProfileFragment() {
-        // Required empty public constructor
     }
 
-    // Static method to create a new instance of ProfileFragment with userId
+    /**
+     * Returns a new instance of ProfileFragment with the specified userId.
+     */
     public static ProfileFragment newInstance(int userId) {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
-        args.putInt("USER_ID", userId); // Add userId to the Bundle
+        args.putInt("USER_ID", userId);
         fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     * Initializes the fragment with any arguments provided.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", -1); // Default to -1 if not found
+            userId = getArguments().getInt("USER_ID", -1);
         }
-        //Log.d("TAG - ProfileFragment", "getting username...");
-        //userName = user.getUsername();
     }
 
+    /**
+     * Inflates the layout and sets up UI for posts and saved content.
+     */
+    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        UISettings.applyBrightnessGradientBackground(rootView, 50f);
+        framePosts = rootView.findViewById(R.id.frame_posts);
+        gifPosts = rootView.findViewById(R.id.gif_posts);
+        textPosts = rootView.findViewById(R.id.posts_text);
+        frameSaved = rootView.findViewById(R.id.frame_saved);
+        gifSaved = rootView.findViewById(R.id.gif_saved);
+        textSaved = rootView.findViewById(R.id.saved_text);
+        initComponents(rootView);
+        Random random = new Random();
 
-        TextView profile_bio = rootView.findViewById(R.id.profile_bio);
-        profile_bio.setText("HI! I am Lucy and I am an art instructor located in California. Books are closed for February! Check back for March's availability.");
-
-        int colour_pressed = ContextCompat.getColor(requireContext(), R.color.button_pressed);
-        int colour_default = ContextCompat.getColor(requireContext(), R.color.button_default);
-
-        Button buttonPosts = rootView.findViewById(R.id.button_posts);
-        Button buttonSaved = rootView.findViewById(R.id.button_saved);
-        AppCompatImageButton buttonEdit = rootView.findViewById(R.id.edit_profile_button);
-
-        // Set onClickListener for buttonPosts
-        buttonPosts.setOnClickListener(v -> {
-            buttonPosts.setBackgroundTintList(ColorStateList.valueOf(colour_pressed));
-            buttonSaved.setBackgroundTintList(ColorStateList.valueOf(colour_default));
-
-            setButtonTextUnderline(buttonPosts, true);
-            setButtonTextUnderline(buttonSaved, false);
-
-            replaceFragment(1);
+        framePosts.setOnClickListener(v -> {
+            try {
+                final GifDrawable postsGifDrawable = (GifDrawable) gifPosts.getDrawable();
+                framePosts.getBackground().mutate().setAlpha(FULL_ALPHA);
+                frameSaved.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
+                UISettings.applyBrightnessGradientBackground(rootView, 50f);
+                postsGifDrawable.start();
+                gifHandler.postDelayed(() -> postsGifDrawable.stop(), 800);
+            } catch (ClassCastException e) {
+                e.printStackTrace();
+                Toast.makeText(requireContext(),
+                        "Error casting Posts GIF to GifDrawable",
+                        Toast.LENGTH_SHORT).show();
+            }
+            try {
+                if (gifSaved.getDrawable() instanceof GifDrawable) {
+                    ((GifDrawable) gifSaved.getDrawable()).stop();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            gifPosts.setAlpha(1.0f);
+            gifSaved.setAlpha(0.3f);
+            setButtonTextSelected(textPosts, true);
+            setButtonTextSelected(textSaved, false);
+            int randomPostsNumber = random.nextInt(6) + 10;
+            Log.d("ProfileFragment", "Posts clicked - randomNumber: " + randomPostsNumber);
+            replaceFragment(randomPostsNumber);
         });
 
-        // Set onClickListener for buttonSaved
-        buttonSaved.setOnClickListener(v -> {
-            buttonSaved.setBackgroundTintList(ColorStateList.valueOf(colour_pressed));
-            buttonPosts.setBackgroundTintList(ColorStateList.valueOf(colour_default));
-
-            setButtonTextUnderline(buttonSaved, true);
-            setButtonTextUnderline(buttonPosts, false);
-
-            replaceFragment(2);
+        frameSaved.setOnClickListener(v -> {
+            try {
+                final GifDrawable savedGifDrawable = (GifDrawable) gifSaved.getDrawable();
+                frameSaved.getBackground().mutate().setAlpha(FULL_ALPHA);
+                framePosts.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
+                UISettings.applyBrightnessGradientBackground(rootView, 60f);
+                savedGifDrawable.start();
+                gifHandler.postDelayed(() -> savedGifDrawable.stop(), 800);
+            } catch (ClassCastException e) {
+                e.printStackTrace();
+                Toast.makeText(requireContext(),
+                        "Error casting Saved GIF to GifDrawable",
+                        Toast.LENGTH_SHORT).show();
+            }
+            try {
+                if (gifPosts.getDrawable() instanceof GifDrawable) {
+                    ((GifDrawable) gifPosts.getDrawable()).stop();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            gifSaved.setAlpha(1.0f);
+            gifPosts.setAlpha(0.3f);
+            setButtonTextSelected(textSaved, true);
+            setButtonTextSelected(textPosts, false);
+            int randomSavedNumber = random.nextInt(9) + 1;
+            Log.d("ProfileFragment", "Saved clicked - randomNumber: " + randomSavedNumber);
+            replaceFragment(randomSavedNumber);
         });
 
-        buttonEdit.setOnClickListener(v -> {
-            ProfileEditFragment profileEditFragment = ProfileEditFragment.newInstance(userId);
-
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.mainScreenFrame, profileEditFragment);
-            transaction.commit();
-        });
-
-
-        buttonPosts.performClick();
+        framePosts.performClick();
         return rootView;
     }
 
-    /** initializes components in the fragment */
+    /**
+     * Initializes components and loads the user data.
+     */
     private void initComponents(View view) {
-        // Get arguments instead of Intent
         if (getArguments() != null) {
-            userId = getArguments().getInt("userId", 0);
+            userId = getArguments().getInt("USER_ID", 0);
         }
-
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
-
-        //recyclerView = view.findViewById(R.id.mainContent);
-        //recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        //recyclerView.setAdapter(mainContentAdapter);
-
         userClient = SPWebApiRepository.getInstance().getUserClient();
         getUser();
     }
 
+    /**
+     * Retrieves user data in a background thread.
+     */
     private void getUser() {
         new Thread(() -> {
             try {
@@ -151,19 +183,27 @@ public class ProfileFragment extends Fragment {
                 requireActivity().runOnUiThread(this::populateView);
             } catch (IOException e) {
                 requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Error fetching user", Toast.LENGTH_SHORT).show()
-                );
+                        Toast.makeText(requireContext(),
+                                "Error fetching user",
+                                Toast.LENGTH_SHORT).show());
             }
         }).start();
     }
 
+    /**
+     * Populates the view once the user data is loaded.
+     */
     private void populateView() {
         userList.clear();
         userList.add(user);
-        mainContentAdapter.notifyDataSetChanged();
+        if (mainContentAdapter != null) {
+            mainContentAdapter.notifyDataSetChanged();
+        }
     }
 
-
+    /**
+     * Replaces the current child fragment with a PostFragment for a given userId.
+     */
     private void replaceFragment(int userId) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(userId);
@@ -171,18 +211,16 @@ public class ProfileFragment extends Fragment {
         transaction.commit();
     }
 
-    private void setButtonTextUnderline(Button button, boolean isSelected) {
-        String text = button.getText().toString();
-        SpannableString spannableString = new SpannableString(text);
-
+    /**
+     * Sets the style of a TextView to selected or unselected.
+     */
+    private void setButtonTextSelected(TextView textView, boolean isSelected) {
         if (isSelected) {
-            spannableString.setSpan(new UnderlineSpan(), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            button.setTypeface(null, Typeface.BOLD); // Make text bold for emphasis
+            textView.setTypeface(null, Typeface.BOLD);
+            textView.setTextSize(19);
         } else {
-            button.setTypeface(null, Typeface.NORMAL); // Reset style
+            textView.setTypeface(null, Typeface.NORMAL);
+            textView.setTextSize(18);
         }
-
-        button.setText(spannableString);
     }
-
 }

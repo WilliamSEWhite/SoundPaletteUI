@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".Activities.Profile.Register"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".Activities.Profile.Register">
 
-    <!--     TOOLBAR AND HEADER     -->
     <include
         android:id="@+id/toolbar"
         layout="@layout/header"/>
 
-    <!-- main content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -21,95 +19,139 @@
         android:orientation="vertical"
         android:padding="@dimen/register_fields"
         android:gravity="center"
-        android:background="@color/sp_main_bg">
-        <EditText
+        android:background="@android:color/transparent">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/edit_text"
             android:layout_margin="@dimen/edit_text_margin"
-            android:hint="@string/register_name"
-            android:id="@+id/registerUsername"
-            android:background="@color/white"
-            android:focusable="true"/>
-        <EditText
+            android:orientation="vertical"
+android:backgroundTint="@color/white"
+            android:background="@drawable/rounded_corners">
+            <EditText
+                android:id="@+id/registerUsername"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/register_name"
+                android:focusable="true"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/edit_text"
             android:layout_margin="@dimen/edit_text_margin"
-            android:hint="@string/register_password"
-            android:id="@+id/registerPassword"
-            android:background="@color/white"
-            android:inputType="textPassword"
-            android:focusable="true"/>
-        <EditText
+            android:orientation="vertical"
+            android:backgroundTint="@color/white"
+
+            android:background="@drawable/rounded_corners">
+
+            <EditText
+                android:id="@+id/registerPassword"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/register_password"
+                android:inputType="textPassword"
+                android:focusable="true"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/edit_text"
             android:layout_margin="@dimen/edit_text_margin"
-            android:hint="@string/register_email_address"
-            android:id="@+id/registerEmail"
-            android:background="@color/white"
-            android:focusable="true"/>
-        <EditText
+            android:backgroundTint="@color/white"
+
+            android:orientation="vertical"
+            android:background="@drawable/rounded_corners">
+            <EditText
+                android:id="@+id/registerEmail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/register_email_address"
+                android:focusable="true"/>
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/edit_text"
             android:layout_margin="@dimen/edit_text_margin"
-            android:hint="@string/register_phone"
-            android:id="@+id/registerPhone"
-            android:background="@color/white"
-            android:focusable="true"/>
-        <!-- Date of birth picker -->
+            android:backgroundTint="@color/white"
+
+            android:orientation="vertical"
+            android:background="@drawable/rounded_corners">
+            <EditText
+                android:id="@+id/registerPhone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="@string/register_phone"
+                android:focusable="true"/>
+        </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+
             android:gravity="center">
-            <EditText
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="@dimen/edit_text"
                 android:layout_weight="6"
+                android:backgroundTint="@color/white"
+
                 android:layout_margin="@dimen/edit_text_margin"
-                android:hint="@string/register_dob"
-                android:id="@+id/registerDob"
-                android:enabled="false"
-                android:background="@color/white"/>
+                android:orientation="vertical"
+                android:background="@drawable/rounded_corners">
+                <EditText
+                    android:id="@+id/registerDob"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/register_dob"
+                    android:enabled="false"
+                    android:focusable="true"/>
+            </LinearLayout>
             <ImageButton
+                android:id="@+id/btnDatePicker"
                 android:layout_width="0dp"
+
+                android:tint="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_margin="@dimen/edit_text_margin"
                 android:src="@drawable/icon_calendar"
-                android:id="@+id/btnDatePicker"
+                android:background="@android:color/transparent"
                 android:focusable="true"/>
         </LinearLayout>
-        <!-- Profile picture picker -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center">
-                <ImageView
-                    android:layout_width="@dimen/profile_pic"
-                    android:layout_height="@dimen/profile_pic"
-                    android:layout_margin="@dimen/edit_text_margin"
-                    android:src="@drawable/baseline_person_100"
-                    android:id="@+id/registerProfilePicture"
-                    android:background="@color/white"
-                    android:focusable="true"
-                    android:clickable="true"/>
-            </LinearLayout>
+            <ImageView
+                android:id="@+id/registerProfilePicture"
+                android:layout_width="@dimen/profile_pic"
+                android:alpha="0.5"
+
+                android:tint="@color/white"
+                android:layout_height="@dimen/profile_pic"
+                android:layout_margin="@dimen/edit_text_margin"
+                android:src="@drawable/baseline_person_100"
+                android:background="@drawable/posts_profile"
+
+                android:focusable="true"
+                android:clickable="true"/>
         </LinearLayout>
+
         <Spinner
+            android:id="@+id/registerLocation"
+            android:backgroundTint="@color/white"
+
             android:layout_width="match_parent"
             android:layout_height="@dimen/spinner_height"
             android:layout_margin="@dimen/edit_text_margin"
-            android:id="@+id/registerLocation"
-            android:background="@color/white"
+            android:background="@drawable/rounded_corners"
             android:focusable="true"/>
     </LinearLayout>
-    <!-- bottom buttons -->
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -117,28 +159,64 @@
         android:padding="@dimen/btn_padding"
         android:orientation="horizontal"
         android:background="@color/sp_main_bg">
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginRight="@dimen/edit_text_margin"
-            android:padding="@dimen/btn_padding"
-            android:backgroundTint="@color/sp_brown"
-            android:textColor="@color/white"
-            android:text="@string/btn_clear"
-            android:textSize="@dimen/btn_text_size"
-            android:id="@+id/btnClear"/>
-        <Button
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginLeft="@dimen/edit_text_margin"
-            android:padding="@dimen/btn_padding"
-            android:backgroundTint="@color/sp_tan"
-            android:textColor="@color/black"
-            android:text="@string/btn_save"
-            android:textSize="@dimen/btn_text_size"
-            android:id="@+id/btnSave"/>
 
+        <!-- Clear button -->
+        <FrameLayout
+            android:id="@+id/frame_clear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/edit_text_margin"
+            android:background="@drawable/round_button_shape"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif_clear"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/saved_profile"/>
+
+            <TextView
+                android:id="@+id/clear_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="CLEAR"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/frame_save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/edit_text_margin"
+            android:background="@drawable/round_button_shape"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif_save"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/posts_profile"/>
+
+            <TextView
+                android:id="@+id/save_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="SAVE"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+        </FrameLayout>
     </LinearLayout>
 </LinearLayout>

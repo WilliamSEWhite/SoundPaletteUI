@@ -1,29 +1,18 @@
 package com.soundpaletteui.Activities.Home;
 
-import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.style.UnderlineSpan;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
-import java.util.Random;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
-import com.soundpaletteui.Activities.Messages.MessageFragment;
+import com.soundpaletteui.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
@@ -34,98 +23,173 @@ import com.soundpaletteui.R;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import pl.droidsonroids.gif.GifDrawable;
+import pl.droidsonroids.gif.GifImageView;
+
+/**
+ * Represents the Home screen fragment for exploring and following content.
+ */
 public class HomeFragment extends Fragment {
 
-    private RecyclerView recyclerView;
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
     private int userId;
     private UserModel user;
     private UserClient userClient;
+    private View frameExplore;
+    private GifImageView gifExplore;
+    private TextView textExplore;
+    private View frameFollower;
+    private GifImageView gifFollower;
+    private TextView textFollower;
+    private Handler gifHandler = new Handler(Looper.getMainLooper());
+    private final int ORANGE_COLOR = Color.parseColor("#FFA500");
+    private final int PINK_COLOR = Color.parseColor("#FFC0CB");
+    private final int TRANSPARENT_ALPHA = 77;
+    private final int FULL_ALPHA = 255;
 
+    /**
+     * Default constructor for HomeFragment.
+     */
     public HomeFragment() {
-        // Required empty public constructor
     }
 
-    // Static method to create a new instance of HomeFragment with userId
+    /**
+     * Creates a new instance of HomeFragment with the specified userId.
+     */
     public static HomeFragment newInstance(int userId) {
         HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
-        args.putInt("USER_ID", userId); // Pass userId with key "USER_ID"
+        args.putInt("USER_ID", userId);
         fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     * Initializes the fragment with the arguments passed in.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", -1); // Ensure correct key
+            userId = getArguments().getInt("USER_ID", -1);
         }
     }
 
+    /**
+     * Inflates the layout and sets up UI elements for the fragment.
+     */
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        final View rootLayout = rootView.findViewById(R.id.root_layout);
+        UISettings.applyBrightnessGradientBackground(rootLayout, 120f);
         initComponents(rootView);
-
-        int colour_pressed = ContextCompat.getColor(requireContext(), R.color.button_pressed);
-        int colour_default = ContextCompat.getColor(requireContext(), R.color.button_default);
-
-        Button buttonExplore = rootView.findViewById(R.id.button_explore);
-        Button buttonFollower = rootView.findViewById(R.id.button_follower);
-
+        frameExplore = rootView.findViewById(R.id.frame_explore);
+        gifExplore = rootView.findViewById(R.id.gif_explore);
+        textExplore = rootView.findViewById(R.id.explore_text);
+        frameFollower = rootView.findViewById(R.id.frame_follower);
+        gifFollower = rootView.findViewById(R.id.gif_follower);
+        textFollower = rootView.findViewById(R.id.follower_text);
         Random random = new Random();
 
-        buttonExplore.setOnClickListener(v -> {
-            buttonExplore.setBackgroundTintList(ColorStateList.valueOf(colour_pressed));
-            buttonFollower.setBackgroundTintList(ColorStateList.valueOf(colour_default));
-
-            setButtonTextUnderline(buttonExplore, true);
-            setButtonTextUnderline(buttonFollower, false);
-
+        frameExplore.setOnClickListener(v -> {
+            try {
+                final GifDrawable exploreGifDrawable = (GifDrawable) gifExplore.getDrawable();
+                frameExplore.getBackground().mutate().setTint(ORANGE_COLOR);
+                frameExplore.getBackground().mutate().setAlpha(FULL_ALPHA);
+                frameFollower.getBackground().mutate().setTint(ORANGE_COLOR);
+                frameFollower.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
+                UISettings.applyBrightnessGradientBackground(rootLayout, 30f);
+                exploreGifDrawable.start();
+                gifHandler.postDelayed(() -> exploreGifDrawable.stop(), 800);
+            } catch (ClassCastException e) {
+                e.printStackTrace();
+                Toast.makeText(requireContext(),
+                        "Error casting Explore GIF to GifDrawable",
+                        Toast.LENGTH_SHORT).show();
+            }
+            try {
+                if (gifFollower.getDrawable() instanceof GifDrawable) {
+                    ((GifDrawable) gifFollower.getDrawable()).stop();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            gifExplore.setAlpha(1.0f);
+            gifFollower.setAlpha(0.3f);
+            setButtonTextSelected(textExplore, true);
+            setButtonTextSelected(textFollower, false);
             int randomExploreNumber = random.nextInt(6) + 10;
             Log.d("HomeFragment", "Explore clicked - randomNumber: " + randomExploreNumber);
             replaceFragment(randomExploreNumber);
+            View toolbar = requireActivity().findViewById(R.id.toolbar);
+            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 30f);
         });
 
-        buttonFollower.setOnClickListener(v -> {
-            buttonFollower.setBackgroundTintList(ColorStateList.valueOf(colour_pressed));
-            buttonExplore.setBackgroundTintList(ColorStateList.valueOf(colour_default));
-
-            setButtonTextUnderline(buttonFollower, true);
-            setButtonTextUnderline(buttonExplore, false);
-
+        frameFollower.setOnClickListener(v -> {
+            try {
+                final GifDrawable followerGifDrawable = (GifDrawable) gifFollower.getDrawable();
+                frameFollower.getBackground().mutate().setTint(PINK_COLOR);
+                frameFollower.getBackground().mutate().setAlpha(FULL_ALPHA);
+                frameExplore.getBackground().mutate().setTint(PINK_COLOR);
+                frameExplore.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
+                UISettings.applyBrightnessGradientBackground(rootLayout, 330f);
+                followerGifDrawable.start();
+                gifHandler.postDelayed(() -> followerGifDrawable.stop(), 800);
+            } catch (ClassCastException e) {
+                e.printStackTrace();
+                Toast.makeText(requireContext(),
+                        "Error casting Follower GIF to GifDrawable",
+                        Toast.LENGTH_SHORT).show();
+            }
+            try {
+                if (gifExplore.getDrawable() instanceof GifDrawable) {
+                    ((GifDrawable) gifExplore.getDrawable()).stop();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            gifFollower.setAlpha(1.0f);
+            gifExplore.setAlpha(0.3f);
+            setButtonTextSelected(textFollower, true);
+            setButtonTextSelected(textExplore, false);
             int randomFollowerNumber = random.nextInt(9) + 1;
             Log.d("HomeFragment", "Follower clicked - randomNumber: " + randomFollowerNumber);
             replaceFragment(randomFollowerNumber);
+            View toolbar = requireActivity().findViewById(R.id.toolbar);
+            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 330f);
         });
 
-        buttonExplore.performClick();
+        frameExplore.performClick();
         return rootView;
     }
 
-
+    /**
+     * Initializes views and loads user data.
+     */
     private void initComponents(View view) {
-        // Get arguments instead of Intent
         if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", 0); // Correct key
+            userId = getArguments().getInt("USER_ID", 0);
         }
-
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
-
-        //recyclerView = view.findViewById(R.id.mainContent);
-        //recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        //recyclerView.setAdapter(mainContentAdapter);
-
         userClient = SPWebApiRepository.getInstance().getUserClient();
         getUser();
     }
 
+    /**
+     * Retrieves the user data on a background thread.
+     */
     private void getUser() {
         new Thread(() -> {
             try {
@@ -133,20 +197,33 @@ public class HomeFragment extends Fragment {
                 requireActivity().runOnUiThread(this::populateView);
             } catch (IOException e) {
                 requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Error fetching user", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(requireContext(),
+                                "Error fetching user",
+                                Toast.LENGTH_SHORT).show()
                 );
             }
         }).start();
     }
 
+    /**
+     * Populates the view once the user data is loaded.
+     */
     private void populateView() {
         if (user != null) {
+            if (userList == null) {
+                userList = new ArrayList<>();
+            }
             userList.clear();
             userList.add(user);
-            mainContentAdapter.notifyDataSetChanged();
+            if (mainContentAdapter != null) {
+                mainContentAdapter.notifyDataSetChanged();
+            }
         }
     }
 
+    /**
+     * Replaces the child fragment with a PostFragment based on userId.
+     */
     private void replaceFragment(int userId) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(userId);
@@ -154,20 +231,16 @@ public class HomeFragment extends Fragment {
         transaction.commit();
     }
 
-
-    private void setButtonTextUnderline(Button button, boolean isSelected) {
-        String text = button.getText().toString();
-        SpannableString spannableString = new SpannableString(text);
-
+    /**
+     * Sets the text style for a TextView based on whether it is selected.
+     */
+    private void setButtonTextSelected(TextView textView, boolean isSelected) {
         if (isSelected) {
-            spannableString.setSpan(new UnderlineSpan(), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            button.setTypeface(null, Typeface.BOLD); // Make text bold for emphasis
+            textView.setTypeface(null, Typeface.BOLD);
+            textView.setTextSize(19);
         } else {
-            button.setTypeface(null, Typeface.NORMAL); // Reset style
+            textView.setTypeface(null, Typeface.NORMAL);
+            textView.setTextSize(18);
         }
-
-        button.setText(spannableString);
     }
-
-
 }

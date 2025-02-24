@@ -1,125 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@android:color/transparent"
     tools:context=".Activities.Profile.ProfileFragment">
 
-    <!-- PROFILE BIO -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:backgroundTint="@color/colorBackgroundLight"
         android:orientation="horizontal">
 
-        <FrameLayout
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center">
+    </LinearLayout>
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/profile_picture"
+    <LinearLayout
+        android:id="@+id/button_section"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <FrameLayout
+            android:id="@+id/frame_posts"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_margin="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/round_button_shape"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif_posts"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/white"
-                android:src="@drawable/baseline_person_100"
-                app:shapeAppearanceOverlay="@style/CircleImageView" />
-
-            <ImageButton
-                android:id="@+id/edit_profile_button"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="bottom|end"
-                android:background="@drawable/icon_edit_24"
-                android:padding="5dp"/>
-        </FrameLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+                android:scaleType="fitXY"
+                android:src="@drawable/posts_profile" />
 
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="75dp"
-                android:layout_gravity="left"
-                android:id="@+id/profile_bio"
-                android:textSize="12dp"
-                android:padding="15dp"
-                android:text="Hello! This is going to be the bio for the profile."
-                >
-            </TextView>
-
-            <!-- TAGS CONTAINER INSIDE OF BIO -->
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="25dp"
-                android:fillViewport="true">
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recycler_tag"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
-
-            </HorizontalScrollView>
-
-        </LinearLayout>
-
-    </LinearLayout>
-
-    <!-- POST AND SAVED BUTTON -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/main_filter_toolbar"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <Button
-                android:id="@+id/button_posts"
-                android:layout_width="1000dp"
-                android:layout_height="1000dp"
-                android:layout_weight="1"
+                android:id="@+id/posts_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="POSTS"
-                android:contentDescription="POSTS"
-                android:backgroundTint="@color/button_pressed"
-                android:textColor="#FFFFFF"
-                android:gravity="center"
-                android:textSize="18sp" />
-        </LinearLayout>
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </FrameLayout>
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <FrameLayout
+            android:id="@+id/frame_saved"
+            android:layout_width="0dp"
+            android:layout_height="120dp"
+            android:layout_margin="8dp"
             android:layout_weight="1"
-            android:orientation="horizontal"
-            android:gravity="center">
+            android:background="@drawable/round_button_shape"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless">
 
-            <Button
-                android:id="@+id/button_saved"
-                android:layout_width="1000dp"
-                android:layout_height="1000dp"
-                android:layout_weight="1"
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif_saved"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/saved_profile" />
+
+            <TextView
+                android:id="@+id/saved_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:text="SAVED"
-                android:backgroundTint="@color/button_default"
-                android:textColor="#FFFFFF"
-                android:gravity="center"
-                android:textSize="18sp" />
-        </LinearLayout>
-
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </FrameLayout>
     </LinearLayout>
 
-    <!-- Content area -->
     <FrameLayout
         android:id="@+id/postFragment"
         android:layout_width="match_parent"

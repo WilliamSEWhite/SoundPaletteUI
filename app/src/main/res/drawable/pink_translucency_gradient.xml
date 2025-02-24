@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <!--
+         The gradient goes from top to bottom:
+         - Start color: Light Pink (#FFB6C1) with 100% opacity
+         - End color: Light Pink (#FFB6C1) with 100% opacity
+    -->
+    <gradient
+        android:orientation="vertical"
+        android:startColor="#FFB6C1"
+        android:endColor="#FFB6C1"
+        android:type="linear" />
+</shape>

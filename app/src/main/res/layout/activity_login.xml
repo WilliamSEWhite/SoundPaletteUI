@@ -1,34 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
+    android:background="@android:color/transparent"
     android:orientation="vertical"
     android:padding="16dp"
     tools:context=".Activities.LoginRegister.LoginActivity">
 
-    <LinearLayout
+    <ImageView
+        android:id="@+id/logo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5"
-        android:gravity="center"
-        android:paddingBottom="70dp"
-        android:orientation="horizontal">
+        android:layout_weight="10"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:layout_gravity="center"
+        android:paddingTop="125dp"
+        android:paddingStart="125dp"
+        android:paddingEnd="125dp"
+        android:paddingBottom="0dp"
+        android:tint="@color/white"
+        android:alpha="0.8"
+        android:src="@drawable/baseline_music_note_48"
+        android:shadowColor="@color/white"
+        android:shadowDx="3"
+        android:shadowDy="3"
+        android:shadowRadius="4"
 
-    </LinearLayout>
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="368dp"
-        android:layout_weight="5"
-        app:srcCompat="@drawable/logo" />
+        />
 
     <TextView
-        android:layout_width="311dp"
-        android:layout_height="85dp"
+        android:id="@+id/textLogo"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="5"
         android:paddingStart="20dp"
@@ -36,56 +44,115 @@
         android:paddingBottom="50dp"
         android:text="SoundPalette"
         android:textColor="@color/white"
-        android:textSize="42sp" />
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:shadowColor="@color/white"
+        android:shadowDx="3"
+        android:shadowDy="3"
+        android:shadowRadius="4"
+        />
 
     <EditText
         android:id="@+id/username"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="16dp"
-        android:background="@color/white"
-        android:hint="username"
+        android:background="@drawable/white_translucency_gradient_horizontal"
+        android:hint="Username"
         android:inputType="text"
         android:maxLength="25"
-        android:minHeight="48dp"
         android:padding="10dp"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:layout_marginBottom="16dp"/>
 
     <EditText
         android:id="@+id/password"
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginBottom="32dp"
-        android:background="@color/white"
-        android:hint="password"
+        android:background="@drawable/white_translucency_gradient_horizontal"
+        android:hint="Password"
         android:inputType="text"
         android:maxLength="25"
-        android:minHeight="48dp"
         android:padding="10dp"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:layout_marginBottom="32dp"/>
 
-    <Button
-        android:id="@+id/login_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:backgroundTint="@color/colorOnSurface"
-        android:text="Login"
-        android:textColor="@color/white"
-        android:textSize="18sp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:gravity="center"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/register_button"
-        android:layout_width="120dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="10dp"
-        android:backgroundTint="@color/colorOnSurface"
-        android:text="Register"
-        android:textColor="@color/white"
-        android:textSize="18sp" />
+        <!-- Register animated button -->
+        <FrameLayout
+            android:id="@+id/frame_register"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif_register"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:alpha="0.5"
+                android:src="@drawable/register_login_button"
+                android:shadowColor="@color/white"
+                android:shadowDx="3"
+                android:shadowDy="3"
+                android:shadowRadius="4"
+                />
+
+            <TextView
+                android:id="@+id/register_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Register"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/frame_login"
+            android:layout_width="120dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="@android:color/transparent"
+
+            android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif_login"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:alpha="0.5"
+                android:src="@drawable/register_login_button"
+
+                />
+
+            <TextView
+                android:id="@+id/login_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Login"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                />
+        </FrameLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

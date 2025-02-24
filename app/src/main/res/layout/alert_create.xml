@@ -18,11 +18,11 @@
             android:layout_width="1000dp"
             android:layout_height="1000dp"
             android:layout_weight="1"
-            android:text="POSTS"
+            android:background="@drawable/white_translucency_gradient"
             android:contentDescription="TEXT"
-            android:backgroundTint="@color/colorSecondaryVariant"
-            android:textColor="#FFFFFF"
             android:gravity="center"
+            android:text="POSTS"
+            android:textColor="#FFFFFF"
             android:textSize="18sp" />
 
     </LinearLayout>
@@ -30,8 +30,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:background="@color/colorBackground" />  <!-- Black line, change the color as needed -->
-
+        android:background="@color/colorBackground" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -44,17 +43,16 @@
             android:layout_width="1000dp"
             android:layout_height="1000dp"
             android:layout_weight="1"
-            android:text="IMAGE"
-            android:backgroundTint="@color/colorSecondaryVariant"
-            android:textColor="#FFFFFF"
+            android:background="@drawable/white_translucency_gradient"
             android:gravity="center"
+            android:text="IMAGE"
+            android:textColor="#FFFFFF"
             android:textSize="18sp" />
     </LinearLayout>
     <View
         android:layout_width="match_parent"
         android:layout_height="5dp"
-        android:background="@color/colorBackground" />  <!-- Black line, change the color as needed -->
-
+        android:background="@color/colorBackground" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -67,10 +65,10 @@
             android:layout_width="1000dp"
             android:layout_height="1000dp"
             android:layout_weight="1"
-            android:text="SOUND"
-            android:backgroundTint="@color/colorSecondaryVariant"
-            android:textColor="#FFFFFF"
+            android:background="@drawable/white_translucency_gradient"
             android:gravity="center"
+            android:text="SOUND"
+            android:textColor="#FFFFFF"
             android:textSize="18sp" />
     </LinearLayout>
 

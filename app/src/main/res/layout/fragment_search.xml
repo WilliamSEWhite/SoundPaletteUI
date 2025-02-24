@@ -3,53 +3,56 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Activities.Home.HomeFragment">
+    android:background="@drawable/white_translucency_gradient_vertical"
+
+    tools:context=".Activities.Trending.SearchFragment">
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:background="@color/colorBackground"
         android:orientation="horizontal">
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_weight="10"
-            android:padding="10dp"
-            android:gravity="center"
             android:layout_gravity="center"
+            android:layout_weight="10"
             android:background="@drawable/rounded_corners"
-            android:backgroundTint="@color/white">
+            android:backgroundTint="@color/white"
+            android:alpha="0.6"
+            android:gravity="center"
+            android:padding="10dp">
 
             <EditText
+                android:id="@+id/edittext_search"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:hint="search"
-                android:id="@+id/edittext_search"
                 android:background="@android:color/transparent"
-                android:paddingStart="10dp"/>
+                android:hint="Search"
+                android:paddingStart="10dp" />
         </LinearLayout>
 
         <ImageButton
+            android:id="@+id/button_search"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"
-            android:id="@+id/button_search"
-            android:background="@color/colorBackground"
-            android:src="@drawable/navigation_search_24"
+            android:background="@android:color/transparent"
             android:padding="15dp"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop"
+            android:src="@drawable/navigation_search_24"
+
+        />
 
     </LinearLayout>
 
-
-    <!-- Content area -->
     <FrameLayout
         android:id="@+id/postFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
-
 </LinearLayout>

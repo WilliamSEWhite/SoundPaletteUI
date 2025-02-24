@@ -1,35 +1,33 @@
 package com.soundpaletteui.Activities.Trending;
 
-        import android.os.Bundle;
-        import android.util.Log;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.EditText;
-        import android.widget.ImageButton;
-        import android.widget.Toast;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.RecyclerView;
+import com.soundpaletteui.Activities.Posts.PostFragment;
+import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
+import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.Models.UserModel;
+import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.R;
+import com.soundpaletteui.UISettings;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
-        import androidx.annotation.NonNull;
-        import androidx.annotation.Nullable;
-        import androidx.fragment.app.Fragment;
-        import androidx.fragment.app.FragmentManager;
-        import androidx.fragment.app.FragmentTransaction;
-        import androidx.recyclerview.widget.LinearLayoutManager;
-        import androidx.recyclerview.widget.RecyclerView;
-
-        import com.soundpaletteui.Activities.Messages.MessageFragment;
-        import com.soundpaletteui.Activities.Posts.PostFragment;
-        import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-        import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
-        import com.soundpaletteui.Infrastructure.Models.UserModel;
-        import com.soundpaletteui.Infrastructure.SPWebApiRepository;
-        import com.soundpaletteui.R;
-
-        import java.io.IOException;
-        import java.util.ArrayList;
-        import java.util.List;
-        import java.util.Random;
-
+/**
+ * Provides search functionality and displays relevant posts.
+ */
 public class SearchFragment extends Fragment {
 
     private RecyclerView recyclerView;
@@ -39,51 +37,56 @@ public class SearchFragment extends Fragment {
     private UserModel user;
     private UserClient userClient;
 
+    /**
+     * Default constructor for SearchFragment.
+     */
     public SearchFragment() {
-        // Required empty public constructor
     }
 
-    // Static method to create a new instance of HomeFragment with userId
-    public static com.soundpaletteui.Activities.Trending.SearchFragment newInstance(int userId) {
-        com.soundpaletteui.Activities.Trending.SearchFragment fragment = new com.soundpaletteui.Activities.Trending.SearchFragment();
+    /**
+     * Returns a new instance of SearchFragment with the specified userId.
+     */
+    public static SearchFragment newInstance(int userId) {
+        SearchFragment fragment = new SearchFragment();
         Bundle args = new Bundle();
-        args.putInt("USER_ID", userId); // Pass userId with key "USER_ID"
+        args.putInt("USER_ID", userId);
         fragment.setArguments(args);
         return fragment;
     }
 
+    /**
+     * Initializes data from arguments.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", -1); // Ensure correct key
+            userId = getArguments().getInt("USER_ID", -1);
         }
     }
 
+    /**
+     * Inflates the layout, sets up UI, and loads initial post content.
+     */
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
+        UISettings.applyBrightnessGradientBackground(rootView, 330f);
         initComponents(rootView);
-
         Random random = new Random();
         int randomNumber = random.nextInt(6) + 10;
-        Log.d("HomeFragment", "Initial randomNumber: " + randomNumber);
+        Log.d("SearchFragment", "Initial randomNumber: " + randomNumber);
         replaceFragment(randomNumber);
-
         EditText inputSearch = rootView.findViewById(R.id.edittext_search);
         ImageButton buttonSearch = rootView.findViewById(R.id.button_search);
-
-        // Set onClickListener for buttonSearch
         buttonSearch.setOnClickListener(v -> {
-            String searchText = inputSearch.getText().toString().trim(); // Trim whitespace
-            Log.d("TAG- SearchFragment", "Fetching new feed with ID: " + searchText);
-
+            String searchText = inputSearch.getText().toString().trim();
+            Log.d("SearchFragment", "Fetching new feed with ID: " + searchText);
             if (isNumeric(searchText)) {
                 int searchNumber = Integer.parseInt(searchText);
-                if (searchNumber >= 1 && searchNumber <= 9) { // Ensures it's within range
+                if (searchNumber >= 1 && searchNumber <= 9) {
                     replaceFragment(searchNumber);
                 }
             } else {
@@ -96,34 +99,32 @@ public class SearchFragment extends Fragment {
                 }
             }
         });
-
         return rootView;
     }
 
-
-
-    // Helper method to check if input is numeric
+    /**
+     * Checks if a string is numeric.
+     */
     private boolean isNumeric(String str) {
-        if (str == null || str.isEmpty()) {
-            return false;
-        }
-        return str.matches("\\d+"); // Regex: Matches only digits
+        return str != null && !str.isEmpty() && str.matches("\\d+");
     }
 
-
+    /**
+     * Initializes the main content adapter and loads user data.
+     */
     private void initComponents(View view) {
-        // Get arguments instead of Intent
         if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", 0); // Correct key
+            userId = getArguments().getInt("USER_ID", 0);
         }
-
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
-
         userClient = SPWebApiRepository.getInstance().getUserClient();
         getUser();
     }
 
+    /**
+     * Retrieves user data in a background thread.
+     */
     private void getUser() {
         new Thread(() -> {
             try {
@@ -137,6 +138,9 @@ public class SearchFragment extends Fragment {
         }).start();
     }
 
+    /**
+     * Updates the adapter list once user data is retrieved.
+     */
     private void populateView() {
         if (user != null) {
             userList.clear();
@@ -145,9 +149,12 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    private void replaceFragment(int userId) {
+    /**
+     * Replaces the child fragment with a PostFragment having a fixed hue.
+     */
+    private void replaceFragment(int id) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        PostFragment postFragment = PostFragment.newInstance(userId);
+        PostFragment postFragment = PostFragment.newInstance(id, 330f);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
     }
