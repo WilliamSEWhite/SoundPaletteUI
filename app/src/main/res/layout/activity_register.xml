@@ -138,6 +138,35 @@
         android:orientation="horizontal"
         android:background="@color/sp_main_bg">
 
+        <!-- Clear button -->
+        <FrameLayout
+            android:id="@+id/frame_clear"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="@dimen/edit_text_margin"
+            android:background="@drawable/round_button_shape"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif_clear"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/saved_profile"/>
+
+            <TextView
+                android:id="@+id/clear_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="CLEAR"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold"/>
+        </FrameLayout>
 
         <FrameLayout
             android:id="@+id/frame_save"
