@@ -7,18 +7,22 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.soundpaletteui.Activities.MainScreenActivity;
 import com.soundpaletteui.Activities.Profile.Register;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.R;
 import com.soundpaletteui.UISettings;
 import pl.droidsonroids.gif.GifImageView;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import java.io.IOException;
+
 import java.io.IOException;
 
 /**
@@ -27,17 +31,21 @@ import java.io.IOException;
 public class LoginActivity extends AppCompatActivity {
 
     private LoginRegisterClient loginRegisterClient;
-    UserModel user;
-    EditText usernameBox;
-    EditText passwordBox;
+    private final AppSettings appSettings = AppSettings.getInstance();
+
+    private UserModel user;
+    private EditText usernameBox;
+    private EditText passwordBox;
+    private Button registerBtn;
+    private Button loginBtn;
+    private String username;
+    private String password;
     FrameLayout frameRegister;
     GifImageView gifRegister;
     TextView registerText;
     FrameLayout frameLogin;
     GifImageView gifLogin;
     TextView loginText;
-    String username;
-    String password;
 
     /**
      * Sets up the activity and initializes UI.
@@ -104,127 +112,152 @@ public class LoginActivity extends AppCompatActivity {
         loginText = findViewById(R.id.login_text);
         frameRegister.setOnClickListener(v -> register());
         frameLogin.setOnClickListener(v -> {
-            try {
-                login();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            login();
         });
     }
 
-    /**
-     * Initiates the user registration process.
-     */
-    private void register(){
-        new RegisterUserAsync().execute();
+    /** register new user */
+    private void register() {
+        // Retrieve the username and password entered by the user
+        String username = usernameBox.getText().toString();
+        String password = passwordBox.getText().toString();
+
+        // Validation checks for username and password
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Username and Password cannot be empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Username length validation (should not be more than 20 characters)
+        if (username.length() > 20) {
+            Toast.makeText(this, "Username should be less than 20 characters", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Password validation (should be between 8-10 characters and contain numbers and special characters)
+        if (!password.matches(".*[0-9].*") || !password.matches(".*[!@#$%^&*()].*") || password.length() < 6 || password.length() > 20) {
+            Toast.makeText(this, "Password must be 6-20 characters, contain numbers and a special character", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // If validation passes, call the async task for user registration
+        new RegisterUserAsync().execute(username, password);
     }
 
-    /**
-     * Initiates the user login process.
-     */
-    private void login() throws IOException {
-        new LoginUserAsync().execute();
+    /** login existing user */
+    private void login() {
+        // Retrieve the username and password entered by the user
+        String username = usernameBox.getText().toString();
+        String password = passwordBox.getText().toString();
+
+        // Validation checks for username and password
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Username and Password cannot be empty", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // If validation passes, call the async task for user login
+        new LoginUserAsync().execute(username, password);
     }
 
-    /**
-     * Displays feedback and navigates to next screen if login is successful.
-     */
     void loginUser(){
+        System.out.println("login username: " + username);
+        UserModel user = appSettings.getUser();
         if(user != null) {
-            Toast.makeText(this, "User logged in with Id " + user.getId(),
-                    Toast.LENGTH_SHORT).show();
-            nextActivity(user.getId(), 2);
-        } else {
+            if(user.getUserInfo() != null){
+                Toast.makeText(this, "User logged in with Id " + user.getUserId(),
+                        Toast.LENGTH_SHORT).show();
+                nextActivity(2);
+            }
+            else{
+                Toast.makeText(this, "Please finish registration " + user.getUserId(),
+                        Toast.LENGTH_SHORT).show();
+                nextActivity(1);
+            }
+        }
+        else {
             Toast.makeText(this, "Failed to log in user", Toast.LENGTH_SHORT).show();
         }
-    }
 
-    /**
-     * Displays feedback and navigates to next screen if registration is successful.
-     */
+    }
     void registerUser(){
+        UserModel user = appSettings.getUser();
+        System.out.println("register username: " + user.getUsername());
         if(user != null) {
-            Toast.makeText(this, "User registered with Id " + user.getId(),
+            Toast.makeText(this, "User registered with Id " + user.getUserId(),
                     Toast.LENGTH_SHORT).show();
-            nextActivity(user.getId(), 1);
-        } else {
+            nextActivity(1);
+        }
+        else {
             Toast.makeText(this, "Failed to register user", Toast.LENGTH_SHORT).show();
         }
     }
 
-    /**
-     * Handles user login in background.
-     */
-    private class LoginUserAsync extends AsyncTask<Void,Void, Void> {
-        /**
-         * Performs the login by calling the client in background.
-         */
-        @Override
-        protected Void doInBackground(Void... d) {
-            username = usernameBox.getText().toString();
-            password = passwordBox.getText().toString();
-            try {
-                user = loginRegisterClient.loginUser(username, password);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return null;
-        }
 
-        /**
-         * Updates the UI after login attempt.
-         */
-        @Override
-        protected void onPostExecute(Void v) {
-            loginUser();
+    /** move UX to next activity */
+    private void nextActivity(int aId) {
+        Intent i = null;
+        switch(aId) {
+            case 1:
+                i = new Intent(LoginActivity.this, Register.class);
+                break;
+            case 2:
+//                i = new Intent(LoginActivity.this, HomeActivity.class);
+                i = new Intent(LoginActivity.this, MainScreenActivity.class);
+                break;
         }
+        startActivity(i);
+        finish();
     }
 
-    /**
-     * Handles user registration in background.
-     */
-    private class RegisterUserAsync extends AsyncTask<Void,Void, Void> {
-        /**
-         * Performs the registration by calling the client in background.
-         */
+    // AsyncTask for registering a new user
+    private class RegisterUserAsync extends AsyncTask<String, Void, Void> {
+
         @Override
-        protected Void doInBackground(Void... d) {
-            username = usernameBox.getText().toString();
-            password = passwordBox.getText().toString();
+        // Background task to register the user
+        protected Void doInBackground(String... params) {
+            String username = params[0];
+            String password = params[1];
             try {
-                user = loginRegisterClient.registerUser(username, password);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                // Call the registerUser method of the API client to register the user
+                appSettings.setUser(loginRegisterClient.registerUser(username, password));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
             }
             return null;
         }
 
-        /**
-         * Updates the UI after registration attempt.
-         */
         @Override
+        // Handle the result of the registration process
         protected void onPostExecute(Void v) {
             registerUser();
         }
     }
 
-    /**
-     * Navigates to the next appropriate activity based on actionId.
-     */
-    private void nextActivity(int userId, int actionId) {
-        Intent intent;
-        switch(actionId) {
-            case 1:
-                intent = new Intent(LoginActivity.this, Register.class);
-                break;
-            case 2:
-                intent = new Intent(LoginActivity.this, MainScreenActivity.class);
-                break;
-            default:
-                return;
+    // AsyncTask for logging in an existing user
+    private class LoginUserAsync extends AsyncTask<String, Void, Void> {
+
+        @Override
+        // Background task to log in the user
+        protected Void doInBackground(String... params) {
+            String username = params[0];
+            String password = params[1];
+            try {
+                // Call the loginUser method of the API client to log in the user
+                appSettings.setUser(loginRegisterClient.loginUser(username, password));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+            return null;
         }
-        intent.putExtra("userId", user.getId());
-        startActivity(intent);
-        finish();
+
+        @Override
+        // Handle the result of the login process
+        protected void onPostExecute(Void o) {
+                loginUser();
+        }
     }
+
 }

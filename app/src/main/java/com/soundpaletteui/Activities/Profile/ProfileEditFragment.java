@@ -24,6 +24,7 @@ import com.soundpaletteui.Infrastructure.Models.LocationModel;
 import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
@@ -62,20 +63,15 @@ public class ProfileEditFragment extends Fragment {
         return rootView;
     }
     public static ProfileEditFragment newInstance(int userId) {
-        ProfileEditFragment fragment = new ProfileEditFragment();
-        Bundle args = new Bundle();
-        args.putInt("USER_ID", userId); // Add userId to the Bundle
-        fragment.setArguments(args);
-        return fragment;
+        return new ProfileEditFragment();
     }
 
 
     /** initializes components in the fragment */
     private void initComponents() {
         // Get arguments instead of Intent
-        if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", 0);
-        }
+        user = AppSettings.getInstance().getUser();
+
         userClient = SPWebApiRepository.getInstance().getUserClient();
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
@@ -84,15 +80,13 @@ public class ProfileEditFragment extends Fragment {
         profile_email = rootView.findViewById(R.id.profile_email);
         profile_phone = rootView.findViewById(R.id.profile_phone);
         profile_bio = rootView.findViewById(R.id.profile_bio);
-        
+
         btnSave = rootView.findViewById(R.id.btnSave);
         btnCancel = rootView.findViewById(R.id.btnCancel);
-        
+
         btnCancel.setOnClickListener(v -> cancelProfileEdit());
 
-        getUser();
         getCountries();
-        //getUserInfo();
     }
 
     /** cancel editing user profile and return to profile fragment */
@@ -105,18 +99,6 @@ public class ProfileEditFragment extends Fragment {
         transaction.commit();
     }
 
-    private void getUser() {
-        new Thread(() -> {
-            try {
-                user = userClient.getUser(userId);
-                requireActivity().runOnUiThread(this::populateView);
-            } catch (IOException e) {
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Error fetching user", Toast.LENGTH_SHORT).show()
-                );
-            }
-        }).start();
-    }
 
     /** initialize Spinner with list of countries */
     private void getCountries() {

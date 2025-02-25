@@ -17,6 +17,7 @@ import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -59,11 +60,8 @@ public class ProfileFragment extends Fragment {
      * Returns a new instance of ProfileFragment with the specified userId.
      */
     public static ProfileFragment newInstance(int userId) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putInt("USER_ID", userId);
-        fragment.setArguments(args);
-        return fragment;
+
+        return new ProfileFragment();
     }
 
     /**
@@ -72,9 +70,9 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", -1);
-        }
+
+        //Log.d("TAG - ProfileFragment", "getting username...");
+        //userName = user.getUsername();
     }
 
     /**
@@ -164,30 +162,12 @@ public class ProfileFragment extends Fragment {
      * Initializes components and loads the user data.
      */
     private void initComponents(View view) {
-        if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", 0);
-        }
+        // Get arguments instead of Intent
+        user = AppSettings.getInstance().getUser();
+
+
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
-        userClient = SPWebApiRepository.getInstance().getUserClient();
-        getUser();
-    }
-
-    /**
-     * Retrieves user data in a background thread.
-     */
-    private void getUser() {
-        new Thread(() -> {
-            try {
-                user = userClient.getUser(userId);
-                requireActivity().runOnUiThread(this::populateView);
-            } catch (IOException e) {
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(),
-                                "Error fetching user",
-                                Toast.LENGTH_SHORT).show());
-            }
-        }).start();
     }
 
     /**

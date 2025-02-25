@@ -13,10 +13,13 @@ import android.provider.MediaStore;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,6 +31,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import com.bumptech.glide.Glide;
+import com.soundpaletteui.Activities.LoginRegister.LoginActivity;
+import com.soundpaletteui.Activities.MainScreenActivity;
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
@@ -35,6 +40,7 @@ import com.soundpaletteui.Infrastructure.Models.LocationModel;
 import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
 import com.soundpaletteui.UISettings;
 import java.io.File;
@@ -55,29 +61,27 @@ import pl.droidsonroids.gif.GifImageView;
 public class Register extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
-    private EditText txtUsername;
-    private EditText txtPassword;
-    private EditText txtEmail;
-    private EditText txtPhone;
-    private EditText txtDob;
-    private ImageButton btnCalendar;
-    private ImageView profileImage;
-    private Uri imageUri;
-    private String currentPhotoPath;
-    private Spinner location;
-    private ArrayList<LocationModel> countries;
+    AppSettings appSettings = AppSettings.getInstance();
+    private EditText txtEmail;              // email address
+    private EditText txtPhone;              // phone number (optional)
+    private EditText txtDob;                // date of birth
+    private ImageButton btnCalendar;        // date of birth button
+    private Uri imageUri;                   // image URI from external source
+    private ImageView profileImage;         // object to display the image
+    private String currentPhotoPath;        // current photo path
+    private Spinner location;               // country
+    private ArrayList<LocationModel> countries;             // list of countries
     private Intent intent;
     private UserModel user;
     private UserClient userClient;
     private int userId;
-    private String dob, dateCreated;
-    private FrameLayout frameClear;
+//    private Date dob, dateCreated;
+    private Date dob, dateCreated;
+    private String Dob;
     private GifImageView gifClear;
-    private TextView textClear;
     private FrameLayout frameSave;
     private GifImageView gifSave;
     private TextView textSave;
-
     /**
      * Sets up the layout and calls initialization.
      */
@@ -94,43 +98,48 @@ public class Register extends AppCompatActivity {
      * Initializes UI components, listeners, and loads user data.
      */
     private void initComponents() {
-        txtUsername = findViewById(R.id.registerUsername);
-        txtPassword = findViewById(R.id.registerPassword);
+        // initialise UI objects
         txtEmail = findViewById(R.id.registerEmail);
         txtPhone = findViewById(R.id.registerPhone);
-        txtDob = findViewById(R.id.registerDob);
-        btnCalendar = findViewById(R.id.btnDatePicker);
-        btnCalendar.setColorFilter(Color.WHITE);
+        LinearLayout pickDateBtn = findViewById(R.id.pick_date);
+        pickDateBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(dob == null)
+                    dob = new Date();
+                int year = dob.getYear() + 1900;
+                int month = dob.getMonth();
+                int day = dob.getDate();
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(
+                        Register.this,
+                        new DatePickerDialog.OnDateSetListener() {
+                            @Override
+                            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                                Date date = new Date(year-1900, month, dayOfMonth);
+
+                                TextView selectedDate = findViewById(R.id.selected_date);
+                                dob = date;
+                                selectedDate.setText(new SimpleDateFormat("MMMM dd, yyyy").format(dob));
+
+                            }
+                        },
+                        year, month, day);
+                datePickerDialog.show();
+            }
+        });
         profileImage = findViewById(R.id.registerProfilePicture);
         profileImage.setColorFilter(Color.WHITE);
         location = findViewById(R.id.registerLocation);
-        frameClear = findViewById(R.id.frame_clear);
-        gifClear = findViewById(R.id.gif_clear);
-        textClear = findViewById(R.id.clear_text);
+
         frameSave = findViewById(R.id.frame_save);
         gifSave = findViewById(R.id.gif_save);
         textSave = findViewById(R.id.save_text);
-        btnCalendar.setOnClickListener(v -> chooseDate());
         profileImage.setOnClickListener(v -> showImageSourceDialog());
-        frameClear.setOnClickListener(v -> {
-            try {
-                final GifDrawable clearGif = (GifDrawable) gifClear.getDrawable();
-                frameClear.getBackground().mutate().setAlpha(255);
-                frameSave.getBackground().mutate().setAlpha(77);
-                UISettings.applyBrightnessGradientBackground(findViewById(R.id.root_layout), 50f);
-                clearGif.start();
-                new android.os.Handler().postDelayed(() -> clearGif.stop(), 800);
-            } catch (ClassCastException e) {
-                e.printStackTrace();
-                Toast.makeText(Register.this, "Error with Clear animation", Toast.LENGTH_SHORT).show();
-            }
-            clearFields();
-        });
         frameSave.setOnClickListener(v -> {
             try {
                 final GifDrawable saveGif = (GifDrawable) gifSave.getDrawable();
                 frameSave.getBackground().mutate().setAlpha(255);
-                frameClear.getBackground().mutate().setAlpha(77);
                 UISettings.applyBrightnessGradientBackground(findViewById(R.id.root_layout), 60f);
                 saveGif.start();
                 new android.os.Handler().postDelayed(() -> saveGif.stop(), 800);
@@ -138,13 +147,12 @@ public class Register extends AppCompatActivity {
                 e.printStackTrace();
                 Toast.makeText(Register.this, "Error with Save animation", Toast.LENGTH_SHORT).show();
             }
-            saveProfile();
+            saveUserInfo();
         });
         intent = getIntent();
-        userId = intent.getIntExtra("userId", 0);
         userClient = SPWebApiRepository.getInstance().getUserClient();
-        getCountries();
-        getUser();
+        getCountries();     // load countries from database
+        user = AppSettings.getInstance().getUser();
     }
 
     /**
@@ -261,55 +269,33 @@ public class Register extends AppCompatActivity {
      * Sets the adapter for the country spinner.
      */
     private void initCountries(){
-        CountrySelectAdapter adapter = new CountrySelectAdapter(this, android.R.layout.simple_spinner_item, countries);
-        location.setAdapter(adapter);
-        location.setSelection(0);
+        CountrySelectAdapter adapter = new CountrySelectAdapter(this,
+                android.R.layout.simple_spinner_item,
+                countries);
+        location = (Spinner) findViewById(R.id.registerLocation);
+        location.setAdapter(adapter); // Set the custom adapter to the spinner
+        // You can create an anonymous listener to handle the event when is selected an spinner item
+        location.setSelection(0);                              //retain previously selected value
     }
 
-    /**
-     * Saves user profile data to the backend.
-     */
-    private void saveProfile() {
-        saveUserProfile();
-        Toast.makeText(Register.this, "User profile saved: " + userId, Toast.LENGTH_SHORT).show();
+    /** saves user profile - calls save async method */
+
+    /** save information to database */
+    private void saveUserInfo() {
+        // write saving code here
+        new UpdateUserInfoAsync().execute();
+        Toast.makeText(Register.this, "User profile saved" + userId, Toast.LENGTH_SHORT).show();
     }
 
-    /**
-     * Clears the input fields in the registration form.
-     */
-    private void clearFields() {
-        txtUsername.setText("");
-        txtPassword.setText("");
-        txtEmail.setText("");
-        txtPhone.setText("");
-        txtDob.setText("");
-    }
+    /** clear text fields in register activity */
+    private void onRegistrationComplete() {
+        Intent i = new Intent(Register.this, MainScreenActivity.class);
+        startActivity(i);
+        finish();
 
-    /**
-     * Opens a DatePickerDialog for date of birth selection.
-     */
-    private void chooseDate() {
-        final Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-        DatePickerDialog datePickerDialog = new DatePickerDialog(
-                Register.this,
-                (view, year1, month1, dayOfMonth) -> {
-                    String selectedDate = String.format("%04d-%02d-%02d", year1, month1 + 1, dayOfMonth);
-                    txtDob.setText(selectedDate);
-                    SimpleDateFormat outputSdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
-                    SimpleDateFormat inputSdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                    try {
-                        Date date = inputSdf.parse(selectedDate);
-                        dob = outputSdf.format(date);
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                }, year, month, day
-        );
-        datePickerDialog.show();
     }
+    /** populate datepicker dialogue */
+
 
     /**
      * Handles the gallery image selection result.
@@ -334,47 +320,8 @@ public class Register extends AppCompatActivity {
                 .into(profileImage);
     }
 
-    /**
-     * Retrieves user data from the backend.
-     */
-    private void getUser() {
-        new GetUserAsync().execute();
-    }
-
-    /**
-     * Asynchronously gets user data.
-     */
-    private class GetUserAsync extends AsyncTask<Void, Void, Void> {
-        /**
-         * Performs the getUser call in the background.
-         */
-        @Override
-        protected Void doInBackground(Void... d) {
-            try {
-                user = userClient.getUser(userId);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return null;
-        }
-
-        /**
-         * Updates the UI after user data is retrieved.
-         */
-        @Override
-        protected void onPostExecute(Void v) {
-            populateView();
-        }
-    }
-
-    /**
-     * Asynchronously loads location data from the backend.
-     */
-    private class GetLocationsAsync extends AsyncTask<Void, Void, Void> {
-        /**
-         * Retrieves location data in the background.
-         */
-        @Override
+    /** async call to pull countries from the database */
+    private class GetLocationsAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             try {
                 LocationClient client = SPWebApiRepository.getInstance().getLocationClient();
@@ -393,8 +340,6 @@ public class Register extends AppCompatActivity {
         protected void onPostExecute(Void v) {
             if(countries != null && !countries.isEmpty()) {
                 initCountries();
-            } else {
-                Toast.makeText(Register.this, "Failed to load countries!", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -410,17 +355,29 @@ public class Register extends AppCompatActivity {
         protected Void doInBackground(Void... d) {
             try {
                 Calendar calendar = Calendar.getInstance();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
+                        Locale.getDefault());
                 String dateCreated = sdf.format(calendar.getTime());
                 String email = txtEmail.getText().toString();
                 String phone = txtPhone.getText().toString();
                 CountrySelectAdapter adapter = (CountrySelectAdapter) location.getAdapter();
                 LocationModel selectedLocation = adapter.getItem(location.getSelectedItemPosition());
                 if(selectedLocation != null) {
-                    UserInfoModel newUserInfo = new UserInfoModel(user.getId(), selectedLocation.getLocationId(), email, phone, dob, dateCreated);
-                    userClient.updateUserInfo(newUserInfo);
-                } else {
-                    Toast.makeText(Register.this, "Please select a location.", Toast.LENGTH_SHORT).show();
+                    UserInfoModel newUserInfo = new UserInfoModel(user.getUserId(),
+                            selectedLocation.getLocationId(), email, phone, dob, dateCreated);
+                    appSettings.setUser(userClient.updateUserInfo(appSettings.getUserId(), newUserInfo));
+                    System.out.println("--------------");
+                    System.out.println("location Id: " + selectedLocation.getLocationId());
+                    System.out.println("user Id: " + user.getUserId());
+                    System.out.println("email: " + email);
+                    System.out.println("phone: " + phone);
+                    System.out.println("dob: " + dob);
+                    System.out.println("dateCreated: " + dateCreated);
+                    System.out.println("--------------");
+                }
+                else {
+                    Toast.makeText(Register.this, "Please select a location.",
+                            Toast.LENGTH_SHORT).show();
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -433,22 +390,10 @@ public class Register extends AppCompatActivity {
          */
         @Override
         protected void onPostExecute(Void v) {
-            populateView();
-        }
+            onRegistrationComplete();
+        }//end onPostExecute
     }
 
-    /**
-     * Saves the user profile by initiating an async update.
-     */
-    private void saveUserProfile(){
-        new UpdateUserInfoAsync().execute();
-    }
 
-    /**
-     * Fills in text fields after user data is retrieved.
-     */
-    private void populateView() {
-        txtUsername.setText(user.getUsername());
-        txtPassword.setText(user.getPassword());
-    }
+
 }

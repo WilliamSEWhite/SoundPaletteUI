@@ -21,18 +21,27 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundpaletteui.Activities.Home.HomeFragment;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
+import com.soundpaletteui.Activities.Posts.CreatePostFragment;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.Activities.Trending.SearchFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
 import com.soundpaletteui.UISettings;
 import com.soundpaletteui.databinding.ActivityMainBinding;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +54,6 @@ public class MainScreenActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
-    private Intent intent;
     private int userId;
     private UserModel user;
     private UserClient userClient;
@@ -60,6 +68,8 @@ public class MainScreenActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        user = AppSettings.getInstance().getUser();
+
         initComponents();
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -75,7 +85,7 @@ public class MainScreenActivity extends AppCompatActivity {
             );
             View toolbarView = findViewById(R.id.toolbar);
             ColorStateList tint;
-            float hue;
+            float hue = 0;
             int selected = item.getItemId();
 
             if (selected == R.id.nav_home) {
@@ -87,12 +97,7 @@ public class MainScreenActivity extends AppCompatActivity {
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue);
                 replaceFragment(profileFragment);
             } else if (selected == R.id.nav_create) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                final View addPost = getLayoutInflater().inflate(R.layout.alert_create, null);
-                builder.setView(addPost);
-                AlertDialog dialog = builder.create();
-                dialog.show();
-                return true;
+                selectPostType();
             } else if (selected == R.id.nav_msg) {
                 hue = 240f;
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue);
@@ -111,6 +116,48 @@ public class MainScreenActivity extends AppCompatActivity {
             updateBottomNavShadows(item.getItemId(), hue);
             return true;
         });
+    }
+
+    private void selectPostType(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        final View addPost = getLayoutInflater().inflate(R.layout.post_type_select_dialog, null);
+        builder.setView(addPost);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        Button textPostButton = (Button) dialog.findViewById(R.id.create_text);
+        Button audioPostButton = (Button) dialog.findViewById(R.id.create_sound);
+        Button imagePostButton = (Button) dialog.findViewById(R.id.create_image);
+
+        // if button is clicked, close the custom dialog
+        textPostButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                createPost(1);
+            }
+        });
+        audioPostButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                createPost(2);
+
+            }
+        });
+        imagePostButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+                createPost(3);
+
+            }
+        });
+    }
+
+    private void createPost(int postType){
+        CreatePostFragment createPostFragment = CreatePostFragment.newInstance(postType);
+        replaceFragment(createPostFragment);
     }
 
     /**
@@ -182,27 +229,16 @@ public class MainScreenActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    /**
-     * Initializes user data and prepares the default fragments.
-     */
+    /** initializes components in the activity */
     private void initComponents() {
-        intent = getIntent();
-        userId = intent.getIntExtra("userId", 0);
+        // Get the Intent that started this activity
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
         homeFragment = HomeFragment.newInstance(userId);
         profileFragment = ProfileFragment.newInstance(userId);
         searchFragment = SearchFragment.newInstance(userId);
-        userClient = SPWebApiRepository.getInstance().getUserClient();
-        getUser();
     }
 
-    /**
-     * Asynchronously retrieves user data from the server or DB.
-     */
-    private void getUser() {
-        new GetUserAsync().execute();
-    }
 
     /**
      * Populates data into the adapter once user is retrieved.
@@ -210,32 +246,6 @@ public class MainScreenActivity extends AppCompatActivity {
     private void populateView() {
         userList.clear();
         userList.add(user);
-    }
-
-    /**
-     * Manages a background task to get the current user.
-     */
-    private class GetUserAsync extends AsyncTask<Void, Void, Void> {
-        /**
-         * Fetches user data in background.
-         */
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                user = userClient.getUser(userId);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return null;
-        }
-
-        /**
-         * Updates the UI once data fetching completes.
-         */
-        @Override
-        protected void onPostExecute(Void unused) {
-            populateView();
-        }
     }
 
     /**
