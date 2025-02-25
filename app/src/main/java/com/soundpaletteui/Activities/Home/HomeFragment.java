@@ -18,6 +18,7 @@ import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
@@ -64,11 +65,7 @@ public class HomeFragment extends Fragment {
      * Creates a new instance of HomeFragment with the specified userId.
      */
     public static HomeFragment newInstance(int userId) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putInt("USER_ID", userId);
-        fragment.setArguments(args);
-        return fragment;
+        return new HomeFragment();
     }
 
     /**
@@ -77,9 +74,6 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", -1);
-        }
     }
 
     /**
@@ -178,32 +172,15 @@ public class HomeFragment extends Fragment {
      * Initializes views and loads user data.
      */
     private void initComponents(View view) {
-        if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", 0);
-        }
+        // Get arguments instead of Intent
+        user = AppSettings.getInstance().getUser();
+
+
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
         userClient = SPWebApiRepository.getInstance().getUserClient();
-        getUser();
     }
 
-    /**
-     * Retrieves the user data on a background thread.
-     */
-    private void getUser() {
-        new Thread(() -> {
-            try {
-                user = userClient.getUser(userId);
-                requireActivity().runOnUiThread(this::populateView);
-            } catch (IOException e) {
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(),
-                                "Error fetching user",
-                                Toast.LENGTH_SHORT).show()
-                );
-            }
-        }).start();
-    }
 
     /**
      * Populates the view once the user data is loaded.

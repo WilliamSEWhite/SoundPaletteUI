@@ -13,6 +13,6 @@ import retrofit2.http.Query;
 public interface UserEndpoints {
     @GET("api/user/get-user/{id}")
     Call<UserModel> getUser(@Path("id") int id);
-    @POST("api/user/update-user-info")
-    Call<UserInfoModel> updateUserInfo(@Body UserInfoModel userInfo);
+    @POST("api/user/update-user-info/{id}")
+    Call<UserModel> updateUserInfo(@Path("id") int id, @Body UserInfoModel userInfo);
 }

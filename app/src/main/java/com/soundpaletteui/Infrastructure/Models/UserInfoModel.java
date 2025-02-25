@@ -19,7 +19,7 @@ public class UserInfoModel {
     public String Phone;
     //public Date DOB;
     @SerializedName("dob")
-    public String Dob;
+    public Date Dob;
     @SerializedName("dateCreated")
     public String dateCreated;
     //public Date DateCreated;
@@ -36,7 +36,7 @@ public class UserInfoModel {
         DateCreated = dateCreated;
     }*/
 
-    public UserInfoModel(int userId, int locationId, String email, String phone, String dob, String dateCreated) {
+    public UserInfoModel(int userId, int locationId, String email, String phone, Date dob, String dateCreated) {
         UserId = userId;
         LocationId = locationId;
         Email = email;

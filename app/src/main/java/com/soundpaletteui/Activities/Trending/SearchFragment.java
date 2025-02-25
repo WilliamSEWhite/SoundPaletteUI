@@ -24,6 +24,36 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+        import android.os.Bundle;
+        import android.util.Log;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.widget.EditText;
+        import android.widget.ImageButton;
+        import android.widget.Toast;
+
+        import androidx.annotation.NonNull;
+        import androidx.annotation.Nullable;
+        import androidx.fragment.app.Fragment;
+        import androidx.fragment.app.FragmentManager;
+        import androidx.fragment.app.FragmentTransaction;
+        import androidx.recyclerview.widget.LinearLayoutManager;
+        import androidx.recyclerview.widget.RecyclerView;
+
+        import com.soundpaletteui.Activities.Messages.MessageFragment;
+        import com.soundpaletteui.Activities.Posts.PostFragment;
+        import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
+        import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+        import com.soundpaletteui.Infrastructure.Models.UserModel;
+        import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+        import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+        import com.soundpaletteui.R;
+
+        import java.io.IOException;
+        import java.util.ArrayList;
+        import java.util.List;
+        import java.util.Random;
 
 /**
  * Provides search functionality and displays relevant posts.
@@ -43,15 +73,9 @@ public class SearchFragment extends Fragment {
     public SearchFragment() {
     }
 
-    /**
-     * Returns a new instance of SearchFragment with the specified userId.
-     */
-    public static SearchFragment newInstance(int userId) {
-        SearchFragment fragment = new SearchFragment();
-        Bundle args = new Bundle();
-        args.putInt("USER_ID", userId);
-        fragment.setArguments(args);
-        return fragment;
+    // Static method to create a new instance of HomeFragment with userId
+    public static com.soundpaletteui.Activities.Trending.SearchFragment newInstance(int userId) {
+        return new SearchFragment();
     }
 
     /**
@@ -60,9 +84,7 @@ public class SearchFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", -1);
-        }
+
     }
 
     /**
@@ -113,30 +135,14 @@ public class SearchFragment extends Fragment {
      * Initializes the main content adapter and loads user data.
      */
     private void initComponents(View view) {
-        if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", 0);
-        }
+
+        user = AppSettings.getInstance().getUser();
+
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
-        userClient = SPWebApiRepository.getInstance().getUserClient();
-        getUser();
+
     }
 
-    /**
-     * Retrieves user data in a background thread.
-     */
-    private void getUser() {
-        new Thread(() -> {
-            try {
-                user = userClient.getUser(userId);
-                requireActivity().runOnUiThread(this::populateView);
-            } catch (IOException e) {
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Error fetching user", Toast.LENGTH_SHORT).show()
-                );
-            }
-        }).start();
-    }
 
     /**
      * Updates the adapter list once user data is retrieved.
@@ -154,7 +160,7 @@ public class SearchFragment extends Fragment {
      */
     private void replaceFragment(int id) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        PostFragment postFragment = PostFragment.newInstance(id, 330f);
+        PostFragment postFragment = PostFragment.newInstance(userId);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
     }

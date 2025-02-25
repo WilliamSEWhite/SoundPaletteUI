@@ -59,7 +59,7 @@
     <string name="register_password">password</string>
     <string name="register_email_address">email address</string>
     <string name="register_phone">phone number (optional)</string>
-    <string name="register_dob">date of birth</string>
+    <string name="register_dob">Birthday</string>
     <string name="register_location">location</string>
     <string name="register_profilePicture">profile picture</string>
     <string name="btn_clear">CLEAR</string>
@@ -159,5 +159,6 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+    <string name="finish">Finish</string>
     <string name="todo">TODO</string>
 </resources>

@@ -22,9 +22,10 @@ public class UserClient {
         Response<UserModel> response = call.execute();
         return response.body();
     }
-    public UserInfoModel updateUserInfo(UserInfoModel userInfo) throws IOException {
-        Call<UserInfoModel> call = userEndpoints.updateUserInfo(userInfo);
-        Response<UserInfoModel> response = call.execute();
+
+    public UserModel updateUserInfo(int id, UserInfoModel userInfo) throws IOException {
+        Call<UserModel> call = userEndpoints.updateUserInfo(id, userInfo);
+        Response<UserModel> response = call.execute();
         return response.body();
     }
 
