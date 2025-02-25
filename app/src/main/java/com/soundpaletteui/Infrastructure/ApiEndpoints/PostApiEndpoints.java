@@ -11,6 +11,6 @@ import retrofit2.http.Path;
 
 public interface PostApiEndpoints {
     @POST("api/post/create-post")
-    Call<Object> createPost(@Body NewPostModel newPost);
+    Call<Void> createPost(@Body NewPostModel newPost);
 
 }

@@ -200,6 +200,11 @@ public class CreatePostFragment extends Fragment {
         transaction.replace(R.id.postContentShell, fragment);
         transaction.commit();
     }
+
+    private void finishPost(){
+
+    }
+
     private class GetTagsAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             System.out.println("UpdateUserInfoAsync");
@@ -225,16 +230,18 @@ public class CreatePostFragment extends Fragment {
                 NewPostModel newPost = d[0];
 
                 PostClient client = SPWebApiRepository.getInstance().getPostClient();
-                Object o = client.makePost(newPost);
+                client.makePost(newPost);
 
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                Toast.makeText(requireContext(),
+                        "Error making post",
+                        Toast.LENGTH_SHORT).show();
             }
             return null;
         }//end doInBackground
 
         protected void onPostExecute(Void v) {
-
+            finishPost();
         }//end onPostExecute
     }
 
