@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Username -->
+    <TextView
+        android:id="@+id/adapter_comment_user"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:text="\@USERNAME"
+        android:textColor="#FF006E"/>
+
+    <!-- Comment Message -->
+    <TextView
+        android:id="@+id/adapter_comment_msg"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="14sp"
+        android:text="This is a comment"
+        android:paddingTop="5dp"
+        android:paddingBottom="10dp"
+        android:textColor="#0D0D0D"/>
+
+    <!-- Separator Line -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#0D0D0D"
+        android:layout_marginTop="4dp"/>
+</LinearLayout>

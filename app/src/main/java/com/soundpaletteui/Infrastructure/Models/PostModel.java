@@ -4,26 +4,56 @@ import java.util.Date;
 import java.util.List;
 
 public class PostModel {
-    public int PostId;
-    public String PostCaption;
-    public List<TagModel> PostTags;
-    public PostContentModel PostContent;
-    public Date CreatedDate;
-    public String CreatedByUsername;
-    public int PostType;
+    private int postId;
+    private String postCaption;
+    private List<TagModel> postTags;
+    private PostContentModel postContent;
+    private Date createdDate;
+    private String createdByUsername;
+    private int postType;
 
-    public PostModel()
-    {
+    // Default constructor
+    public PostModel() { }
 
+    // Parameterized constructor
+    public PostModel(int postId, String postCaption, List<TagModel> postTags, PostContentModel postContent,
+                     Date createdDate, String createdByUsername, int postType) {
+        this.postId = postId;
+        this.postCaption = postCaption;
+        this.postTags = postTags;
+        this.postContent = postContent;
+        this.createdDate = createdDate;
+        this.createdByUsername = createdByUsername;
+        this.postType = postType;
     }
-    public PostModel(int postId, String postCaption, List<TagModel> postTags, PostContentModel postContent, Date createdDate, String createdByUsername, int postType)
-    {
-        PostId = postId;
-        PostCaption = postCaption;
-        PostTags = postTags;
-        PostContent = postContent;
-        CreatedDate = createdDate;
-        CreatedByUsername = createdByUsername;
-        PostType = postType;
+
+    // Getters
+    public int getPostId() {
+        return postId;
     }
+
+    public String getPostCaption() {
+        return postCaption;
+    }
+
+    public List<TagModel> getPostTags() {
+        return postTags;
+    }
+
+    public PostContentModel getPostContent() {
+        return postContent;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public String getUsername() {
+        return createdByUsername;
+    }
+
+    public int getPostType() {
+        return postType;
+    }
+
 }

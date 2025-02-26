@@ -1,15 +1,14 @@
 package com.soundpaletteui.Infrastructure.ApiClients;
 
-import com.google.gson.Gson;
-import com.soundpaletteui.Infrastructure.ApiEndpoints.PostApiEndpoints;
-import com.soundpaletteui.Infrastructure.ApiEndpoints.UserEndpoints;
+import android.util.Log;
+
 import com.soundpaletteui.Infrastructure.Models.NewPostModel;
-import com.soundpaletteui.Infrastructure.Models.TagModel;
+import com.soundpaletteui.Infrastructure.Models.PostModel;
+import com.soundpaletteui.Infrastructure.ApiEndpoints.PostApiEndpoints;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -28,4 +27,24 @@ public class PostClient {
 
         return response.body();
     }
+
+    public List<PostModel> getPosts() throws IOException {
+        Call<List<PostModel>> call = postApiEndpoints.getPosts();
+        Response<List<PostModel>> response = call.execute();
+
+        if (!response.isSuccessful()) {
+            Log.e("PostClient", "Error fetching posts: " + response.code() + " - " + response.message());
+            return new ArrayList<>();
+        }
+
+        List<PostModel> posts = response.body();
+        if (posts == null) {
+            Log.w("PostClient", "Received null response body for posts.");
+            return new ArrayList<>();
+        }
+
+        Log.d("PostClient", "Fetched " + posts.size() + " posts.");
+        return posts;
+    }
+
 }

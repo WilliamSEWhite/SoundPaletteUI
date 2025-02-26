@@ -2,7 +2,9 @@ package com.soundpaletteui.Activities.Posts;
 
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,87 +14,142 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
+import com.soundpaletteui.Infrastructure.Models.PostContentModel;
+import com.soundpaletteui.Infrastructure.Models.PostModel;
+import com.soundpaletteui.Infrastructure.Models.TagModel;
+import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
 import com.soundpaletteui.UISettings;
+
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Displays a grid or list of posts based on provided resource arrays.
- */
 public class PostFragment extends Fragment {
-    private static final String ARG_IMAGES = "array_images";
-    private static final String ARG_CAPTIONS = "array_captions";
     private static final String ARG_BASE_HUE = "base_hue";
-    private int arrayImagesId;
-    private int arrayCaptionId;
-    private float baseHue = -1f;
+    private static final String ARG_USER_ID = "user_id";
+    private static final String TAG = "PostFragment";
 
-    /**
-     * Creates a new instance of PostFragment using default gradient logic.
-     */
+    private float baseHue = -1f;
+    private int userId;
+    private ArrayList<PostModel> allPosts = new ArrayList<>();
+    private RecyclerView recyclerView;
+
     public static PostFragment newInstance(int id) {
-        PostFragment fragment = new PostFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_IMAGES, getImagesArrayResourceId(String.valueOf(id)));
-        args.putInt(ARG_CAPTIONS, getCaptionArrayResourceId(String.valueOf(id)));
-        fragment.setArguments(args);
-        return fragment;
+        return newInstance(id, -1f);
     }
 
-    /**
-     * Creates a new instance of PostFragment with a fixed hue for the background.
-     */
     public static PostFragment newInstance(int id, float baseHue) {
         PostFragment fragment = new PostFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_IMAGES, getImagesArrayResourceId(String.valueOf(id)));
-        args.putInt(ARG_CAPTIONS, getCaptionArrayResourceId(String.valueOf(id)));
+        args.putInt(ARG_USER_ID, id);
         args.putFloat(ARG_BASE_HUE, baseHue);
         fragment.setArguments(args);
         return fragment;
     }
 
-    /**
-     * Retrieves arguments on fragment creation.
-     */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            arrayImagesId = getArguments().getInt(ARG_IMAGES, 0);
-            arrayCaptionId = getArguments().getInt(ARG_CAPTIONS, 0);
-            if (getArguments().containsKey(ARG_BASE_HUE)) {
-                baseHue = getArguments().getFloat(ARG_BASE_HUE, -1f);
-            }
+            userId = getArguments().getInt(ARG_USER_ID, -1);
+            baseHue = getArguments().getFloat(ARG_BASE_HUE, -1f);
         }
     }
 
-    /**
-     * Inflates the layout, sets background, and initializes RecyclerView.
-     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post, container, false);
+
         if (baseHue >= 0f) {
-            UISettings.applyBrightnessGradientBackground(view, 330f);
+            UISettings.applyBrightnessGradientBackground(view, baseHue);
         }
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerView);
+
+        recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
-        List<String> imagePaths = loadImageArray();
-        List<String> captions = loadCaptionsArray();
-        PostAdapter adapter = new PostAdapter(imagePaths, captions);
-        recyclerView.setAdapter(adapter);
+
+        new GetPostsTask().execute();
         return view;
     }
 
-    /**
-     * (Optional) Sets a random vertical gradient background if needed.
-     */
+    private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
+        @Override
+        protected List<PostModel> doInBackground(Void... voids) {
+            List<PostModel> dummyPosts = new ArrayList<>();
+
+            dummyPosts.add(new PostModel(1,  "new lyrics in the works! just need some good vocals…", null, new PostContentModel("Sharing some thoughts on my latest sound exploration"), new Date(), "Username1", 1));
+            dummyPosts.add(new PostModel(1,  "Finished my latest track!", null, new PostContentModel("image02.png"), new Date(), "Username1", 3));
+            dummyPosts.add(new PostModel(1,  "What my Friday nights are looking like..", null, new PostContentModel( "Excited to finally share this track with everyone!"), new Date(), "Username1", 1));
+            dummyPosts.add(new PostModel(2,  "Trying out a new genre today!", null, new PostContentModel( "image07.png"), new Date(), "Username2", 3));
+            dummyPosts.add(new PostModel(2,  "they call this position the birds eye view I believe", null, new PostContentModel( "Trying out something new and unexpected today!"), new Date(), "Username2", 1));
+            dummyPosts.add(new PostModel(2,  "Inspired by nature", null, new PostContentModel( "image09.png"), new Date(), "Username2", 3));
+            dummyPosts.add(new PostModel(3,  "Sunday Funday!", null, new PostContentModel( "Nature always inspires my melodies"), new Date(), "Username3", 1));
+            dummyPosts.add(new PostModel(3,  "Here’s a snippet from my next album.", null, new PostContentModel( "image14.png"), new Date(), "Username3", 3));
+            dummyPosts.add(new PostModel(3,  "just my morning commute guys…", null, new PostContentModel( "A sneak peek at my upcoming album. Hope you like it!"), new Date(), "Username3", 1));
+            dummyPosts.add(new PostModel(1,  "Collab opportunity for vocalists!", null, new PostContentModel( "image18.png"), new Date(), "Username1", 3));
+            dummyPosts.add(new PostModel(1,  "inspiration.", null, new PostContentModel( "Looking for a vocalist to collaborate with on my next track."), new Date(), "Username1", 1));
+            dummyPosts.add(new PostModel(1,  "A little jazz influence in this one.", null, new PostContentModel( "image21.png"), new Date(), "Username1", 3));
+            dummyPosts.add(new PostModel(2,  "writing. dreaming. thinking.", null, new PostContentModel( "Blending jazz influences into my latest piece"), new Date(), "Username2", 1));
+
+            return dummyPosts;
+        }
+
+        @Override
+        protected void onPostExecute(List<PostModel> posts) {
+            if (posts == null) {
+                Log.w(TAG, "Received null posts list, initializing empty list");
+                posts = new ArrayList<>();
+            }
+            Log.d(TAG, "Fetched dummy posts: " + posts.size());
+            allPosts.clear();
+            allPosts.addAll(posts);
+            setupRecyclerView();
+        }
+    }
+
+
+
+//    private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
+//        @Override
+//        protected List<PostModel> doInBackground(Void... voids) {
+//            try {
+//                PostClient client = SPWebApiRepository.getInstance().getPostClient();
+//                List<PostModel> posts = client.getPosts();
+//                return (posts != null) ? posts : new ArrayList<>();
+//            } catch (IOException e) {
+//                Log.e(TAG, "Error fetching posts", e);
+//                return new ArrayList<>();
+//            }
+//        }
+//
+//        @Override
+//        protected void onPostExecute(List<PostModel> posts) {
+//            if (posts == null) {
+//                Log.w(TAG, "Received null posts list, initializing empty list");
+//                posts = new ArrayList<>();
+//            }
+//            Log.d(TAG, "Fetched posts: " + posts.size());
+//            allPosts.clear();
+//            allPosts.addAll(posts);
+//            setupRecyclerView();
+//        }
+//    }
+//
+    private void setupRecyclerView() {
+        if (recyclerView.getAdapter() == null) {
+            recyclerView.setAdapter(new PostAdapter(allPosts));
+        } else {
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+    }
+
     private void setRandomGradientBackground(View rootView) {
         Random random = new Random();
         int alpha = 128 + random.nextInt(128);
@@ -108,83 +165,4 @@ public class PostFragment extends Fragment {
         rootView.setBackground(gradientDrawable);
     }
 
-    /**
-     * Loads the image resource array into a list of drawable resource URIs.
-     */
-    private List<String> loadImageArray() {
-        List<String> images = new ArrayList<>();
-        if (getContext() != null && arrayImagesId != 0) {
-            String[] imageNames = getResources().getStringArray(arrayImagesId);
-            for (String name : imageNames) {
-                images.add("android.resource://" +
-                        requireContext().getPackageName() +
-                        "/drawable/" + name.replace(".png", ""));
-            }
-        } else {
-            Toast.makeText(requireContext(), "Invalid image array resource", Toast.LENGTH_SHORT).show();
-        }
-        return images;
-    }
-
-    /**
-     * Loads the captions resource array into a list of captions.
-     */
-    private List<String> loadCaptionsArray() {
-        List<String> captions = new ArrayList<>();
-        if (getContext() != null && arrayCaptionId != 0) {
-            String[] captionArray = getResources().getStringArray(arrayCaptionId);
-            for (String caption : captionArray) {
-                captions.add(caption);
-            }
-        }
-        return captions;
-    }
-
-    /**
-     * Returns the appropriate images array resource ID for a given ID.
-     */
-    private static int getImagesArrayResourceId(String id) {
-        switch (id) {
-            case "1": return R.array.user1_images;
-            case "2": return R.array.user2_images;
-            case "3": return R.array.user3_images;
-            case "4": return R.array.user4_images;
-            case "5": return R.array.user5_images;
-            case "6": return R.array.user6_images;
-            case "7": return R.array.art_images;
-            case "8": return R.array.music_images;
-            case "9": return R.array.random_images;
-            case "10": return R.array.all_images;
-            case "11": return R.array.allrandom1_images;
-            case "12": return R.array.allrandom2_images;
-            case "13": return R.array.allrandom3_images;
-            case "14": return R.array.allrandom4_images;
-            case "15": return R.array.allrandom5_images;
-            default: return 10;
-        }
-    }
-
-    /**
-     * Returns the appropriate captions array resource ID for a given ID.
-     */
-    private static int getCaptionArrayResourceId(String id) {
-        switch (id) {
-            case "1": return R.array.user1_captions;
-            case "2": return R.array.user2_captions;
-            case "3": return R.array.user3_captions;
-            case "4": return R.array.user4_captions;
-            case "5": return R.array.user5_captions;
-            case "6": return R.array.user6_captions;
-            case "7": return R.array.art_captions;
-            case "8": return R.array.music_captions;
-            case "9": return R.array.random_captions;
-            case "10": return R.array.all_captions;
-            case "11": return R.array.allrandom1_captions;
-            case "12": return R.array.allrandom2_captions;
-            case "13": return R.array.allrandom3_captions;
-            case "14": return R.array.allrandom4_captions;
-            case "15": return R.array.allrandom5_captions;
-            default: return 10;
-        }
-    }
 }
