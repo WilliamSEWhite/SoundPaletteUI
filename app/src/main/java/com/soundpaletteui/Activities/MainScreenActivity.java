@@ -62,9 +62,7 @@ public class MainScreenActivity extends AppCompatActivity {
     private ProfileFragment profileFragment;
     private SearchFragment searchFragment;
 
-    /**
-     * Sets up components, layout, and initializes default fragment on creation.
-     */
+    //Sets up components, layout, and initializes default fragment on creation.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,6 +116,7 @@ public class MainScreenActivity extends AppCompatActivity {
         });
     }
 
+    // Function for Post creation - type selection
     private void selectPostType(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final View addPost = getLayoutInflater().inflate(R.layout.post_type_select_dialog, null);
@@ -155,14 +154,13 @@ public class MainScreenActivity extends AppCompatActivity {
         });
     }
 
+    // Function to create a post
     private void createPost(int postType){
         CreatePostFragment createPostFragment = CreatePostFragment.newInstance(postType);
         replaceFragment(createPostFragment);
     }
 
-    /**
-     * Animates a "breathing" shadow effect on the header text.
-     */
+    // Animates a "breathing" shadow effect on the header text.
     private void animateHeaderShadow() {
         final TextView titleCenter = findViewById(R.id.title_center);
         if (titleCenter == null) return;
@@ -196,9 +194,7 @@ public class MainScreenActivity extends AppCompatActivity {
         offsetAnimator.start();
     }
 
-    /**
-     * Creates a ColorStateList for tinting bottom navigation items based on hue.
-     */
+    // Creates a ColorStateList for tinting bottom navigation items based on hue.
     private ColorStateList createColorStateList(View toolbarView, float hue) {
         int selectedColor = Color.HSVToColor(new float[]{hue, 1f, 1f});
         int defaultColor = ContextCompat.getColor(this, android.R.color.darker_gray);
@@ -210,18 +206,33 @@ public class MainScreenActivity extends AppCompatActivity {
         return new ColorStateList(states, colors);
     }
 
-    /**
-     * Sets the initial color for the Home button upon startup.
-     */
+    // Sets the initial color for the Home button upon startup.
     private void setInitialHomeButtonColor() {
         ColorStateList homeButtonTint = createColorStateList(findViewById(R.id.toolbar), 30f);
         binding.bottomNavigationView.setItemIconTintList(homeButtonTint);
         binding.bottomNavigationView.setItemTextColor(homeButtonTint);
     }
 
-    /**
-     * Replaces the currently displayed fragment with the provided fragment.
-     */
+    // Initializes Fragment Activities to replace Main Fragment
+    private void initComponents() {
+        // Get the Intent that started this activity
+        userList = new ArrayList<>();
+        mainContentAdapter = new MainContentAdapter(userList);
+        homeFragment = new HomeFragment();
+        profileFragment = new ProfileFragment();
+        searchFragment = new SearchFragment();
+    }
+
+    // Updates the adapter list once user data is retrieved.
+    private void populateView() {
+        if (user != null) {
+            userList.clear();
+            userList.add(user);
+            mainContentAdapter.notifyDataSetChanged();
+        }
+    }
+
+    // Replaces the main Fragment based on bottom navigation selection
     private void replaceFragment(Fragment fragment) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -229,28 +240,7 @@ public class MainScreenActivity extends AppCompatActivity {
         fragmentTransaction.commit();
     }
 
-    /** initializes components in the activity */
-    private void initComponents() {
-        // Get the Intent that started this activity
-        userList = new ArrayList<>();
-        mainContentAdapter = new MainContentAdapter(userList);
-        homeFragment = HomeFragment.newInstance(userId);
-        profileFragment = ProfileFragment.newInstance(userId);
-        searchFragment = SearchFragment.newInstance(userId);
-    }
-
-
-    /**
-     * Populates data into the adapter once user is retrieved.
-     */
-    private void populateView() {
-        userList.clear();
-        userList.add(user);
-    }
-
-    /**
-     * Sets up custom layouts for bottom navigation items.
-     */
+    //Sets up custom layouts for bottom navigation items.
     private void setupCustomBottomNav() {
         BottomNavigationView bottomNav = binding.bottomNavigationView;
         for (int i = 0; i < bottomNav.getMenu().size(); i++) {
@@ -265,9 +255,7 @@ public class MainScreenActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Updates the shadow effect on the selected bottom navigation item.
-     */
+    // Updates the shadow effect on the selected bottom navigation item.
     private void updateBottomNavShadows(int checkedItemId, float hue) {
         BottomNavigationView bottomNav = binding.bottomNavigationView;
         for (int i = 0; i < bottomNav.getMenu().size(); i++) {
@@ -289,9 +277,7 @@ public class MainScreenActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Produces a darker color based on the provided color by reducing brightness.
-     */
+    // Produces a darker color based on the provided color by reducing brightness.
     private int darkenColor(int color) {
         float[] hsv = new float[3];
         Color.colorToHSV(color, hsv);
@@ -299,3 +285,5 @@ public class MainScreenActivity extends AppCompatActivity {
         return Color.HSVToColor(hsv);
     }
 }
+
+

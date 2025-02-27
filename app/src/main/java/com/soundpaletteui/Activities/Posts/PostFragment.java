@@ -30,37 +30,44 @@ import java.util.List;
 import java.util.Random;
 
 public class PostFragment extends Fragment {
+    private static String ARG_ALGO_TYPE = "AlgorithmType";
+    private static String ARG_SEARCH_TERM = "SearchTerm";
     private static final String ARG_BASE_HUE = "base_hue";
-    private static final String ARG_USER_ID = "user_id";
     private static final String TAG = "PostFragment";
-
     private float baseHue = -1f;
-    private int userId;
     private ArrayList<PostModel> allPosts = new ArrayList<>();
     private RecyclerView recyclerView;
 
-    public static PostFragment newInstance(int id) {
-        return newInstance(id, -1f);
+    public static PostFragment newInstance(String algorithmType) {
+        return newInstance(algorithmType, null, -1f);
     }
 
-    public static PostFragment newInstance(int id, float baseHue) {
+    public static PostFragment newInstance(String algorithmType, String searchTerm) {
+        return newInstance(algorithmType, searchTerm, -1f);
+    }
+    public static PostFragment newInstance(String algorithmType, String searchTerm, float baseHue) {
         PostFragment fragment = new PostFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_USER_ID, id);
+        args.putString(ARG_ALGO_TYPE, algorithmType);
+        args.putString(ARG_SEARCH_TERM, searchTerm);
         args.putFloat(ARG_BASE_HUE, baseHue);
         fragment.setArguments(args);
         return fragment;
     }
 
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            userId = getArguments().getInt(ARG_USER_ID, -1);
+            ARG_ALGO_TYPE = getArguments().getString(ARG_ALGO_TYPE, null);
+            ARG_SEARCH_TERM = getArguments().getString(ARG_SEARCH_TERM, null);
             baseHue = getArguments().getFloat(ARG_BASE_HUE, -1f);
         }
     }
 
+
+    // Sets the View to fragment_post.xml (only contains the RecyclerView which will call on PostAdapter)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -79,24 +86,25 @@ public class PostFragment extends Fragment {
         return view;
     }
 
+    // Manually create PostModel (remove when connection to API Server successful
     private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
         @Override
         protected List<PostModel> doInBackground(Void... voids) {
             List<PostModel> dummyPosts = new ArrayList<>();
 
             dummyPosts.add(new PostModel(1,  "new lyrics in the works! just need some good vocals…", null, new PostContentModel("Sharing some thoughts on my latest sound exploration"), new Date(), "Username1", 1));
-            dummyPosts.add(new PostModel(1,  "Finished my latest track!", null, new PostContentModel("image02.png"), new Date(), "Username1", 3));
-            dummyPosts.add(new PostModel(1,  "What my Friday nights are looking like..", null, new PostContentModel( "Excited to finally share this track with everyone!"), new Date(), "Username1", 1));
-            dummyPosts.add(new PostModel(2,  "Trying out a new genre today!", null, new PostContentModel( "image07.png"), new Date(), "Username2", 3));
-            dummyPosts.add(new PostModel(2,  "they call this position the birds eye view I believe", null, new PostContentModel( "Trying out something new and unexpected today!"), new Date(), "Username2", 1));
-            dummyPosts.add(new PostModel(2,  "Inspired by nature", null, new PostContentModel( "image09.png"), new Date(), "Username2", 3));
-            dummyPosts.add(new PostModel(3,  "Sunday Funday!", null, new PostContentModel( "Nature always inspires my melodies"), new Date(), "Username3", 1));
-            dummyPosts.add(new PostModel(3,  "Here’s a snippet from my next album.", null, new PostContentModel( "image14.png"), new Date(), "Username3", 3));
-            dummyPosts.add(new PostModel(3,  "just my morning commute guys…", null, new PostContentModel( "A sneak peek at my upcoming album. Hope you like it!"), new Date(), "Username3", 1));
-            dummyPosts.add(new PostModel(1,  "Collab opportunity for vocalists!", null, new PostContentModel( "image18.png"), new Date(), "Username1", 3));
-            dummyPosts.add(new PostModel(1,  "inspiration.", null, new PostContentModel( "Looking for a vocalist to collaborate with on my next track."), new Date(), "Username1", 1));
-            dummyPosts.add(new PostModel(1,  "A little jazz influence in this one.", null, new PostContentModel( "image21.png"), new Date(), "Username1", 3));
-            dummyPosts.add(new PostModel(2,  "writing. dreaming. thinking.", null, new PostContentModel( "Blending jazz influences into my latest piece"), new Date(), "Username2", 1));
+            dummyPosts.add(new PostModel(2,  "Finished my latest track!", null, new PostContentModel("image02.png"), new Date(), "Username1", 3));
+            dummyPosts.add(new PostModel(3,  "What my Friday nights are looking like..", null, new PostContentModel( "Excited to finally share this track with everyone!"), new Date(), "Username1", 1));
+            dummyPosts.add(new PostModel(4,  "Trying out a new genre today!", null, new PostContentModel( "image07.png"), new Date(), "Username2", 3));
+            dummyPosts.add(new PostModel(5,  "they call this position the birds eye view I believe", null, new PostContentModel( "Trying out something new and unexpected today!"), new Date(), "Username2", 1));
+            dummyPosts.add(new PostModel(6,  "Inspired by nature", null, new PostContentModel( "image09.png"), new Date(), "Username2", 3));
+            dummyPosts.add(new PostModel(7,  "Sunday Funday!", null, new PostContentModel( "Nature always inspires my melodies"), new Date(), "Username3", 1));
+            dummyPosts.add(new PostModel(8,  "Here’s a snippet from my next album.", null, new PostContentModel( "image14.png"), new Date(), "Username3", 3));
+            dummyPosts.add(new PostModel(9,  "just my morning commute guys…", null, new PostContentModel( "A sneak peek at my upcoming album. Hope you like it!"), new Date(), "Username3", 1));
+            dummyPosts.add(new PostModel(10,  "Collab opportunity for vocalists!", null, new PostContentModel( "image18.png"), new Date(), "Username1", 3));
+            dummyPosts.add(new PostModel(11,  "inspiration.", null, new PostContentModel( "Looking for a vocalist to collaborate with on my next track."), new Date(), "Username1", 1));
+            dummyPosts.add(new PostModel(11,  "A little jazz influence in this one.", null, new PostContentModel( "image21.png"), new Date(), "Username1", 3));
+            dummyPosts.add(new PostModel(12,  "writing. dreaming. thinking.", null, new PostContentModel( "Blending jazz influences into my latest piece"), new Date(), "Username2", 1));
 
             return dummyPosts;
         }
@@ -114,14 +122,45 @@ public class PostFragment extends Fragment {
         }
     }
 
-
-
+// Untested getPostsTask that should connect to the API Server
+// Note: PostFragment takes an algorithmType and searchTerm (opt) parameters
 //    private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
 //        @Override
 //        protected List<PostModel> doInBackground(Void... voids) {
 //            try {
 //                PostClient client = SPWebApiRepository.getInstance().getPostClient();
-//                List<PostModel> posts = client.getPosts();
+//                List<PostModel> posts;
+//
+//                String algorithmType = getArguments().getString(ARG_ALGO_TYPE, nul);
+//                String searchTerm = getArguments().getString(ARG_SEARCH_TERM, null);
+//
+//                switch (algorithmType) {
+//                    case "user":          //Posts by the current User
+//                        posts = client.getUsersPosts(userId);
+//                        break;
+//                    case "following":     //All posts based on User's followers
+//                        posts = client.getFollowingPosts(userId);
+//                        break;
+//                    case "saved":         //All saved posts
+//                        posts = client.getSavedPosts(userId);
+//                        break;
+//                    case "new":           //All new posts
+//                        posts = client.getNewestPosts();
+//                        break;
+//                    case "popular":       //All popular posts
+//                        posts = client.getPopularPosts();
+//                        break;
+//                    case "trending":      //All trending posts
+//                        posts = client.getTrendingPosts();
+//                        break;
+//                    case "searchTerm":    //Posts based on search term
+//                        posts = client.getSearchTermPosts(ARG_SEARCH_TERM);
+//                        break;
+//                    default:              //All posts
+//                        posts = client.getAllPosts();
+//                        break;
+//                }
+//
 //                return (posts != null) ? posts : new ArrayList<>();
 //            } catch (IOException e) {
 //                Log.e(TAG, "Error fetching posts", e);
@@ -141,7 +180,9 @@ public class PostFragment extends Fragment {
 //            setupRecyclerView();
 //        }
 //    }
-//
+
+
+    // Sets the RecyclerView by sending through a List of all PostModels
     private void setupRecyclerView() {
         if (recyclerView.getAdapter() == null) {
             recyclerView.setAdapter(new PostAdapter(allPosts));

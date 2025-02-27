@@ -26,14 +26,6 @@
                 android:layout_height="match_parent"
                 android:background="@color/white"
                 android:src="@drawable/baseline_person_100"/>
-
-            <ImageButton
-                android:id="@+id/edit_profile_button"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="bottom|end"
-                android:background="@drawable/icon_edit_24"
-                android:padding="5dp"/>
         </FrameLayout>
 
         <LinearLayout
@@ -122,11 +114,11 @@
                 android:src="@drawable/saved_profile" />
 
             <TextView
-                android:id="@+id/saved_text"
+                android:id="@+id/tags"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="SAVED"
+                android:text="TAGS"
                 android:textColor="@android:color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />

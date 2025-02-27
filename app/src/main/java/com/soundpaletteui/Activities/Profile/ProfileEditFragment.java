@@ -36,7 +36,7 @@ public class ProfileEditFragment extends Fragment {
     private RecyclerView recyclerView;
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
-    private int userId;
+    private String userId;
     private UserModel user;
     private UserInfoModel userInfo;
     private UserClient userClient;
@@ -48,11 +48,10 @@ public class ProfileEditFragment extends Fragment {
     Button btnCancel;
     Button btnSave;
     private String userName;
-    private Spinner location;               // country
-    private ArrayList<LocationModel> countries;             // list of countries
+    private Spinner location;                   // country
+    private ArrayList<LocationModel> countries; // list of countries
 
     public ProfileEditFragment() {
-        // Required empty public constructor
     }
 
     @Override
@@ -60,12 +59,28 @@ public class ProfileEditFragment extends Fragment {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_profile_edit, container, false);
         initComponents();
+
+        profile_user = rootView.findViewById(R.id.profile_user);
+        profile_user.setText(user.getUsername());
+
+        profile_email = rootView.findViewById(R.id.profile_email);
+        profile_email.setText(user.getUserInfo().getEmail());
+
+        profile_phone = rootView.findViewById(R.id.profile_phone);
+        profile_phone.setText(user.getUserInfo().getPhone());
+
+        profile_bio = rootView.findViewById(R.id.profile_bio);
+        //profileBio.setText(user.getUserProfile().getBio());
+
+        btnSave = rootView.findViewById(R.id.btnSave);
+        btnCancel = rootView.findViewById(R.id.btnCancel);
+
+        btnCancel.setOnClickListener(v -> cancelProfileEdit());
+
+        getCountries();
+
         return rootView;
     }
-    public static ProfileEditFragment newInstance(int userId) {
-        return new ProfileEditFragment();
-    }
-
 
     /** initializes components in the fragment */
     private void initComponents() {
@@ -75,23 +90,11 @@ public class ProfileEditFragment extends Fragment {
         userClient = SPWebApiRepository.getInstance().getUserClient();
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
-
-        profile_user = rootView.findViewById(R.id.profile_user);
-        profile_email = rootView.findViewById(R.id.profile_email);
-        profile_phone = rootView.findViewById(R.id.profile_phone);
-        profile_bio = rootView.findViewById(R.id.profile_bio);
-
-        btnSave = rootView.findViewById(R.id.btnSave);
-        btnCancel = rootView.findViewById(R.id.btnCancel);
-
-        btnCancel.setOnClickListener(v -> cancelProfileEdit());
-
-        getCountries();
     }
 
     /** cancel editing user profile and return to profile fragment */
     private void cancelProfileEdit() {
-        ProfileFragment profileFragment = ProfileFragment.newInstance(userId);
+        ProfileFragment profileFragment = new ProfileFragment();
 
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -111,9 +114,9 @@ public class ProfileEditFragment extends Fragment {
                 android.R.layout.simple_spinner_item,
                 countries);
         location = (Spinner) rootView.findViewById(R.id.profile_location);
-        location.setAdapter(adapter); // Set the custom adapter to the spinner
-        // You can create an anonymous listener to handle the event when is selected an spinner item
-        location.setSelection(0);                              //retain previously selected value
+        location.setAdapter(adapter);        // Set the custom adapter to the spinner
+                                             // You can create an anonymous listener to handle the event when is selected an spinner item
+        location.setSelection(0);            //retain previously selected value
     }
 
     /** async call to pull countries from the database */
@@ -146,11 +149,4 @@ public class ProfileEditFragment extends Fragment {
             }
         }//end onPostExecute
     }
-
-    private void populateView() {
-        userList.clear();
-        userList.add(user);
-        mainContentAdapter.notifyDataSetChanged();
-    }
-
 }

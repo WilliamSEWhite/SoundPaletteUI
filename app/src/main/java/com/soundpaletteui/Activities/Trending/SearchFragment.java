@@ -63,13 +63,9 @@ public class SearchFragment extends Fragment {
     private RecyclerView recyclerView;
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
-    private int userId;
     private UserModel user;
     private UserClient userClient;
 
-    /**
-     * Default constructor for SearchFragment.
-     */
     public SearchFragment() {
     }
 
@@ -78,18 +74,12 @@ public class SearchFragment extends Fragment {
         return new SearchFragment();
     }
 
-    /**
-     * Initializes data from arguments.
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
-    /**
-     * Inflates the layout, sets up UI, and loads initial post content.
-     */
+    // Inflates the layout, sets up UI, and loads initial post content.
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -97,70 +87,31 @@ public class SearchFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
         UISettings.applyBrightnessGradientBackground(rootView, 330f);
         initComponents(rootView);
-        Random random = new Random();
-        int randomNumber = random.nextInt(6) + 10;
-        Log.d("SearchFragment", "Initial randomNumber: " + randomNumber);
-        replaceFragment(randomNumber);
+
+        Log.d("SearchFragment", "Initial Trending Algorithm");
+        replaceFragment("trending", null);
+
         EditText inputSearch = rootView.findViewById(R.id.edittext_search);
         ImageButton buttonSearch = rootView.findViewById(R.id.button_search);
         buttonSearch.setOnClickListener(v -> {
             String searchText = inputSearch.getText().toString().trim();
             Log.d("SearchFragment", "Fetching new feed with ID: " + searchText);
-            if (isNumeric(searchText)) {
-                int searchNumber = Integer.parseInt(searchText);
-                if (searchNumber >= 1 && searchNumber <= 9) {
-                    replaceFragment(searchNumber);
-                }
-            } else {
-                if (searchText.toLowerCase().equals("art")) {
-                    replaceFragment(7);
-                } else if (searchText.toLowerCase().equals("music")) {
-                    replaceFragment(8);
-                } else {
-                    Toast.makeText(requireContext(), "I heard you're trying to find " + searchText, Toast.LENGTH_SHORT).show();
-                }
-            }
+            replaceFragment("search", searchText);
         });
         return rootView;
     }
 
-    /**
-     * Checks if a string is numeric.
-     */
-    private boolean isNumeric(String str) {
-        return str != null && !str.isEmpty() && str.matches("\\d+");
-    }
-
-    /**
-     * Initializes the main content adapter and loads user data.
-     */
+    // Initializes the main content adapter and loads user data.
     private void initComponents(View view) {
-
         user = AppSettings.getInstance().getUser();
-
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
-
     }
 
-
-    /**
-     * Updates the adapter list once user data is retrieved.
-     */
-    private void populateView() {
-        if (user != null) {
-            userList.clear();
-            userList.add(user);
-            mainContentAdapter.notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * Replaces the child fragment with a PostFragment having a fixed hue.
-     */
-    private void replaceFragment(int id) {
+    // Replaces the PostFragment based on the algorithmType and userId
+    private void replaceFragment(String algoType, String searchTerm) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        PostFragment postFragment = PostFragment.newInstance(userId);
+        PostFragment postFragment = PostFragment.newInstance(algoType, searchTerm);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
     }

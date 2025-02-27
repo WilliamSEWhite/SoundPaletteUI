@@ -1,7 +1,6 @@
 package com.soundpaletteui.Activities.Posts;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,15 +8,18 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Interactions.CommentBottomSheet;
+import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
-import com.soundpaletteui.Infrastructure.Models.PostContentModel;
 import com.soundpaletteui.R;
+
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
@@ -31,7 +33,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         this.postList = postList;
     }
 
-    // Create the main View using adapter_posts.xml
     @NonNull
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,63 +41,63 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return new PostViewHolder(view);
     }
 
-    // Binds (sets) the objects in adapter_posts.xml
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         PostModel post = postList.get(position);
         int postId = post.getPostId();
-        holder.postUsername.setText(post.getUsername());        // Get username from Post
-        holder.postCaption.setText(post.getPostCaption());      // Get caption from Post
-        holder.postFragmentDisplay.removeAllViews();            // Clear previous content
+        int userId = -1; // Placeholder: Replace with actual user ID if available
+        String postUsername = post.getUsername();
+
+        holder.postUsername.setText(postUsername);
+        holder.postCaption.setText(post.getPostCaption());
+        holder.postFragmentDisplay.removeAllViews();
+
         LayoutInflater inflater = LayoutInflater.from(context);
         View fragmentView;
 
-        // Sets the fragmentView in adapter_posts based on the postType
-        if (post.getPostType() == TEXT_POST) {                  // Text Post
+        if (post.getPostType() == TEXT_POST) {
             fragmentView = inflater.inflate(R.layout.adapter_posts_text, holder.postFragmentDisplay, false);
             TextView postTextDisplay = fragmentView.findViewById(R.id.postTextDisplay);
             postTextDisplay.setText(post.getPostContent().getPostContent());
-        } else if (post.getPostType() == AUDIO_POST) {          //Audio Post
-            fragmentView = new View(context);
-        } else if (post.getPostType() == IMAGE_POST) {          // Image Post
+        } else if (post.getPostType() == IMAGE_POST) {
             fragmentView = inflater.inflate(R.layout.adapter_posts_image, holder.postFragmentDisplay, false);
             ImageView postImageDisplay = fragmentView.findViewById(R.id.postImageDisplay);
             String imageName = post.getPostContent().getPostContent().replace(".png", "").replace(".jpg", "");
             int imageResource = holder.itemView.getContext().getResources().getIdentifier(imageName, "drawable", holder.itemView.getContext().getPackageName());
             postImageDisplay.setImageResource(imageResource);
-        } else {                                                // Empty View
+        } else {
             fragmentView = new View(context);
         }
 
-        // Like Button Actions
-        holder.likeButton.setOnClickListener(v -> {
-            if (holder.isLiked) {
-                holder.likeButton.setImageResource(R.drawable.post_fav_empty_24);
-                Log.d("Like Button", "Unliked Post ID#" +postId);
-            } else {
-                holder.likeButton.setImageResource(R.drawable.post_fav_filled_24);
-                Log.d("Like Button", "Liked Post ID#" +postId);
-            }
-            holder.isLiked = !holder.isLiked;
+        // Open Poster's profile page
+        // NOTE: NEEDS TO BE UPDATED!!!!!
+        holder.postersProfile.setOnClickListener(v -> {
+            ProfileFragment profileFragment = new ProfileFragment();
+            FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.mainScreenFrame, profileFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
         });
 
-        // Comment Button Actions
+        // Like Button Actions
+        holder.likeButton.setOnClickListener(v -> {
+            holder.isLiked = !holder.isLiked;
+            holder.likeButton.setImageResource(holder.isLiked ? R.drawable.post_fav_filled_24 : R.drawable.post_fav_empty_24);
+            Log.d("Like Button", (holder.isLiked ? "Liked" : "Unliked") + " Post ID#" + postId);
+        });
+
+        // Comment Button Actions (opens bottom sheet)
         holder.commentButton.setOnClickListener(v -> {
-            Intent intent = new Intent(v.getContext(), CommentBottomSheet.class);
-            intent.putExtra("postId", position); // Use position as a placeholder postId
-            v.getContext().startActivity(intent);
+            CommentBottomSheet commentBottomSheet = CommentBottomSheet.newInstance(postId);
+            commentBottomSheet.show(((FragmentActivity) v.getContext()).getSupportFragmentManager(), "CommentBottomSheet");
         });
 
         // Save Button Actions
         holder.saveButton.setOnClickListener(v -> {
-            if (holder.isSaved) {
-                holder.saveButton.setImageResource(R.drawable.post_saved_empty_24);
-                Log.d("Save Button", "Unsaved Post ID#" +postId);
-            } else {
-                holder.saveButton.setImageResource(R.drawable.post_saved_filled_24);
-                Log.d("Save Button", "Saved Post ID#" +postId);
-            }
             holder.isSaved = !holder.isSaved;
+            holder.saveButton.setImageResource(holder.isSaved ? R.drawable.post_saved_filled_24 : R.drawable.post_saved_empty_24);
+            Log.d("Save Button", (holder.isSaved ? "Saved" : "Unsaved") + " Post ID#" + postId);
         });
 
         holder.postFragmentDisplay.addView(fragmentView);
@@ -107,11 +108,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         return postList.size();
     }
 
-    // Set and find all objects in adapter_posts.xml
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView postUsername, postCaption;
         ViewGroup postFragmentDisplay;
-        ImageButton likeButton, commentButton, saveButton;
+        ImageButton postersProfile, likeButton, commentButton, saveButton;
         boolean isLiked = false;
         boolean isSaved = false;
 
@@ -120,6 +120,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             postUsername = itemView.findViewById(R.id.postUsername);
             postCaption = itemView.findViewById(R.id.postCaption);
             postFragmentDisplay = itemView.findViewById(R.id.postFragmentDisplay);
+            postersProfile = itemView.findViewById(R.id.postersProfile);
             likeButton = itemView.findViewById(R.id.postLikeButton);
             commentButton = itemView.findViewById(R.id.postCommentButton);
             saveButton = itemView.findViewById(R.id.postSaveButton);

@@ -12,6 +12,7 @@
 
                 <!-- Poster's Profile -->
                 <ImageButton
+                    android:id="@+id/postersProfile"
                     android:layout_width="75dp"
                     android:layout_height="match_parent"
                     android:background="@drawable/white_translucency_gradient"

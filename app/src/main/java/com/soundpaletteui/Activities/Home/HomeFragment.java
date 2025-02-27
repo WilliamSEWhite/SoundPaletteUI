@@ -40,7 +40,7 @@ public class HomeFragment extends Fragment {
 
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
-    private int userId;
+    private String userId;
     private UserModel user;
     private UserClient userClient;
     private View frameExplore;
@@ -55,46 +55,35 @@ public class HomeFragment extends Fragment {
     private final int TRANSPARENT_ALPHA = 77;
     private final int FULL_ALPHA = 255;
 
-    /**
-     * Default constructor for HomeFragment.
-     */
     public HomeFragment() {
     }
 
-    /**
-     * Creates a new instance of HomeFragment with the specified userId.
-     */
-    public static HomeFragment newInstance(int userId) {
-        return new HomeFragment();
-    }
-
-    /**
-     * Initializes the fragment with the arguments passed in.
-     */
+    // Initializes the fragment with the arguments passed in.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
-    /**
-     * Inflates the layout and sets up UI elements for the fragment.
-     */
+    // Inflates the layout and sets up UI elements for the fragment.
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
+        initComponents(rootView);
+        userId = String.valueOf(user.getUserId());
+
         final View rootLayout = rootView.findViewById(R.id.root_layout);
         UISettings.applyBrightnessGradientBackground(rootLayout, 120f);
         initComponents(rootView);
+
         frameExplore = rootView.findViewById(R.id.frame_explore);
         gifExplore = rootView.findViewById(R.id.gif_explore);
         textExplore = rootView.findViewById(R.id.explore_text);
         frameFollower = rootView.findViewById(R.id.frame_follower);
         gifFollower = rootView.findViewById(R.id.gif_follower);
         textFollower = rootView.findViewById(R.id.follower_text);
-        Random random = new Random();
 
         frameExplore.setOnClickListener(v -> {
             try {
@@ -123,9 +112,9 @@ public class HomeFragment extends Fragment {
             gifFollower.setAlpha(0.3f);
             setButtonTextSelected(textExplore, true);
             setButtonTextSelected(textFollower, false);
-            int randomExploreNumber = random.nextInt(6) + 10;
-            Log.d("HomeFragment", "Explore clicked - randomNumber: " + randomExploreNumber);
-            replaceFragment(randomExploreNumber);
+
+            Log.d("HomeFragment", "Explore Selected");
+            replaceFragment("popular", null);
             View toolbar = requireActivity().findViewById(R.id.toolbar);
             UISettings.applyFlippedBrightnessGradientBackground(toolbar, 30f);
         });
@@ -157,9 +146,9 @@ public class HomeFragment extends Fragment {
             gifExplore.setAlpha(0.3f);
             setButtonTextSelected(textFollower, true);
             setButtonTextSelected(textExplore, false);
-            int randomFollowerNumber = random.nextInt(9) + 1;
-            Log.d("HomeFragment", "Follower clicked - randomNumber: " + randomFollowerNumber);
-            replaceFragment(randomFollowerNumber);
+
+            Log.d("HomeFragment", "Followers Selected for UserID #" + userId);
+            replaceFragment("followers", userId);
             View toolbar = requireActivity().findViewById(R.id.toolbar);
             UISettings.applyFlippedBrightnessGradientBackground(toolbar, 330f);
         });
@@ -168,49 +157,24 @@ public class HomeFragment extends Fragment {
         return rootView;
     }
 
-    /**
-     * Initializes views and loads user data.
-     */
+    // Initializes views and loads user data.
     private void initComponents(View view) {
         // Get arguments instead of Intent
         user = AppSettings.getInstance().getUser();
-
-
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
         userClient = SPWebApiRepository.getInstance().getUserClient();
     }
 
-
-    /**
-     * Populates the view once the user data is loaded.
-     */
-    private void populateView() {
-        if (user != null) {
-            if (userList == null) {
-                userList = new ArrayList<>();
-            }
-            userList.clear();
-            userList.add(user);
-            if (mainContentAdapter != null) {
-                mainContentAdapter.notifyDataSetChanged();
-            }
-        }
-    }
-
-    /**
-     * Replaces the child fragment with a PostFragment based on userId.
-     */
-    private void replaceFragment(int userId) {
+    // Replaces the PostFragment based on the algorithmType and userId
+    private void replaceFragment(String algoType, String userId) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        PostFragment postFragment = PostFragment.newInstance(userId);
+        PostFragment postFragment = PostFragment.newInstance(algoType, userId);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
     }
 
-    /**
-     * Sets the text style for a TextView based on whether it is selected.
-     */
+    //Sets the text style for a TextView based on whether it is selected.
     private void setButtonTextSelected(TextView textView, boolean isSelected) {
         if (isSelected) {
             textView.setTypeface(null, Typeface.BOLD);

@@ -30,7 +30,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         CommentModel comment = commentList.get(position);
         //holder.postId.setText(comment.getPostId());
-        ///holder.userId.setText(comment.getUserId());
+        holder.username.setText("Username"+String.valueOf(comment.getUserId()));
         holder.message.setText(comment.getMessage());
     }
 

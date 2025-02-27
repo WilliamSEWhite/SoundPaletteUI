@@ -45,4 +45,16 @@ public class UserInfoModel {
         this.dateCreated = dateCreated;
     }
 
+    public String getEmail() {
+        return Email;
+    }
+
+    public String getPhone() {
+        return Phone;
+    }
+
+    public Date getDob() {
+        return Dob;
+    }
+
 }

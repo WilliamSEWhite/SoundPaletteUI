@@ -32,6 +32,9 @@
         <activity android:name=".Activities.Profile.Register"
             android:exported="false"/>
 
+        <activity android:name=".Activities.Interactions.CommentBottomSheet" />
+
+
         <activity
             android:name=".Activities.MainScreenActivity"
             android:exported="false" />
