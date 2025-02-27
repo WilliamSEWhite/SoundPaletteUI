@@ -64,7 +64,7 @@ public class HomeFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    // Inflates the layout and sets up UI elements for the fragment.
+    // Sets the Parent View as fragment_home, and Child View for fragment_post.xml
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -76,7 +76,6 @@ public class HomeFragment extends Fragment {
 
         final View rootLayout = rootView.findViewById(R.id.root_layout);
         UISettings.applyBrightnessGradientBackground(rootLayout, 120f);
-        initComponents(rootView);
 
         frameExplore = rootView.findViewById(R.id.frame_explore);
         gifExplore = rootView.findViewById(R.id.gif_explore);
@@ -86,6 +85,10 @@ public class HomeFragment extends Fragment {
         textFollower = rootView.findViewById(R.id.follower_text);
 
         frameExplore.setOnClickListener(v -> {
+            // Setting the Post Fragment with "Popular" algorithm
+            Log.d("HomeFragment", "Explore Selected");
+            replacePostFragment("popular", null);
+
             try {
                 final GifDrawable exploreGifDrawable = (GifDrawable) gifExplore.getDrawable();
                 frameExplore.getBackground().mutate().setTint(ORANGE_COLOR);
@@ -112,14 +115,15 @@ public class HomeFragment extends Fragment {
             gifFollower.setAlpha(0.3f);
             setButtonTextSelected(textExplore, true);
             setButtonTextSelected(textFollower, false);
-
-            Log.d("HomeFragment", "Explore Selected");
-            replaceFragment("popular", null);
             View toolbar = requireActivity().findViewById(R.id.toolbar);
             UISettings.applyFlippedBrightnessGradientBackground(toolbar, 30f);
         });
 
         frameFollower.setOnClickListener(v -> {
+            // Setting the Post Fragment with posts based on User's Following
+            Log.d("HomeFragment", "Followers Selected for UserID #" + userId);
+            replacePostFragment("following", userId);
+
             try {
                 final GifDrawable followerGifDrawable = (GifDrawable) gifFollower.getDrawable();
                 frameFollower.getBackground().mutate().setTint(PINK_COLOR);
@@ -147,8 +151,6 @@ public class HomeFragment extends Fragment {
             setButtonTextSelected(textFollower, true);
             setButtonTextSelected(textExplore, false);
 
-            Log.d("HomeFragment", "Followers Selected for UserID #" + userId);
-            replaceFragment("followers", userId);
             View toolbar = requireActivity().findViewById(R.id.toolbar);
             UISettings.applyFlippedBrightnessGradientBackground(toolbar, 330f);
         });
@@ -167,7 +169,7 @@ public class HomeFragment extends Fragment {
     }
 
     // Replaces the PostFragment based on the algorithmType and userId
-    private void replaceFragment(String algoType, String userId) {
+    private void replacePostFragment(String algoType, String userId) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(algoType, userId);
         transaction.replace(R.id.postFragment, postFragment);

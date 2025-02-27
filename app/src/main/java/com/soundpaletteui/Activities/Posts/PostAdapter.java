@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Interactions.CommentBottomSheet;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
+import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.R;
 
@@ -45,7 +46,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         PostModel post = postList.get(position);
         int postId = post.getPostId();
-        int userId = -1; // Placeholder: Replace with actual user ID if available
+        int postUserId = 1; // Placeholder: Replace with actual user ID if available
         String postUsername = post.getUsername();
 
         holder.postUsername.setText(postUsername);
@@ -70,12 +71,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
 
         // Open Poster's profile page
-        // NOTE: NEEDS TO BE UPDATED!!!!!
         holder.postersProfile.setOnClickListener(v -> {
-            ProfileFragment profileFragment = new ProfileFragment();
+            ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUserId);
             FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.mainScreenFrame, profileFragment);
+            transaction.replace(R.id.mainScreenFrame, profileViewFragment);
             transaction.addToBackStack(null);
             transaction.commit();
         });

@@ -88,16 +88,20 @@ public class SearchFragment extends Fragment {
         UISettings.applyBrightnessGradientBackground(rootView, 330f);
         initComponents(rootView);
 
-        Log.d("SearchFragment", "Initial Trending Algorithm");
-        replaceFragment("trending", null);
+        EditText inputSearch = rootView.findViewById(R.id.inputSearch);
+        ImageButton buttonSearch = rootView.findViewById(R.id.buttonSearch);
 
-        EditText inputSearch = rootView.findViewById(R.id.edittext_search);
-        ImageButton buttonSearch = rootView.findViewById(R.id.button_search);
+        // Set initial PostFragment as trending algorithm
+        Log.d("SearchFragment", "Initial Trending Algorithm");
+        replacePostFragment("trending", null);
+
+        // Set PostFragment as all posts containing SearchText
         buttonSearch.setOnClickListener(v -> {
             String searchText = inputSearch.getText().toString().trim();
             Log.d("SearchFragment", "Fetching new feed with ID: " + searchText);
-            replaceFragment("search", searchText);
+            replacePostFragment("search", searchText);
         });
+
         return rootView;
     }
 
@@ -109,7 +113,7 @@ public class SearchFragment extends Fragment {
     }
 
     // Replaces the PostFragment based on the algorithmType and userId
-    private void replaceFragment(String algoType, String searchTerm) {
+    private void replacePostFragment(String algoType, String searchTerm) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(algoType, searchTerm);
         transaction.replace(R.id.postFragment, postFragment);

@@ -38,13 +38,17 @@ public class PostFragment extends Fragment {
     private ArrayList<PostModel> allPosts = new ArrayList<>();
     private RecyclerView recyclerView;
 
+    // New Instance of a PostFragment with algorithmType only
     public static PostFragment newInstance(String algorithmType) {
         return newInstance(algorithmType, null, -1f);
     }
 
+    // New Instance of a PostFragment with algorithmType and searchTerm (may also be a userId)
     public static PostFragment newInstance(String algorithmType, String searchTerm) {
         return newInstance(algorithmType, searchTerm, -1f);
     }
+
+    // New Instance of a PostFragment with algorithmType, searchTerm and baseHue
     public static PostFragment newInstance(String algorithmType, String searchTerm, float baseHue) {
         PostFragment fragment = new PostFragment();
         Bundle args = new Bundle();
@@ -55,7 +59,6 @@ public class PostFragment extends Fragment {
         return fragment;
     }
 
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,7 +68,6 @@ public class PostFragment extends Fragment {
             baseHue = getArguments().getFloat(ARG_BASE_HUE, -1f);
         }
     }
-
 
     // Sets the View to fragment_post.xml (only contains the RecyclerView which will call on PostAdapter)
     @Nullable
