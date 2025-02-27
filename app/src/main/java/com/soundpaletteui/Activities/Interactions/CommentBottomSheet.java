@@ -55,6 +55,8 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.bottom_sheet_comments, container, false);
+        initComponents(view);
+
         postId = getArguments().getInt("postId", -1);
 
         recyclerView = view.findViewById(R.id.comment_recyclerview);
@@ -73,9 +75,9 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
         sendButton.setOnClickListener(v -> {
             String text = commentInput.getText().toString().trim();
             if (!text.isEmpty()) {
-                CommentModel newComment = new CommentModel(postId, user.getUserId(), text);
-                new SendCommentTask().execute(newComment);
+                adapter.addComment(new CommentModel(postId, user.getUserId(), text));
                 commentInput.setText(""); // Clear input field
+                recyclerView.smoothScrollToPosition(commentList.size() - 1);
             }
         });
 
@@ -108,31 +110,6 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
         }
     }
 
-    // AsyncTask to simulate sending a dummy comment
-    private class SendCommentTask extends AsyncTask<CommentModel, Void, Boolean> {
-        private CommentModel newComment;
-
-        @Override
-        protected Boolean doInBackground(CommentModel... params) {
-            newComment = params[0];
-
-            // Simulate delay
-            try { Thread.sleep(500); } catch (InterruptedException e) { e.printStackTrace(); }
-
-            return true; // Simulate successful API call
-        }
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (success) {
-                commentList.add(newComment);
-                adapter.notifyItemInserted(commentList.size() - 1);
-                recyclerView.smoothScrollToPosition(commentList.size() - 1);
-            } else {
-                Toast.makeText(getContext(), "Failed to send comment", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 
 //    AsyncTask to fetch comments from API
 //    private class FetchCommentsTask extends AsyncTask<Void, Void, List<CommentModel>> {
