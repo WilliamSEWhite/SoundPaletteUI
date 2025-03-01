@@ -5,26 +5,18 @@ import static java.util.Calendar.getInstance;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -55,7 +47,7 @@ import java.util.Calendar;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Register extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     private EditText txtUsername;           // username
@@ -242,7 +234,7 @@ public class Register extends AppCompatActivity {
     private void saveProfile() {
         // write saving code here
         saveUserProfile();
-        Toast.makeText(Register.this, "User profile saved" + userId, Toast.LENGTH_SHORT).show();
+        Toast.makeText(RegisterActivity.this, "User profile saved" + userId, Toast.LENGTH_SHORT).show();
     }
 
     /** clear text fields in register activity */
@@ -260,7 +252,7 @@ public class Register extends AppCompatActivity {
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
         DatePickerDialog datePickerDialog = new DatePickerDialog(
-                Register.this,
+                RegisterActivity.this,
                 new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -382,7 +374,7 @@ public class Register extends AppCompatActivity {
                 initCountries();
             }
             else {
-                Toast.makeText(Register.this, "Failed to load countries!",
+                Toast.makeText(RegisterActivity.this, "Failed to load countries!",
                         Toast.LENGTH_SHORT).show();
             }
         }//end onPostExecute
@@ -420,7 +412,7 @@ public class Register extends AppCompatActivity {
                     System.out.println("--------------");
                 }
                 else {
-                    Toast.makeText(Register.this, "Please select a location.",
+                    Toast.makeText(RegisterActivity.this, "Please select a location.",
                             Toast.LENGTH_SHORT).show();
                 }
             } catch (IOException e) {

@@ -9,7 +9,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.soundpaletteui.Activities.MainScreenActivity;
-import com.soundpaletteui.Activities.Profile.Register;
+import com.soundpaletteui.Activities.Profile.RegisterActivity;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
@@ -165,7 +165,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = null;
         // Choose activity based on the action passed (1 for Register, 2 for Home)
         if (action == 1) {
-            intent = new Intent(LoginActivity.this, Register.class);
+            intent = new Intent(LoginActivity.this, RegisterActivity.class);
         } else {
             intent = new Intent(LoginActivity.this, MainScreenActivity.class);
         }

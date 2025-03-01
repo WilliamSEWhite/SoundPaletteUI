@@ -33,7 +33,7 @@
                 android:resource="@xml/filepaths"/>
         </provider>
 
-        <activity android:name=".Activities.Profile.Register"
+        <activity android:name=".Activities.Profile.RegisterActivity"
             android:exported="false"/>
 
         <activity
