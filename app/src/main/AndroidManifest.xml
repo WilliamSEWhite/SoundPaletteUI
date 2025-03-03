@@ -29,12 +29,9 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/filepaths"/>
         </provider>
-        <activity android:name=".Activities.Profile.Register"
+        <activity android:name=".Activities.Profile.RegisterActivity"
             android:exported="false"/>
-
         <activity android:name=".Activities.Interactions.CommentBottomSheet" />
-
-
         <activity
             android:name=".Activities.MainScreenActivity"
             android:exported="false" />

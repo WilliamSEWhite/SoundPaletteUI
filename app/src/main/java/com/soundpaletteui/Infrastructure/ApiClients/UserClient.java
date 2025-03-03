@@ -4,6 +4,7 @@ import com.soundpaletteui.Infrastructure.ApiEndpoints.LoginRegisterApiEndpoints;
 import com.soundpaletteui.Infrastructure.ApiEndpoints.UserEndpoints;
 import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
+import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
 
 import java.io.IOException;
 
@@ -29,9 +30,21 @@ public class UserClient {
         return response.body();
     }
 
-    /*public UserInfoModel getUserInfo(int id) {
-        Call<UserInfoModel> call = userEndpoints.getUser(id);
+    public UserInfoModel getUserInfo(int id) throws IOException {
+        Call<UserInfoModel> call = userEndpoints.getUserInfo(id);
         Response<UserInfoModel> response = call.execute();
         return response.body();
-    }*/
+    }
+
+    public UserProfileModel getUserProfile(int id) throws IOException {
+        Call<UserProfileModel> call = userEndpoints.getUserProfile(id);
+        Response<UserProfileModel> response = call.execute();
+        return response.body();
+    }
+
+    public UserProfileModel updateUserProfile(UserProfileModel userProfile) throws IOException {
+        Call<UserProfileModel> call = userEndpoints.updateUserProfile(userProfile);
+        Response<UserProfileModel> response = call.execute();
+        return response.body();
+    }
 }

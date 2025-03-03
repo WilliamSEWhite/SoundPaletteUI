@@ -43,6 +43,28 @@ public class UserInfoModel {
         Phone = phone;
         this.Dob = dob;
         this.dateCreated = dateCreated;
+        System.out.println("Location in Model 1: " + LocationId);
+    }
+    /* may use later, maybe not **
+    public UserInfoModel(int userId, String email, String phone, int locationId) {
+        UserId = userId;
+        Email = email;
+        Phone = phone;
+        LocationId = locationId;
+    }*/
+
+    /** constructor for update user profile */
+    public UserInfoModel(int userId, int locationId, String email, String phone, String dob) {
+        UserId = userId;
+        Email = email;
+        Phone = phone;
+        Dob = dob;
+        LocationId = locationId;
+        System.out.println("Location in Model: " + LocationId);
+    }
+
+    public int getLocationId() {
+        return LocationId;
     }
 
     public String getEmail() {

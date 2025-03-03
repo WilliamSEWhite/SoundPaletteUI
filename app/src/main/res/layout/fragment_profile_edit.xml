@@ -43,7 +43,8 @@
         android:hint="Username"
         android:background="@color/white"
         android:textSize="@dimen/row_text"
-        android:padding="12dp"/>
+        android:padding="12dp"
+        android:enabled="false"/>
 
     <!-- Email -->
     <EditText
