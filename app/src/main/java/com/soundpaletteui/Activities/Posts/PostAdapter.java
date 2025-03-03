@@ -80,6 +80,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             transaction.commit();
         });
 */
+
         // Like Button Actions
         holder.likeButton.setOnClickListener(v -> {
             holder.isLiked = !holder.isLiked;
