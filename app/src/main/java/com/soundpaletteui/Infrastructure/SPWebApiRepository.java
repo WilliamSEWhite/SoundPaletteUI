@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
+import com.soundpaletteui.Infrastructure.ApiClients.PostInteractionClient;
 import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 
@@ -63,6 +64,8 @@ public class SPWebApiRepository {
         return new TagClient(retrofit);
     }
 
-
+    public static PostInteractionClient getPostInteractionClient(){
+        return new PostInteractionClient(retrofit);
+    }
 
 }

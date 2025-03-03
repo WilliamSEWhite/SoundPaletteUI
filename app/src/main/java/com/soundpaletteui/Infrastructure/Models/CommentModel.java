@@ -1,6 +1,7 @@
 package com.soundpaletteui.Infrastructure.Models;
 
 public class CommentModel {
+
     private int postId;
     private int userId;
     private String message;
