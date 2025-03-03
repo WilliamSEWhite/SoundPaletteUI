@@ -46,5 +46,11 @@ public class PostClient {
         Log.d("PostClient", "Fetched " + posts.size() + " posts.");
         return posts;
     }
+    public Void deletePost(int postId, int userId) throws IOException {
 
+        Call<Void> call = postApiEndpoints.deletePost(postId, userId);
+        Response<Void> response = call.execute();
+
+        return response.body();
+    }
 }
