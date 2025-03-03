@@ -17,7 +17,7 @@ public interface PostInteractionApiEndpoints {
     @POST("api/postInteraction/create-comment")
     Call<Void> createComment(@Body NewPostCommentModel newComment);
     @GET("api/postInteraction/get-post-comments")
-    Call<List<CommentModel>> getPostComments(@Query("username") int postId);
+    Call<List<CommentModel>> getPostComments(@Query("postId") int postId);
     @GET("api/postInteraction/like-post")
     Call<Void> likePost(@Query("postId") int postId, @Query("userId") int userId);
     @GET("api/postInteraction/unlike-post")
