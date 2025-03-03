@@ -69,7 +69,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else {
             fragmentView = new View(context);
         }
-
+/*
         // Open Poster's profile page
         holder.postersProfile.setOnClickListener(v -> {
             ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUserId);
@@ -79,6 +79,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             transaction.addToBackStack(null);
             transaction.commit();
         });
+*/
 
         // Like Button Actions
         holder.likeButton.setOnClickListener(v -> {
