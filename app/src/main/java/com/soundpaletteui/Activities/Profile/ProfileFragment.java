@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
 import com.soundpaletteui.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
@@ -60,6 +62,13 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    /** refreshes profile data when resuming fragment */
+    @Override
+    public void onResume() {
+        super.onResume();
+        new Handler(Looper.getMainLooper()).postDelayed(() -> getProfileBio(), 500);
+    }
+
     // Inflates the layout and sets up UI for posts and saved content.
     @Nullable
     @Override
@@ -80,7 +89,7 @@ public class ProfileFragment extends Fragment {
 
         // Assign text for User's Profile Bio
         profileBio = rootView.findViewById(R.id.profile_bio);
-        //profileBio.setText(user.getUserProfile().getBio());
+        getProfileBio();
 
         // Edit Profile Button Actions
         AppCompatImageButton buttonEdit = rootView.findViewById(R.id.edit_profile_button);
@@ -88,9 +97,10 @@ public class ProfileFragment extends Fragment {
             ProfileEditFragment profileEditFragment = new ProfileEditFragment();
 
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.mainScreenFrame, profileEditFragment);
-            transaction.commit();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.mainScreenFrame, profileEditFragment)
+                    .addToBackStack(null)
+                    .commit();
         });
 
         // Post Button Actions
@@ -157,6 +167,26 @@ public class ProfileFragment extends Fragment {
 
         framePosts.performClick();
         return rootView;
+    }
+
+    private void getProfileBio() {
+        getUserBio();
+    }
+
+    /** populates the user bio field */
+    private void getUserBio() {
+        new Thread(() -> {
+            UserProfileModel userProfile;
+            try {
+                userProfile = userClient.getUserProfile(Integer.parseInt(userId));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            // update UI on main thread
+            new Handler(Looper.getMainLooper()).post(() -> {
+                profileBio.setText(userProfile.getBio());
+            });
+        }).start();
     }
 
 

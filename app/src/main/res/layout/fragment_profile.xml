@@ -41,18 +41,16 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <!-- TAGS CONTAINER INSIDE OF BIO -->
             <TextView
+                android:id="@+id/profile_bio"
                 android:layout_width="match_parent"
                 android:layout_height="75dp"
                 android:layout_gravity="left"
-                android:id="@+id/profile_bio"
-                android:textSize="12dp"
                 android:padding="15dp"
-                android:text="Hello! This is going to be the bio for the profile."
-                >
-            </TextView>
+                android:text="Please edit your bio."
+                android:textSize="12dp"></TextView>
 
-            <!-- TAGS CONTAINER INSIDE OF BIO -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="25dp"
