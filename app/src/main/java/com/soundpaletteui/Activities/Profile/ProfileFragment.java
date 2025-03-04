@@ -184,7 +184,13 @@ public class ProfileFragment extends Fragment {
             }
             // update UI on main thread
             new Handler(Looper.getMainLooper()).post(() -> {
-                profileBio.setText(userProfile.getBio());
+                // check if the bio field is empty or null and respond accordingly
+                if(userProfile.getBio() == null || userProfile.getBio().trim().isEmpty()) {
+                    profileBio.setText("I still need to fill out my bio...");
+                }
+                else {
+                    profileBio.setText(userProfile.getBio());
+                }
             });
         }).start();
     }
