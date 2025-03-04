@@ -65,25 +65,28 @@ public class ProfileEditFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_profile_edit, container, false);
-        initComponents();
+        try {
+            initComponents();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return rootView;
     }
-    public static ProfileEditFragment newInstance(int userId) {
-        ProfileEditFragment fragment = new ProfileEditFragment();
-        Bundle args = new Bundle();
-        args.putInt("USER_ID", userId); // Add userId to the Bundle
-        fragment.setArguments(args);
-        return fragment;
+
+    /** refreshes profile data when resuming fragment */
+    @Override
+    public void onResume() {
+        super.onResume();
+        getUser();
     }
 
-
     /** initializes components in the fragment */
-    private void initComponents() {
+    private void initComponents() throws IOException {
         // Get arguments instead of Intent
-        if (getArguments() != null) {
-            userId = getArguments().getInt("USER_ID", 0);
-        }
+        user = AppSettings.getInstance().getUser();
+        userInfo = user.getUserInfo();
         userClient = SPWebApiRepository.getInstance().getUserClient();
+
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
 
@@ -99,7 +102,6 @@ public class ProfileEditFragment extends Fragment {
         btnSave.setOnClickListener(v -> saveProfileEdit());
 
         getUser();
-        //getCountries();
     }
 
     /** saves the user profile to the database and returns to profile fragment */
@@ -126,10 +128,10 @@ public class ProfileEditFragment extends Fragment {
             LocationModel selectedLocation = adapter.getItem(location.getSelectedItemPosition());
 
             if(selectedLocation != null) {
-                UserInfoModel userInfoModel = new UserInfoModel(userId, selectedLocation.getLocationId(), email, phone, userInfo.getDob());
-                UserProfileModel userProfileModel = new UserProfileModel(userId, bio, picLocation);
+                UserInfoModel userInfoModel = new UserInfoModel(user.getUserId(), selectedLocation.getLocationId(), email, phone, userInfo.getDob());
+                UserProfileModel userProfileModel = new UserProfileModel(user.getUserId(), bio, picLocation);
                 try {
-                    UserInfoModel updateUserInfo = userClient.updateUserInfo(userInfoModel);
+                    UserInfoModel updateUserInfo = userClient.updateUserInfo(user.getUserId(), userInfoModel).getUserInfo();
                     UserProfileModel updateUserProfile = userClient.updateUserProfile(userProfileModel);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -143,40 +145,43 @@ public class ProfileEditFragment extends Fragment {
         }//end doInBackground
 
         protected void onPostExecute(Void v) {
-            System.out.println("Username: " + user.getUsername());
-            System.out.println("Password: " + user.getPassword());
-            //returnToProfile();
+            System.out.println("returnToProfile()");
+            returnToProfile();
         }//end onPostExecute
     }
 
     /** cancel editing user profile and return to profile fragment */
     private void returnToProfile() {
-        ProfileFragment profileFragment = ProfileFragment.newInstance(userId);
-
+        System.out.println("returning to profile!!");
+        if(!isAdded()) {
+            return;     // avoid crash if fragment has already detatched
+        }
+        ProfileFragment profileFragment = new ProfileFragment();
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.mainScreenFrame, profileFragment);
-        transaction.commit();
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        fragmentManager.beginTransaction()
+                .replace(R.id.mainScreenFrame, profileFragment)
+                .addToBackStack(null)
+                .commit();
     }
 
     /** pulls the user from the database */
     private void getUser() {
         new Thread(() -> {
             try {
-                user = userClient.getUser(userId);
-                userInfo = userClient.getUserInfo(userId);
-                userProfile = userClient.getUserProfile(userId);
-                //profile_location = userInfo.getLocationId();
-                System.out.println("User Name: " + user.getUsername());   // delete later
-                System.out.println("User Email: " + userInfo.getEmail());   // delete later
-                System.out.println("UserInfo Location: " + userInfo.getLocationId());   // delete later
-                getCountries();
-                requireActivity().runOnUiThread(this::populateView);
+                userInfo = userClient.getUserInfo(user.getUserId());
+                userProfile = userClient.getUserProfile(user.getUserId());
             } catch (IOException e) {
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Error fetching user", Toast.LENGTH_SHORT).show()
-                );
+                throw new RuntimeException(e);
             }
+            profile_location = userInfo.getLocationId();
+            System.out.println("User Id: " + user.getUserId());
+            System.out.println("User Name: " + user.getUsername());   // delete later
+            System.out.println("User Email: " + userInfo.getEmail());   // delete later
+            System.out.println("UserInfo Location: " + profile_location);   // delete later
+
+            getCountries();
+            requireActivity().runOnUiThread(this::populateView);
         }).start();
     }
 
@@ -212,7 +217,6 @@ public class ProfileEditFragment extends Fragment {
         }//end doInBackground
 
         protected void onPostExecute(Void v) {
-            //initCountries();
             if(countries != null && !countries.isEmpty()) {
                 initCountries();
             }
@@ -226,6 +230,7 @@ public class ProfileEditFragment extends Fragment {
     private void populateView() {
         userList.clear();
         userList.add(user);
+
         profile_user.setText(user.getUsername());
         profile_email.setText(userInfo.getEmail());
         profile_phone.setText(userInfo.getPhone());
@@ -235,9 +240,6 @@ public class ProfileEditFragment extends Fragment {
         else {
             profile_bio.setHint("Please fill in your bio...");
         }
-        /*if(userInfo.getLocationId() != -1) {
-            location.setSelection(userInfo.getLocationId());
-        }*/
         mainContentAdapter.notifyDataSetChanged();
     }
 }

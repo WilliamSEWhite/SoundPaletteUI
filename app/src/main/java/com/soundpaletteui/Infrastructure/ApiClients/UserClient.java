@@ -18,6 +18,7 @@ public class UserClient {
     public UserClient(Retrofit retrofit) {
         userEndpoints = retrofit.create(UserEndpoints.class);
     }
+
     public UserModel getUser(int id) throws IOException {
         Call<UserModel> call = userEndpoints.getUser(id);
         Response<UserModel> response = call.execute();

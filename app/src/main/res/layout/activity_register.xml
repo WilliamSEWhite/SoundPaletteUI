@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Activities.Profile.Register">
+    tools:context=".Activities.Profile.RegisterActivity">
 
     <include
         android:id="@+id/toolbar"

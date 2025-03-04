@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Home.HomeFragment;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
-import com.soundpaletteui.Activities.Profile.Register;
+import com.soundpaletteui.Activities.Profile.RegisterActivity;
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.TagRowAdapter;

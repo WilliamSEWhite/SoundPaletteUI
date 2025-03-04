@@ -17,6 +17,9 @@ public class UserModel {
     public String getPassword() {
         return Password;
     }
+    public UserInfoModel getUserInfo() {
+        return UserInfo;
+    }
 
     public void setUsername(String username) {
         this.Username = username;
@@ -25,9 +28,7 @@ public class UserModel {
     public void setPassword(String password) {
         this.Password = password;
     }
-    public UserInfoModel getUserInfo() {
-        return UserInfo;
-    }
+
     public void setUserInfo(UserInfoModel userInfo) {
         this.UserInfo = userInfo;
     }

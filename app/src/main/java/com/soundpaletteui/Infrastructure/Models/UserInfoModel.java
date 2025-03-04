@@ -5,22 +5,22 @@ import com.google.gson.annotations.SerializedName;
 import java.util.Date;
 
 public class UserInfoModel {
-    @SerializedName("userInfoId")
+    @SerializedName("UserInfoId")
     public int UserInfoId;
-    @SerializedName("userId")
+    @SerializedName("UserId")
     public int UserId;
     public UserModel User;
-    @SerializedName("locationId")
+    @SerializedName("LocationId")
     public int LocationId;
     public LocationModel Location;
-    @SerializedName("email")
+    @SerializedName("Email")
     public String Email;
-    @SerializedName("phone")
+    @SerializedName("Phone")
     public String Phone;
     //public Date DOB;
-    @SerializedName("dob")
+    @SerializedName("DOB")
     public Date Dob;
-    @SerializedName("dateCreated")
+    @SerializedName("DateCreated")
     public String dateCreated;
     //public Date DateCreated;
 
@@ -54,7 +54,7 @@ public class UserInfoModel {
     }*/
 
     /** constructor for update user profile */
-    public UserInfoModel(int userId, int locationId, String email, String phone, String dob) {
+    public UserInfoModel(int userId, int locationId, String email, String phone, Date dob) {
         UserId = userId;
         Email = email;
         Phone = phone;

@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -101,7 +102,7 @@ public class RegisterActivity extends AppCompatActivity {
     /** initializes components in the UI */
     private void initComponents() {
         // initialise UI objects
-        txtUsername = findViewById(R.id.registerUsername);
+        //txtUsername = findViewById(R.id.registerUsername);
         txtEmail = findViewById(R.id.registerEmail);
         txtPhone = findViewById(R.id.registerPhone);
         LinearLayout pickDateBtn = findViewById(R.id.pick_date);
@@ -115,7 +116,7 @@ public class RegisterActivity extends AppCompatActivity {
                 int day = dob.getDate();
 
                 DatePickerDialog datePickerDialog = new DatePickerDialog(
-                        Register.this,
+                        RegisterActivity.this,
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -134,7 +135,7 @@ public class RegisterActivity extends AppCompatActivity {
         profileImage = findViewById(R.id.registerProfilePicture);
         profileImage.setColorFilter(Color.WHITE);
         location = findViewById(R.id.registerLocation);
-        btnClear = findViewById(R.id.btnClear);
+        //btnClear = findViewById(R.id.btnClear);
         btnSave = findViewById(R.id.btnSave);
 
         frameSave = findViewById(R.id.frame_save);
@@ -150,7 +151,7 @@ public class RegisterActivity extends AppCompatActivity {
                 new android.os.Handler().postDelayed(() -> saveGif.stop(), 800);
             } catch (ClassCastException e) {
                 e.printStackTrace();
-                Toast.makeText(Register.this, "Error with Save animation", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this, "Error with Save animation", Toast.LENGTH_SHORT).show();
             }
             saveUserInfo();
         });
@@ -281,12 +282,12 @@ public class RegisterActivity extends AppCompatActivity {
     private void saveUserInfo() {
         // write saving code here
         new UpdateUserInfoAsync().execute();
-        Toast.makeText(Register.this, "User profile saved" + userId, Toast.LENGTH_SHORT).show();
+        Toast.makeText(RegisterActivity.this, "User profile saved" + userId, Toast.LENGTH_SHORT).show();
     }
 
     /** clear text fields in register activity */
     private void onRegistrationComplete() {
-        Intent i = new Intent(Register.this, MainScreenActivity.class);
+        Intent i = new Intent(RegisterActivity.this, MainScreenActivity.class);
         startActivity(i);
         finish();
 
@@ -329,7 +330,7 @@ public class RegisterActivity extends AppCompatActivity {
         }//end doInBackground
 
         protected void onPostExecute(Void v) {
-            populateView();
+            //populateView();
         }//end onPostExecute
     }
 
