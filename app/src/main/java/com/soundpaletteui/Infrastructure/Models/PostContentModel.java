@@ -1,14 +1,18 @@
 package com.soundpaletteui.Infrastructure.Models;
 
-public class PostContentModel {
-    public String PostContent;
+import com.google.gson.annotations.SerializedName;
 
-    public PostContentModel(String postContent) {
-        PostContent = postContent;
+public class PostContentModel {
+    @SerializedName("PostTextContent")
+
+    private String postTextContent;
+
+    public PostContentModel(String postTextContent) {
+        this.postTextContent = postTextContent;
     }
 
-    public String getPostContent(){
-        return PostContent;
+    public String getPostTextContent(){
+        return postTextContent;
     }
 
 }

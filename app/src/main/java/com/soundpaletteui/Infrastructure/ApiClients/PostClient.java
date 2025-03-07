@@ -5,6 +5,7 @@ import android.util.Log;
 import com.soundpaletteui.Infrastructure.Models.NewPostModel;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.ApiEndpoints.PostApiEndpoints;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -28,7 +29,8 @@ public class PostClient {
         return response.body();
     }
 
-    public List<PostModel> getPosts(int userId) throws IOException {
+    public List<PostModel> getPosts() throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
         Call<List<PostModel>> call = postApiEndpoints.getPosts(userId);
         Response<List<PostModel>> response = call.execute();
 

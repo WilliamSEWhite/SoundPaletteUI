@@ -59,11 +59,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         if (post.getPostType() == TEXT_POST) {
             fragmentView = inflater.inflate(R.layout.adapter_posts_text, holder.postFragmentDisplay, false);
             TextView postTextDisplay = fragmentView.findViewById(R.id.postTextDisplay);
-            postTextDisplay.setText(post.getPostContent().getPostContent());
+            postTextDisplay.setText(post.getPostContent().getPostTextContent());
         } else if (post.getPostType() == IMAGE_POST) {
             fragmentView = inflater.inflate(R.layout.adapter_posts_image, holder.postFragmentDisplay, false);
             ImageView postImageDisplay = fragmentView.findViewById(R.id.postImageDisplay);
-            String imageName = post.getPostContent().getPostContent().replace(".png", "").replace(".jpg", "");
+            String imageName = post.getPostContent().getPostTextContent().replace(".png", "").replace(".jpg", "");
             int imageResource = holder.itemView.getContext().getResources().getIdentifier(imageName, "drawable", holder.itemView.getContext().getPackageName());
             postImageDisplay.setImageResource(imageResource);
         } else {

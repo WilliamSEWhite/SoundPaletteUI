@@ -38,6 +38,8 @@ public class PostFragment extends Fragment {
     private ArrayList<PostModel> allPosts = new ArrayList<>();
     private RecyclerView recyclerView;
 
+    private final PostClient postClient = SPWebApiRepository.getInstance().getPostClient();
+
     // New Instance of a PostFragment with algorithmType only
     public static PostFragment newInstance(String algorithmType) {
         return newInstance(algorithmType, null, -1f);
@@ -92,21 +94,26 @@ public class PostFragment extends Fragment {
     private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
         @Override
         protected List<PostModel> doInBackground(Void... voids) {
-            List<PostModel> dummyPosts = new ArrayList<>();
+            List<PostModel> dummyPosts = null;
+            try {
+                dummyPosts = postClient.getPosts();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-            dummyPosts.add(new PostModel(1,  "new lyrics in the works! just need some good vocals…", null, new PostContentModel("Sharing some thoughts on my latest sound exploration"), new Date(), "Username1", 1));
-            dummyPosts.add(new PostModel(2,  "Finished my latest track!", null, new PostContentModel("image02.png"), new Date(), "Username1", 3));
-            dummyPosts.add(new PostModel(3,  "What my Friday nights are looking like..", null, new PostContentModel( "Excited to finally share this track with everyone!"), new Date(), "Username1", 1));
-            dummyPosts.add(new PostModel(4,  "Trying out a new genre today!", null, new PostContentModel( "image07.png"), new Date(), "Username2", 3));
-            dummyPosts.add(new PostModel(5,  "they call this position the birds eye view I believe", null, new PostContentModel( "Trying out something new and unexpected today!"), new Date(), "Username2", 1));
-            dummyPosts.add(new PostModel(6,  "Inspired by nature", null, new PostContentModel( "image09.png"), new Date(), "Username2", 3));
-            dummyPosts.add(new PostModel(7,  "Sunday Funday!", null, new PostContentModel( "Nature always inspires my melodies"), new Date(), "Username3", 1));
-            dummyPosts.add(new PostModel(8,  "Here’s a snippet from my next album.", null, new PostContentModel( "image14.png"), new Date(), "Username3", 3));
-            dummyPosts.add(new PostModel(9,  "just my morning commute guys…", null, new PostContentModel( "A sneak peek at my upcoming album. Hope you like it!"), new Date(), "Username3", 1));
-            dummyPosts.add(new PostModel(10,  "Collab opportunity for vocalists!", null, new PostContentModel( "image18.png"), new Date(), "Username1", 3));
-            dummyPosts.add(new PostModel(11,  "inspiration.", null, new PostContentModel( "Looking for a vocalist to collaborate with on my next track."), new Date(), "Username1", 1));
-            dummyPosts.add(new PostModel(11,  "A little jazz influence in this one.", null, new PostContentModel( "image21.png"), new Date(), "Username1", 3));
-            dummyPosts.add(new PostModel(12,  "writing. dreaming. thinking.", null, new PostContentModel( "Blending jazz influences into my latest piece"), new Date(), "Username2", 1));
+//            dummyPosts.add(new PostModel(1,  "new lyrics in the works! just need some good vocals…", null, new PostContentModel("Sharing some thoughts on my latest sound exploration"), new Date(), "Username1", 1));
+//            dummyPosts.add(new PostModel(2,  "Finished my latest track!", null, new PostContentModel("image02.png"), new Date(), "Username1", 3));
+//            dummyPosts.add(new PostModel(3,  "What my Friday nights are looking like..", null, new PostContentModel( "Excited to finally share this track with everyone!"), new Date(), "Username1", 1));
+//            dummyPosts.add(new PostModel(4,  "Trying out a new genre today!", null, new PostContentModel( "image07.png"), new Date(), "Username2", 3));
+//            dummyPosts.add(new PostModel(5,  "they call this position the birds eye view I believe", null, new PostContentModel( "Trying out something new and unexpected today!"), new Date(), "Username2", 1));
+//            dummyPosts.add(new PostModel(6,  "Inspired by nature", null, new PostContentModel( "image09.png"), new Date(), "Username2", 3));
+//            dummyPosts.add(new PostModel(7,  "Sunday Funday!", null, new PostContentModel( "Nature always inspires my melodies"), new Date(), "Username3", 1));
+//            dummyPosts.add(new PostModel(8,  "Here’s a snippet from my next album.", null, new PostContentModel( "image14.png"), new Date(), "Username3", 3));
+//            dummyPosts.add(new PostModel(9,  "just my morning commute guys…", null, new PostContentModel( "A sneak peek at my upcoming album. Hope you like it!"), new Date(), "Username3", 1));
+//            dummyPosts.add(new PostModel(10,  "Collab opportunity for vocalists!", null, new PostContentModel( "image18.png"), new Date(), "Username1", 3));
+//            dummyPosts.add(new PostModel(11,  "inspiration.", null, new PostContentModel( "Looking for a vocalist to collaborate with on my next track."), new Date(), "Username1", 1));
+//            dummyPosts.add(new PostModel(11,  "A little jazz influence in this one.", null, new PostContentModel( "image21.png"), new Date(), "Username1", 3));
+//            dummyPosts.add(new PostModel(12,  "writing. dreaming. thinking.", null, new PostContentModel( "Blending jazz influences into my latest piece"), new Date(), "Username2", 1));
 
             return dummyPosts;
         }

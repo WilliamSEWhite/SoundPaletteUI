@@ -1,26 +1,39 @@
 package com.soundpaletteui.Infrastructure.Models;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.Date;
 import java.util.List;
 
 public class PostModel {
+    @SerializedName("postId")
     private int postId;
+    @SerializedName("PostCaption")
     private String postCaption;
+    @SerializedName("PostTags")
     private List<TagModel> postTags;
+    @SerializedName("PostContent")
     private PostContentModel postContent;
+    @SerializedName("CreatedDate")
     private Date createdDate;
+    @SerializedName("CreatedByUsername")
     private String createdByUsername;
+    @SerializedName("PostType")
     private int postType;
-
-    private int likeCount;
+    @SerializedName("CommentCount")
     private int commentCount;
+
+    @SerializedName("LikeCount")
+    private int likeCount;
+    @SerializedName("IsLiked")
+    private boolean isLiked;
 
     // Default constructor
     public PostModel() { }
 
     // Parameterized constructor
     public PostModel(int postId, String postCaption, List<TagModel> postTags, PostContentModel postContent,
-                     Date createdDate, String createdByUsername, int postType) {
+                     Date createdDate, String createdByUsername, int postType, int commentCount, int likeCount, boolean isLiked) {
         this.postId = postId;
         this.postCaption = postCaption;
         this.postTags = postTags;
@@ -28,6 +41,10 @@ public class PostModel {
         this.createdDate = createdDate;
         this.createdByUsername = createdByUsername;
         this.postType = postType;
+        this.commentCount = commentCount;
+        this.likeCount = likeCount;
+        this.isLiked = isLiked;
+
     }
 
     // Getters
@@ -58,5 +75,15 @@ public class PostModel {
     public int getPostType() {
         return postType;
     }
+    public int getCommentCount() {
+        return commentCount;
+    }
+    public int getLikeCount() {
+        return likeCount;
+    }
+    public boolean getIsLiked() {
+        return isLiked;
+    }
+
 
 }
