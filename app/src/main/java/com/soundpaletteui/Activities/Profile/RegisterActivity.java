@@ -1,8 +1,11 @@
 package com.soundpaletteui.Activities.Profile;
 
+import static java.util.Calendar.getInstance;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -23,6 +26,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -30,6 +34,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+
 import com.bumptech.glide.Glide;
 import com.soundpaletteui.Activities.LoginRegister.LoginActivity;
 import com.soundpaletteui.Activities.MainScreenActivity;
@@ -55,17 +60,17 @@ import java.util.Locale;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
-/**
- * Allows users to register or update their profile information.
- */
-public class Register extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
     AppSettings appSettings = AppSettings.getInstance();
+    private EditText txtUsername;           // username
     private EditText txtEmail;              // email address
     private EditText txtPhone;              // phone number (optional)
     private EditText txtDob;                // date of birth
     private ImageButton btnCalendar;        // date of birth button
+    private Button btnClear;                // clear user data button
+    private Button btnSave;                 // save button
     private Uri imageUri;                   // image URI from external source
     private ImageView profileImage;         // object to display the image
     private String currentPhotoPath;        // current photo path
@@ -94,11 +99,10 @@ public class Register extends AppCompatActivity {
         initComponents();
     }
 
-    /**
-     * Initializes UI components, listeners, and loads user data.
-     */
+    /** initializes components in the UI */
     private void initComponents() {
         // initialise UI objects
+        //txtUsername = findViewById(R.id.registerUsername);
         txtEmail = findViewById(R.id.registerEmail);
         txtPhone = findViewById(R.id.registerPhone);
         LinearLayout pickDateBtn = findViewById(R.id.pick_date);
@@ -112,7 +116,7 @@ public class Register extends AppCompatActivity {
                 int day = dob.getDate();
 
                 DatePickerDialog datePickerDialog = new DatePickerDialog(
-                        Register.this,
+                        RegisterActivity.this,
                         new DatePickerDialog.OnDateSetListener() {
                             @Override
                             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -131,6 +135,8 @@ public class Register extends AppCompatActivity {
         profileImage = findViewById(R.id.registerProfilePicture);
         profileImage.setColorFilter(Color.WHITE);
         location = findViewById(R.id.registerLocation);
+        //btnClear = findViewById(R.id.btnClear);
+        btnSave = findViewById(R.id.btnSave);
 
         frameSave = findViewById(R.id.frame_save);
         gifSave = findViewById(R.id.gif_save);
@@ -145,19 +151,20 @@ public class Register extends AppCompatActivity {
                 new android.os.Handler().postDelayed(() -> saveGif.stop(), 800);
             } catch (ClassCastException e) {
                 e.printStackTrace();
-                Toast.makeText(Register.this, "Error with Save animation", Toast.LENGTH_SHORT).show();
+                Toast.makeText(RegisterActivity.this, "Error with Save animation", Toast.LENGTH_SHORT).show();
             }
             saveUserInfo();
         });
+
+        // get data from previous activity
         intent = getIntent();
+        userId = intent.getIntExtra("userId", 0);
         userClient = SPWebApiRepository.getInstance().getUserClient();
         getCountries();     // load countries from database
         user = AppSettings.getInstance().getUser();
     }
 
-    /**
-     * Displays a dialog to choose Camera or Gallery for profile image.
-     */
+    /** shows a dialog with options Camera or Gallery */
     private void showImageSourceDialog() {
         String[] options = {"Camera", "Gallery"};
         new AlertDialog.Builder(this)
@@ -169,54 +176,46 @@ public class Register extends AppCompatActivity {
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
-                    } else {
+                    }
+                    else {
                         pickImageFromGallery();
                     }
                 })
                 .show();
     }
 
-    /**
-     * Launches an intent to pick an image from the gallery.
-     */
+    /** launch intent to choose image from gallery */
     private void pickImageFromGallery() {
         Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         galleryLauncher.launch(galleryIntent);
     }
 
-    /**
-     * Launcher for the gallery intent result.
-     */
+    /** launch gallery to choose image */
     private final ActivityResultLauncher<Intent> galleryLauncher =
             registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
                 if(result.getResultCode() == RESULT_OK && result.getData() != null) {
                     imageUri = result.getData().getData();
                     loadImage();
                 }
-            });
+    });
 
-    /**
-     * Loads the chosen image into the profile image using Glide.
-     */
+    /** loads the image */
     private void loadImage() {
         Glide.with(this).load(imageUri).into(profileImage);
     }
 
-    /**
-     * Checks if camera permission is granted and starts camera if so.
-     */
+    /** checks camera permissions */
     private void checkCameraPermissions() throws IOException {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
+        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !=
+                PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 101);
-        } else {
+        }
+        else {
             takePicture();
         }
     }
 
-    /**
-     * Launches camera to take a picture.
-     */
+    /** takes a picture with the camera - incomplete */
     private void takePicture() throws IOException {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if(takePictureIntent.resolveActivity(getPackageManager()) != null) {
@@ -224,13 +223,13 @@ public class Register extends AppCompatActivity {
             if(photo != null) {
                 imageUri = FileProvider.getUriForFile(this,
                         "com.soundpaletteui.fileprovider", photo);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+//                cameraLauncher.launch(takePictureIntent);
             }
         }
     }
 
-    /**
-     * Creates a temporary file for storing the camera image.
-     */
+    /** creates the image file */
     private File createImageFile() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         File storageDir = getExternalFilesDir(null);
@@ -239,9 +238,7 @@ public class Register extends AppCompatActivity {
         return image;
     }
 
-    /**
-     * Handles results of permission requests.
-     */
+    /** checks camera permissions */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
@@ -253,21 +250,18 @@ public class Register extends AppCompatActivity {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        } else {
+        }
+        else {
             Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show();
         }
     }
 
-    /**
-     * Retrieves the list of available countries in the background.
-     */
+    /** initialize Spinner with list of countries */
     private void getCountries() {
         new GetLocationsAsync().execute();
     }
 
-    /**
-     * Sets the adapter for the country spinner.
-     */
+    /** pulls countries from the database for the spinner */
     private void initCountries(){
         CountrySelectAdapter adapter = new CountrySelectAdapter(this,
                 android.R.layout.simple_spinner_item,
@@ -279,27 +273,28 @@ public class Register extends AppCompatActivity {
     }
 
     /** saves user profile - calls save async method */
+    /* not needed **
+    private void saveUserProfile(){
+        new UpdateUserInfoAsync().execute();
+    }*/
 
     /** save information to database */
     private void saveUserInfo() {
         // write saving code here
         new UpdateUserInfoAsync().execute();
-        Toast.makeText(Register.this, "User profile saved" + userId, Toast.LENGTH_SHORT).show();
+        Toast.makeText(RegisterActivity.this, "User profile saved" + userId, Toast.LENGTH_SHORT).show();
     }
 
     /** clear text fields in register activity */
     private void onRegistrationComplete() {
-        Intent i = new Intent(Register.this, MainScreenActivity.class);
+        Intent i = new Intent(RegisterActivity.this, MainScreenActivity.class);
         startActivity(i);
         finish();
 
     }
-    /** populate datepicker dialogue */
 
 
-    /**
-     * Handles the gallery image selection result.
-     */
+    /** Handles the gallery image selection result */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -309,15 +304,34 @@ public class Register extends AppCompatActivity {
         }
     }
 
-    /**
-     * Displays the selected image with a placeholder or error image.
-     */
+    /** displays the image in the register screen */
     private void displayImage(Uri imageUri) {
         Glide.with(this)
                 .load(imageUri)
-                .placeholder(R.drawable.baseline_person_150)
-                .error(R.drawable.baseline_person_150)
+                .placeholder(R.drawable.baseline_person_150)    // placeholder image
+                .error(R.drawable.baseline_person_150)          // use placeholder image if error
                 .into(profileImage);
+    }
+
+    /** gets user data */
+    private void getUser() {
+        new GetUserAsync().execute();
+    }
+
+    /** asynchronous call to the database for the user data */
+    private class GetUserAsync extends AsyncTask<Void,Void, Void> {
+        protected Void doInBackground(Void... d) {
+            try {
+                user = userClient.getUser(userId);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }//end doInBackground
+
+        protected void onPostExecute(Void v) {
+            //populateView();
+        }//end onPostExecute
     }
 
     /** async call to pull countries from the database */
@@ -332,25 +346,21 @@ public class Register extends AppCompatActivity {
             }
             return null;
         }
-
-        /**
-         * Initializes the country spinner after data retrieval.
-         */
+    /** init country spinner after data retrieval */
         @Override
         protected void onPostExecute(Void v) {
             if(countries != null && !countries.isEmpty()) {
                 initCountries();
             }
-        }
+            else {
+                Toast.makeText(RegisterActivity.this, "Failed to load countries!",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }//end onPostExecute
     }
 
-    /**
-     * Asynchronously updates user info in the backend.
-     */
-    private class UpdateUserInfoAsync extends AsyncTask<Void, Void, Void> {
-        /**
-         * Performs the update operation in the background.
-         */
+    /** updates user profile information to the database */
+    private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {
         @Override
         protected Void doInBackground(Void... d) {
             try {
@@ -358,8 +368,10 @@ public class Register extends AppCompatActivity {
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
                         Locale.getDefault());
                 String dateCreated = sdf.format(calendar.getTime());
+
                 String email = txtEmail.getText().toString();
                 String phone = txtPhone.getText().toString();
+
                 CountrySelectAdapter adapter = (CountrySelectAdapter) location.getAdapter();
                 LocationModel selectedLocation = adapter.getItem(location.getSelectedItemPosition());
                 if(selectedLocation != null) {
@@ -376,7 +388,7 @@ public class Register extends AppCompatActivity {
                     System.out.println("--------------");
                 }
                 else {
-                    Toast.makeText(Register.this, "Please select a location.",
+                    Toast.makeText(RegisterActivity.this, "Please select a location.",
                             Toast.LENGTH_SHORT).show();
                 }
             } catch (IOException e) {
@@ -385,15 +397,9 @@ public class Register extends AppCompatActivity {
             return null;
         }
 
-        /**
-         * Updates the UI after the user info update.
-         */
-        @Override
+        /** updates UI after user info update */
         protected void onPostExecute(Void v) {
             onRegistrationComplete();
         }//end onPostExecute
     }
-
-
-
 }

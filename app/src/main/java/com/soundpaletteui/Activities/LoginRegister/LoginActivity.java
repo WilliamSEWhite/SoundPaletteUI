@@ -11,7 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.soundpaletteui.Activities.MainScreenActivity;
-import com.soundpaletteui.Activities.Profile.Register;
+import com.soundpaletteui.Activities.Profile.RegisterActivity;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
@@ -161,7 +161,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     void loginUser(){
-        System.out.println("login username: " + username);
+        //System.out.println("login username: " + username);
         UserModel user = appSettings.getUser();
         if(user != null) {
             if(user.getUserInfo() != null){
@@ -199,7 +199,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent i = null;
         switch(aId) {
             case 1:
-                i = new Intent(LoginActivity.this, Register.class);
+                i = new Intent(LoginActivity.this, RegisterActivity.class);
                 break;
             case 2:
 //                i = new Intent(LoginActivity.this, HomeActivity.class);
@@ -260,4 +260,18 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    // Helper method to navigate to the next activity (Home/Register)
+    private void nextActivity(int userId, int action) {
+        Intent intent = null;
+        // Choose activity based on the action passed (1 for Register, 2 for Home)
+        if (action == 1) {
+            intent = new Intent(LoginActivity.this, RegisterActivity.class);
+        } else {
+            intent = new Intent(LoginActivity.this, MainScreenActivity.class);
+        }
+        // Pass user ID to the next activity
+        intent.putExtra("userId", userId);
+        startActivity(intent); // Start the next activity
+        finish(); // Finish the current activity
+    }
 }

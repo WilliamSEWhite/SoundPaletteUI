@@ -2,12 +2,12 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="app">
+      <SelectionState runConfigName="SoundPaletteUI">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-02-19T06:02:42.621395Z">
+        <DropdownSelection timestamp="2025-03-04T19:01:12.413053Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="LocalEmulator" identifier="path=/Users/workspace/.android/avd/Pixel_4_API_23.avd" />
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\capleton\.android\avd\Pixel_4_API_23.avd" />
             </handle>
           </Target>
         </DropdownSelection>
