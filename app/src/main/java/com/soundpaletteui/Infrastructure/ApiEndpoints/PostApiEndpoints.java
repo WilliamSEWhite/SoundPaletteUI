@@ -15,8 +15,8 @@ public interface PostApiEndpoints {
     @POST("api/post/create-post")
     Call<Void> createPost(@Body NewPostModel newPost);
 
-    @GET("api/post/get-posts")
-    Call<List<PostModel>> getPosts();
+    @GET("api/post/get-feed")
+    Call<List<PostModel>> getPosts(@Query("userId") int userId);
 
     @GET("api/post/delete-post")
     Call<Void> deletePost(@Query("postId") int postId, @Query("userId") int userId);

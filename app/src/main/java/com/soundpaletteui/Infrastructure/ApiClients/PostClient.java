@@ -28,8 +28,8 @@ public class PostClient {
         return response.body();
     }
 
-    public List<PostModel> getPosts() throws IOException {
-        Call<List<PostModel>> call = postApiEndpoints.getPosts();
+    public List<PostModel> getPosts(int userId) throws IOException {
+        Call<List<PostModel>> call = postApiEndpoints.getPosts(userId);
         Response<List<PostModel>> response = call.execute();
 
         if (!response.isSuccessful()) {

@@ -12,6 +12,9 @@ public class PostModel {
     private String createdByUsername;
     private int postType;
 
+    private int likeCount;
+    private int commentCount;
+
     // Default constructor
     public PostModel() { }
 
