@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 public class PostModel {
-    @SerializedName("postId")
+    @SerializedName("PostId")
     private int postId;
     @SerializedName("PostCaption")
     private String postCaption;
@@ -83,6 +83,9 @@ public class PostModel {
     }
     public boolean getIsLiked() {
         return isLiked;
+    }
+    public void setIsLiked(boolean isLiked) {
+        this.isLiked = isLiked;
     }
 
 

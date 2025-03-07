@@ -17,8 +17,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.CommentClient;
+import com.soundpaletteui.Infrastructure.ApiClients.PostInteractionClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.CommentModel;
+import com.soundpaletteui.Infrastructure.Models.NewPostCommentModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
@@ -70,14 +72,17 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
         sendButton = view.findViewById(R.id.comment_send);
 
         // Fetch comments from API
-        new FetchCommentsTask().execute();
+        new FetchCommentsAsync().execute();
 
         sendButton.setOnClickListener(v -> {
             String text = commentInput.getText().toString().trim();
+            commentInput.clearFocus();
+            commentInput.setText("");
             if (!text.isEmpty()) {
-                adapter.addComment(new CommentModel(postId, user.getUserId(), text));
-                commentInput.setText(""); // Clear input field
+                new PostCommentAsync().execute(new NewPostCommentModel(user.getUserId(), postId, text));
                 recyclerView.smoothScrollToPosition(commentList.size() - 1);
+                new FetchCommentsAsync().execute();
+
             }
         });
 
@@ -85,20 +90,18 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
     }
 
     // AsyncTask to simulate fetching dummy comments
-    private class FetchCommentsTask extends AsyncTask<Void, Void, List<CommentModel>> {
+    private class FetchCommentsAsync extends AsyncTask<Void, Void, List<CommentModel>> {
         @Override
         protected List<CommentModel> doInBackground(Void... voids) {
-            // Simulate delay
-            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+            List<CommentModel> dummyComments = new ArrayList<>();
+
+            try {
+                PostInteractionClient postInteractionClient = SPWebApiRepository.getInstance().getPostInteractionClient();
+                dummyComments = postInteractionClient.getCommentsForPost(postId);
+
+            } catch (IOException e) {  }
 
             // Generate dummy comments
-            List<CommentModel> dummyComments = new ArrayList<>();
-            dummyComments.add(new CommentModel(postId, 11, "This is Post ID #"+String.valueOf(postId)));
-            dummyComments.add(new CommentModel(postId, 2, "This is amazing!"));
-            dummyComments.add(new CommentModel(postId, 4, "Love this work."));
-            dummyComments.add(new CommentModel(postId, 62, "Keep it up!"));
-            dummyComments.add(new CommentModel(postId, 31, "Really inspiring!"));
-            dummyComments.add(new CommentModel(postId, 1, "Great job!"));
             return dummyComments;
         }
 
@@ -107,6 +110,25 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
             commentList.clear();
             commentList.addAll(comments);
             adapter.notifyDataSetChanged();
+        }
+    }
+    private class PostCommentAsync extends AsyncTask<NewPostCommentModel, Void, Void> {
+        @Override
+        protected Void doInBackground(NewPostCommentModel... newComment) {
+
+            try {
+                PostInteractionClient postInteractionClient = SPWebApiRepository.getInstance().getPostInteractionClient();
+                postInteractionClient.postComment(newComment[0]);
+
+            } catch (IOException e) {  }
+
+            // Generate dummy comments
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void v) {
+
         }
     }
 
