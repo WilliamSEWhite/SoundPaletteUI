@@ -5,6 +5,7 @@ import com.soundpaletteui.Infrastructure.ApiEndpoints.PostInteractionApiEndpoint
 import com.soundpaletteui.Infrastructure.Models.CommentModel;
 import com.soundpaletteui.Infrastructure.Models.NewPostCommentModel;
 import com.soundpaletteui.Infrastructure.Models.NewPostModel;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,9 +21,9 @@ public class PostInteractionClient {
         postInteractionApiEndpoints = retrofit.create(PostInteractionApiEndpoints.class);
     }
 
-    public Void makeComment(NewPostCommentModel newComment) throws IOException {
+    public Void postComment(NewPostCommentModel newComment) throws IOException {
 
-        Call<Void> call = postInteractionApiEndpoints.createComment(newComment);
+        Call<Void> call = postInteractionApiEndpoints.postComment(newComment);
         Response<Void> response = call.execute();
 
         return response.body();
@@ -33,14 +34,16 @@ public class PostInteractionClient {
         Response<List<CommentModel>> response = call.execute();
         return response.body();
     }
-    public Void likePost(int postId, int userId) throws IOException {
+    public Void likePost(int postId) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
 
         Call<Void> call = postInteractionApiEndpoints.likePost(postId, userId);
         Response<Void> response = call.execute();
 
         return response.body();
     }
-    public Void unlikePost(int postId, int userId) throws IOException {
+    public Void unlikePost(int postId) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
 
         Call<Void> call = postInteractionApiEndpoints.unlikePost(postId, userId);
         Response<Void> response = call.execute();

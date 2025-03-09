@@ -1,25 +1,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical"
     android:paddingBottom="10dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="75dp"
-            android:orientation="horizontal">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:orientation="horizontal">
 
-                <!-- Poster's Profile -->
-                <ImageButton
-                    android:id="@+id/postersProfile"
-                    android:layout_width="75dp"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/white_translucency_gradient"
-                    android:padding="7dp"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/navigation_profile_24"
-                    android:tint="@color/white" />
+        <!-- Poster's Profile -->
+        <ImageButton
+            android:id="@+id/postersProfile"
+            android:layout_width="75dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/white_translucency_gradient"
+            android:padding="7dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/navigation_profile_24"
+            app:tint="@color/white" />
 
                 <!-- Poster's Username and Comments -->
                 <LinearLayout
@@ -62,8 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:background="@drawable/white_translucency_gradient_vertical">
-
-                <ImageButton
+                <CheckBox
                     android:id="@+id/postLikeButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -72,7 +72,17 @@
                     android:layout_marginStart="5dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:paddingStart="10dp"
-                    android:src="@drawable/post_fav_empty_24" />
+                    android:button="@drawable/like_button"/>
+<!--                <ImageButton-->
+<!--                    android:id="@+id/postLikeButton"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_alignParentStart="true"-->
+<!--                    android:layout_centerVertical="true"-->
+<!--                    android:layout_marginStart="5dp"-->
+<!--                    android:background="?android:attr/selectableItemBackgroundBorderless"-->
+<!--                    android:paddingStart="10dp"-->
+<!--                    android:src="@drawable/post_fav_empty_24" />-->
 
                 <ImageButton
                     android:id="@+id/postCommentButton"
