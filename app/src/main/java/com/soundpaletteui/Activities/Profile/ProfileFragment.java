@@ -9,9 +9,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundpaletteui.Infrastructure.Adapters.TagSelectAdapter;
+import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
+import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
 import com.soundpaletteui.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
@@ -31,6 +35,9 @@ import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
@@ -76,8 +83,16 @@ public class ProfileFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+
         initComponents(rootView);
-        userId = String.valueOf(user.getUserId());
+
+        // check if user profile is loaded
+        if(user != null) {
+            userId = String.valueOf(user.getUserId());
+        }
+        else {
+            Toast.makeText(requireContext(), "User profile not loaded.", Toast.LENGTH_SHORT).show();
+        }
 
         UISettings.applyBrightnessGradientBackground(rootView, 50f);
         framePosts = rootView.findViewById(R.id.frame_posts);
@@ -184,6 +199,10 @@ public class ProfileFragment extends Fragment {
             }
             // update UI on main thread
             new Handler(Looper.getMainLooper()).post(() -> {
+                if(userProfile == null) {
+                    profileBio.setText("Please fill in your bio...");
+                    return;
+                }
                 // check if the bio field is empty or null and respond accordingly
                 if(userProfile.getBio() == null || userProfile.getBio().trim().isEmpty()) {
                     profileBio.setText("I still need to fill out my bio...");

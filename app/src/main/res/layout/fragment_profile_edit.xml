@@ -32,8 +32,36 @@
             android:layout_gravity="bottom|end"
             android:background="@drawable/icon_edit_24"
             android:padding="5dp"/>
-    </FrameLayout>
 
+    </FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="12dp">
+        <!-- add profile tags -->
+        <Button
+            android:id="@+id/btnAddTags"
+            android:layout_width="95dp"
+            android:layout_height="40dp"
+            android:layout_gravity="left|center"
+            android:layout_margin="10dp"
+            android:text="TAGS"
+            android:textSize="@dimen/btn_text_size"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/colorOnSurface"/>
+        <!-- display profile tags -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/userProfileTags"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:layout_weight="1"
+            android:background="@color/white">
+        </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
     <!-- Username -->
     <EditText
         android:id="@+id/profile_user"

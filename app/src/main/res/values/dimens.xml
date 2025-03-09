@@ -8,6 +8,7 @@
     <dimen name="main_filter_toolbar">70dp</dimen>
     <!-- text dimensions -->
     <dimen name="main_title_text">40dp</dimen>
+    <dimen name="sub_title_text">25dp</dimen>
     <dimen name="edit_text">40dp</dimen>
     <dimen name="row_text">16dp</dimen>
     <dimen name="edit_text_margin">10dp</dimen>

@@ -65,6 +65,10 @@
     <string name="btn_clear">CLEAR</string>
     <string name="btn_save">SAVE</string>
     <!-- /register activity -->
+    <!-- tags -->
+    <string name="txt_regTagTitle">Choose your interest tags...</string>
+    <string name="txt_modTagTitle">Modify your interest tags...</string>
+    <!-- /tags -->
 
     <string name="it_works">It Works!</string>
     <string name="title_activity_profile">ProfileActivity</string>
@@ -161,4 +165,5 @@
     </string>
     <string name="finish">Finish</string>
     <string name="todo">TODO</string>
+    <string name="addTags">Add tags...</string>
 </resources>

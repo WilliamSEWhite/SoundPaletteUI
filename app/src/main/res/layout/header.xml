@@ -17,7 +17,7 @@
         android:layout_height="50dp"
         android:background="@null"
         android:scaleType="fitCenter"
-        android:tint="@color/white"
+        app:tint="@color/white"
         android:alpha="0.8"
         android:src="@drawable/baseline_music_note_48"
         android:shadowColor="@color/white"

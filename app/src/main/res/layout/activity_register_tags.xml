@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Activities.Profile.RegisterTagsActivity">
+
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/header"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5"
+        android:orientation="vertical"
+        android:padding="30dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="15dp"
+            android:layout_gravity="center"
+            android:text="@string/txt_regTagTitle"
+            android:textSize="@dimen/sub_title_text"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/tagList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="25dp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="@dimen/btn_padding"
+        android:orientation="horizontal"
+        android:background="@color/sp_main_bg">
+
+        <FrameLayout
+            android:id="@+id/frame_save"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="@dimen/edit_text_margin"
+            android:background="@drawable/round_button_shape"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+            <pl.droidsonroids.gif.GifImageView
+                android:id="@+id/gif_save"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:src="@drawable/posts_profile"/>
+
+            <TextView
+                android:id="@+id/save_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="Finish"
+                android:textColor="@android:color/white"
+                android:textSize="30sp"
+                android:textStyle="bold"/>
+        </FrameLayout>
+    </LinearLayout>
+</LinearLayout>

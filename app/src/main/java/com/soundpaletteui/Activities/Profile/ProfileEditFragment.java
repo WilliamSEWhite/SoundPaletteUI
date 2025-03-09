@@ -5,8 +5,10 @@ import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +20,14 @@ import android.widget.Toast;
 
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
+import com.soundpaletteui.Infrastructure.Adapters.TagRowAdapter;
+import com.soundpaletteui.Infrastructure.Adapters.TagSelectAdapter;
+import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
+import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.LocationModel;
+import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
@@ -37,7 +44,6 @@ import java.util.Locale;
 
 public class ProfileEditFragment extends Fragment {
 
-    private RecyclerView recyclerView;
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
     private String userId;
@@ -56,6 +62,11 @@ public class ProfileEditFragment extends Fragment {
     private String userName;
     private Spinner location;               // country
     private ArrayList<LocationModel> countries;             // list of countries
+    private TagClient tagClient;
+    private RecyclerView recyclerView;
+    private UserTagAdapter adapter;
+    private List<TagModel> tagList;
+    private Button btnAddTags;
 
     public ProfileEditFragment() {
         // Required empty public constructor
@@ -78,6 +89,8 @@ public class ProfileEditFragment extends Fragment {
     public void onResume() {
         super.onResume();
         getUser();
+        //requireActivity().runOnUiThread(() -> getTags());
+        refreshTagList();
     }
 
     /** initializes components in the fragment */
@@ -94,14 +107,67 @@ public class ProfileEditFragment extends Fragment {
         profile_email = rootView.findViewById(R.id.profile_email);
         profile_phone = rootView.findViewById(R.id.profile_phone);
         profile_bio = rootView.findViewById(R.id.profile_bio);
-        
+
+        tagClient = SPWebApiRepository.getInstance().getTagClient();
+        tagList = new ArrayList<>();
+
+        recyclerView = rootView.findViewById(R.id.userProfileTags);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        btnAddTags = rootView.findViewById(R.id.btnAddTags);
         btnSave = rootView.findViewById(R.id.btnSave);
         btnCancel = rootView.findViewById(R.id.btnCancel);
-        
+
+        btnAddTags.setOnClickListener(v -> editUserTags());
         btnCancel.setOnClickListener(v -> returnToProfile());
         btnSave.setOnClickListener(v -> saveProfileEdit());
 
         getUser();
+        getTags();
+    }
+
+    /** refreshes the user tag list in the recycler view */
+    private void refreshTagList() {
+        if (getArguments() != null && getArguments().containsKey("selectedTags")) {
+            ArrayList<TagModel> selectedTags = getArguments().getParcelableArrayList("selectedTags");
+
+            if (selectedTags != null && !selectedTags.isEmpty()) {
+                // Update the RecyclerView with the new tag list
+                adapter = new UserTagAdapter(selectedTags, getContext());
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+            else {
+                Log.d("ProfileEditFragment", "No tags received or empty list");
+            }
+        }
+    }
+
+    private void editUserTags() {
+        ProfileEditTagsFragment tagsFragment = new ProfileEditTagsFragment();
+        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+        transaction.addToBackStack(null);
+        transaction.replace(R.id.mainScreenFrame, tagsFragment);
+        transaction.commit();
+    }
+
+    /** retrieves the list of tags from the user profile */
+    private void getTags() {
+        new Thread(() -> {
+            try {
+                System.out.println("tags userId: " + user.getUserId());
+                List<TagModel> tags = tagClient.getUserTags(user.getUserId());
+                //List<TagModel> tags = tagClient.getTags();
+                requireActivity().runOnUiThread(() -> {
+                    tagList = tags;
+                    adapter = new UserTagAdapter((ArrayList<TagModel>) tagList, requireActivity());
+                    recyclerView.setAdapter(adapter);
+                });
+            } catch (IOException e) {
+                requireActivity().runOnUiThread(() -> Toast.makeText(requireActivity(), "Error fetching tags", Toast.LENGTH_SHORT).show());
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     /** saves the user profile to the database and returns to profile fragment */
@@ -234,7 +300,7 @@ public class ProfileEditFragment extends Fragment {
         profile_user.setText(user.getUsername());
         profile_email.setText(userInfo.getEmail());
         profile_phone.setText(userInfo.getPhone());
-        if(userProfile.getBio() != null) {
+        if(userProfile != null) {
             profile_bio.setText(userProfile.getBio());
         }
         else {

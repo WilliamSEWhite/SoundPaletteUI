@@ -287,12 +287,12 @@ public class RegisterActivity extends AppCompatActivity {
 
     /** clear text fields in register activity */
     private void onRegistrationComplete() {
-        Intent i = new Intent(RegisterActivity.this, MainScreenActivity.class);
+        //Intent i = new Intent(RegisterActivity.this, MainScreenActivity.class);
+        Intent i = new Intent(RegisterActivity.this, RegisterTagsActivity.class);
         startActivity(i);
         finish();
 
     }
-
 
     /** Handles the gallery image selection result */
     @Override

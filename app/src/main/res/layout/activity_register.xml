@@ -161,7 +161,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Finish"
+                android:text="Next"
                 android:textColor="@android:color/white"
                 android:textSize="30sp"
                 android:textStyle="bold"/>
