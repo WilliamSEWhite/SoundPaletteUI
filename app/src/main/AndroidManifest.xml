@@ -41,7 +41,8 @@
         <activity
             android:name=".Activities.Profile.RegisterActivity"
             android:exported="false" />
-        <activity android:name=".Activities.Interactions.CommentBottomSheet" />
+        <activity android:name=".Activities.Interactions.CommentBottomSheet"
+            tools:ignore="Instantiatable" />
         <activity
             android:name=".Activities.MainScreenActivity"
             android:exported="false" />

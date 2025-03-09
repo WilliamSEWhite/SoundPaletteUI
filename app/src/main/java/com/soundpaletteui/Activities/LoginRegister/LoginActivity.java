@@ -111,9 +111,7 @@ public class LoginActivity extends AppCompatActivity {
         gifLogin = findViewById(R.id.gif_login);
         loginText = findViewById(R.id.login_text);
         frameRegister.setOnClickListener(v -> register());
-        frameLogin.setOnClickListener(v -> {
-            login();
-        });
+        frameLogin.setOnClickListener(v -> login());
     }
 
     /** register new user */
@@ -123,20 +121,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = passwordBox.getText().toString();
 
         // Validation checks for username and password
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Username and Password cannot be empty", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Username length validation (should not be more than 20 characters)
-        if (username.length() > 20) {
-            Toast.makeText(this, "Username should be less than 20 characters", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Password validation (should be between 8-10 characters and contain numbers and special characters)
-        if (!password.matches(".*[0-9].*") || !password.matches(".*[!@#$%^&*()].*") || password.length() < 6 || password.length() > 20) {
-            Toast.makeText(this, "Password must be 6-20 characters, contain numbers and a special character", Toast.LENGTH_SHORT).show();
+        if (!isValidUsername(username) || !isValidPassword(password)) {
             return;
         }
 
@@ -151,8 +136,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = passwordBox.getText().toString();
 
         // Validation checks for username and password
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Username and Password cannot be empty", Toast.LENGTH_SHORT).show();
+        if (!isValidUsername(username) || !isValidPassword(password)) {
             return;
         }
 
@@ -160,49 +144,68 @@ public class LoginActivity extends AppCompatActivity {
         new LoginUserAsync().execute(username, password);
     }
 
-    void loginUser(){
-        //System.out.println("login username: " + username);
+    // Validation for username
+    public boolean isValidUsername(String username) {
+        if (username.isEmpty()) {
+            Toast.makeText(this, "Username cannot be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (username.length() > 20) {
+            Toast.makeText(this, "Username should be less than 20 characters", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    // Validation for password
+    public boolean isValidPassword(String password) {
+        if (password.isEmpty()) {
+            Toast.makeText(this, "Password cannot be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (password.length() < 6 || password.length() > 20) {
+            Toast.makeText(this, "Password should be between 6-20 characters", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (!password.matches(".*[0-9].*") || !password.matches(".*[!@#$%^&*()].*")) {
+            Toast.makeText(this, "Password must contain a number and a special character", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    void loginUser() {
         UserModel user = appSettings.getUser();
-        if(user != null) {
-            if(user.getUserInfo() != null){
-                Toast.makeText(this, "User logged in with Id " + user.getUserId(),
-                        Toast.LENGTH_SHORT).show();
+        if (user != null) {
+            if (user.getUserInfo() != null) {
+                Toast.makeText(this, "User logged in with Id " + user.getUserId(), Toast.LENGTH_SHORT).show();
                 nextActivity(2);
-            }
-            else{
-                Toast.makeText(this, "Please finish registration " + user.getUserId(),
-                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Please finish registration " + user.getUserId(), Toast.LENGTH_SHORT).show();
                 nextActivity(1);
             }
-        }
-        else {
+        } else {
             Toast.makeText(this, "Failed to log in user", Toast.LENGTH_SHORT).show();
         }
-
     }
-    void registerUser(){
+
+    void registerUser() {
         UserModel user = appSettings.getUser();
-        System.out.println("register username: " + user.getUsername());
-        if(user != null) {
-            Toast.makeText(this, "User registered with Id " + user.getUserId(),
-                    Toast.LENGTH_SHORT).show();
+        if (user != null) {
+            Toast.makeText(this, "User registered with Id " + user.getUserId(), Toast.LENGTH_SHORT).show();
             nextActivity(1);
-        }
-        else {
+        } else {
             Toast.makeText(this, "Failed to register user", Toast.LENGTH_SHORT).show();
         }
     }
 
-
-    /** move UX to next activity */
     private void nextActivity(int aId) {
         Intent i = null;
-        switch(aId) {
+        switch (aId) {
             case 1:
                 i = new Intent(LoginActivity.this, RegisterActivity.class);
                 break;
             case 2:
-//                i = new Intent(LoginActivity.this, HomeActivity.class);
                 i = new Intent(LoginActivity.this, MainScreenActivity.class);
                 break;
         }
@@ -214,12 +217,10 @@ public class LoginActivity extends AppCompatActivity {
     private class RegisterUserAsync extends AsyncTask<String, Void, Void> {
 
         @Override
-        // Background task to register the user
         protected Void doInBackground(String... params) {
             String username = params[0];
             String password = params[1];
             try {
-                // Call the registerUser method of the API client to register the user
                 appSettings.setUser(loginRegisterClient.registerUser(username, password));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -229,7 +230,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
-        // Handle the result of the registration process
         protected void onPostExecute(Void v) {
             registerUser();
         }
@@ -239,12 +239,10 @@ public class LoginActivity extends AppCompatActivity {
     private class LoginUserAsync extends AsyncTask<String, Void, Void> {
 
         @Override
-        // Background task to log in the user
         protected Void doInBackground(String... params) {
             String username = params[0];
             String password = params[1];
             try {
-                // Call the loginUser method of the API client to log in the user
                 appSettings.setUser(loginRegisterClient.loginUser(username, password));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -254,24 +252,8 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         @Override
-        // Handle the result of the login process
         protected void onPostExecute(Void o) {
-                loginUser();
+            loginUser();
         }
-    }
-
-    // Helper method to navigate to the next activity (Home/Register)
-    private void nextActivity(int userId, int action) {
-        Intent intent = null;
-        // Choose activity based on the action passed (1 for Register, 2 for Home)
-        if (action == 1) {
-            intent = new Intent(LoginActivity.this, RegisterActivity.class);
-        } else {
-            intent = new Intent(LoginActivity.this, MainScreenActivity.class);
-        }
-        // Pass user ID to the next activity
-        intent.putExtra("userId", userId);
-        startActivity(intent); // Start the next activity
-        finish(); // Finish the current activity
     }
 }

@@ -15,21 +15,20 @@
         android:id="@+id/logo"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="10"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true"
         android:layout_gravity="center"
-        android:paddingTop="125dp"
+        android:layout_weight="10"
+        android:adjustViewBounds="true"
+        android:alpha="0.8"
         android:paddingStart="125dp"
+        android:paddingTop="125dp"
         android:paddingEnd="125dp"
         android:paddingBottom="0dp"
-        android:tint="@color/white"
-        android:alpha="0.8"
-        android:src="@drawable/baseline_music_note_48"
+        android:scaleType="fitCenter"
         android:shadowColor="@color/white"
         android:shadowDx="3"
         android:shadowDy="3"
         android:shadowRadius="4"
+        android:src="@drawable/baseline_music_note_48"
 
         />
 
@@ -42,15 +41,14 @@
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:paddingBottom="50dp"
-        android:text="SoundPalette"
-        android:textColor="@color/white"
-        android:textSize="50sp"
-        android:textStyle="bold"
         android:shadowColor="@color/white"
         android:shadowDx="3"
         android:shadowDy="3"
         android:shadowRadius="4"
-        />
+        android:text="&quot;SoundPalette&quot;"
+        android:textColor="@color/white"
+        android:textSize="50sp"
+        android:textStyle="bold" />
 
     <EditText
         android:id="@+id/username"

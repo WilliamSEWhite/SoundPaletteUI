@@ -1,26 +1,34 @@
 package com.soundpaletteui.Infrastructure.Models;
 
+import com.google.gson.annotations.SerializedName;
+
+import java.util.Date;
+
 public class CommentModel {
 
-    private int postId;
-    private int userId;
-    private String message;
+    @SerializedName("CommentText")
+    private String commentText;
+    @SerializedName("CommentUsername")
+    private String commentUsername;
+    @SerializedName("CommentDate")
+    private Date commentDate;
 
-    public CommentModel(int postId, int userId, String message) {
-        this.postId = postId;
-        this.userId = userId;
-        this.message = message;
+
+    public CommentModel(String commentText, String commentUsername, Date commentDate) {
+        this.commentText = commentText;
+        this.commentUsername = commentUsername;
+        this.commentDate = commentDate;
     }
 
-    public int getPostId() {
-        return postId;
+    public String getCommentText() {
+        return commentText;
     }
 
-    public int getUserId() {
-        return userId;
+    public String getCommentUsername() {
+        return commentUsername;
     }
 
-    public String getMessage() {
-        return message;
+    public Date getCommentDate() {
+        return commentDate;
     }
 }

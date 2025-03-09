@@ -48,7 +48,7 @@
             android:id="@+id/comment_send"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Send"/>
+            android:text="Post"/>
     </LinearLayout>
 
 </LinearLayout>

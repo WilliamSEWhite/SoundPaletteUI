@@ -1,10 +1,12 @@
 package com.soundpaletteui.Activities.Posts;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,9 +20,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.soundpaletteui.Activities.Interactions.CommentBottomSheet;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
+import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
+import com.soundpaletteui.Infrastructure.ApiClients.PostInteractionClient;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
+import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
 
+import java.io.IOException;
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
@@ -80,13 +86,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             transaction.commit();
         });
 */
+        CheckBox postIsLiked = holder.likeButton;
+        postIsLiked.setChecked(post.getIsLiked());
+
+        postIsLiked.setOnClickListener(v -> toggleLike(post, postIsLiked.isChecked()));
 
         // Like Button Actions
-        holder.likeButton.setOnClickListener(v -> {
-            holder.isLiked = !holder.isLiked;
-            holder.likeButton.setImageResource(holder.isLiked ? R.drawable.post_fav_filled_24 : R.drawable.post_fav_empty_24);
-            Log.d("Like Button", (holder.isLiked ? "Liked" : "Unliked") + " Post ID#" + postId);
-        });
+//        holder.likeButton.setOnClickListener(v -> {
+//            holder.isLiked = !holder.isLiked;
+//            holder.likeButton.setImageResource(holder.isLiked ? R.drawable.post_fav_filled_24 : R.drawable.post_fav_empty_24);
+//            Log.d("Like Button", (holder.isLiked ? "Liked" : "Unliked") + " Post ID#" + postId);
+//        });
 
         // Comment Button Actions (opens bottom sheet)
         holder.commentButton.setOnClickListener(v -> {
@@ -112,7 +122,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView postUsername, postCaption;
         ViewGroup postFragmentDisplay;
-        ImageButton postersProfile, likeButton, commentButton, saveButton;
+        ImageButton postersProfile, commentButton, saveButton;
+        CheckBox likeButton;
         boolean isLiked = false;
         boolean isSaved = false;
 
@@ -127,4 +138,38 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             saveButton = itemView.findViewById(R.id.postSaveButton);
         }
     }
+
+    private void toggleLike(PostModel post, boolean isLiked) {
+        post.setIsLiked(isLiked);
+        new ToggleLikeAsync().execute(new PostModel[]{post});
+    }
+
+    //insert new team asynchronously
+    private class ToggleLikeAsync extends AsyncTask<PostModel, Void, Void> {
+        //update team in database and mark teams as unloaded
+        protected Void doInBackground(PostModel... post) {
+            PostInteractionClient postInteractionClient = SPWebApiRepository.getInstance().getPostInteractionClient();
+            PostModel p = post[0];
+            try {
+                if (p.getIsLiked()) {
+                    postInteractionClient.likePost(p.getPostId());
+
+                } else {
+                    postInteractionClient.unlikePost(p.getPostId());
+
+
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            return null;
+        }//end doInBackground
+
+        //after insert is complete, reload team selector with new team
+        protected void onPostExecute(Void _void) {
+
+        }//end onPostExecute
+    }//end UpdateTeamAsync
+
 }
