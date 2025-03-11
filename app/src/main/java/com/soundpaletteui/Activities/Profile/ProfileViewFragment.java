@@ -2,6 +2,7 @@ package com.soundpaletteui.Activities.Profile;
 
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.soundpaletteui.Activities.Messages.MessageFragment;
+import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
+import com.soundpaletteui.Infrastructure.Models.NewPostModel;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
@@ -141,7 +144,7 @@ public class ProfileViewFragment extends Fragment {
         framePosts.setOnClickListener(v -> {
             // Setting the Post Fragment with ViewUser's post algorithm
             Log.d("ProfileFragment", "Posts selected for User ID# " + viewUserId);
-            replacePostFragment("user", String.valueOf(viewUserId));
+            replacePostFragment("username", String.valueOf(viewUserId));
 
             try {
                 final GifDrawable postsGifDrawable = (GifDrawable) gifPosts.getDrawable();
@@ -215,7 +218,7 @@ public class ProfileViewFragment extends Fragment {
 
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
-        userClient = SPWebApiRepository.getInstance().getUserClient();
+        new GetProfileAsync().execute();
     }
 
     // Replaces the Main Screen Fragment in Main Activity
@@ -229,7 +232,7 @@ public class ProfileViewFragment extends Fragment {
     // Replaces the PostFragment based on the algorithmType and userId
     private void replacePostFragment(String algoType, String userId) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        PostFragment postFragment = PostFragment.newInstance(algoType, userId);
+        PostFragment postFragment = PostFragment.newInstance(algoType, viewUsername);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
     }
@@ -243,6 +246,26 @@ public class ProfileViewFragment extends Fragment {
             textView.setTypeface(null, Typeface.NORMAL);
             textView.setTextSize(18);
         }
+    }
+    private class GetProfileAsync extends AsyncTask<Void,Void, UserProfileModel> {
+        protected UserProfileModel doInBackground(Void... d) {
+            System.out.println("UpdateUserInfoAsync");
+            try {
+                UserClient client = SPWebApiRepository.getInstance().getUserClient();
+                UserProfileModel profile = client.getUserProfileByUsername(viewUsername);
+                return profile;
+            } catch (IOException e) {
+                Toast.makeText(requireContext(),
+                        "Error making post",
+                        Toast.LENGTH_SHORT).show();
+            }
+            return null;
+        }//end doInBackground
+
+        protected void onPostExecute(UserProfileModel v) {
+            profileBioDisplay.setText(v.getBio());
+
+        }//end onPostExecute
     }
 }
 

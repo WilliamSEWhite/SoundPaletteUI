@@ -22,6 +22,10 @@ public interface PostInteractionApiEndpoints {
     Call<Void> likePost(@Query("postId") int postId, @Query("userId") int userId);
     @GET("api/PostInteraction/unlike-post")
     Call<Void> unlikePost(@Query("postId") int postId, @Query("userId") int userId);
+    @GET("api/PostInteraction/save-post")
+    Call<Void> savePost(@Query("postId") int postId, @Query("userId") int userId);
+    @GET("api/PostInteraction/unsave-post")
+    Call<Void> unsavePost(@Query("postId") int postId, @Query("userId") int userId);
 
 
 }

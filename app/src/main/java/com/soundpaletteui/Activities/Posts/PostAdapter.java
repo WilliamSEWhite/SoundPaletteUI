@@ -110,12 +110,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             commentBottomSheet.show(((FragmentActivity) v.getContext()).getSupportFragmentManager(), "CommentBottomSheet");
         });
 
-        // Save Button Actions
-        holder.saveButton.setOnClickListener(v -> {
-            holder.isSaved = !holder.isSaved;
-            holder.saveButton.setImageResource(holder.isSaved ? R.drawable.post_saved_filled_24 : R.drawable.post_saved_empty_24);
-            Log.d("Save Button", (holder.isSaved ? "Saved" : "Unsaved") + " Post ID#" + postId);
-        });
+        CheckBox postIsSaved = holder.saveButton;
+        postIsSaved.setChecked(post.getIsSaved());
+
+        postIsSaved.setOnClickListener(v -> toggleSaved(post, postIsSaved.isChecked()));
+
 
         holder.postFragmentDisplay.addView(fragmentView);
     }
@@ -128,8 +127,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView postUsername, postCaption, postLikeValue, postCommentValue;
         ViewGroup postFragmentDisplay;
-        ImageButton postersProfile, commentButton, saveButton;
-        CheckBox likeButton;
+        ImageButton postersProfile, commentButton;
+        CheckBox likeButton, saveButton;
         boolean isLiked = false;
         boolean isSaved = false;
 
@@ -151,8 +150,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         post.setIsLiked(isLiked);
         new ToggleLikeAsync().execute(new PostModel[]{post});
     }
-
-    //insert new team asynchronously
+    private void toggleSaved(PostModel post, boolean isSaved) {
+        post.setIsSaved(isSaved);
+        new ToggleSavedAsync().execute(new PostModel[]{post});
+    }
     private class ToggleLikeAsync extends AsyncTask<PostModel, Void, Void> {
         //update team in database and mark teams as unloaded
         protected Void doInBackground(PostModel... post) {
@@ -178,6 +179,32 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         protected void onPostExecute(Void _void) {
 
         }//end onPostExecute
-    }//end UpdateTeamAsync
+    }
+    private class ToggleSavedAsync extends AsyncTask<PostModel, Void, Void> {
+        //update team in database and mark teams as unloaded
+        protected Void doInBackground(PostModel... post) {
+            PostInteractionClient postInteractionClient = SPWebApiRepository.getInstance().getPostInteractionClient();
+            PostModel p = post[0];
+            try {
+                if (p.getIsSaved()) {
+                    postInteractionClient.savePost(p.getPostId());
+
+                } else {
+                    postInteractionClient.unsavePost(p.getPostId());
+
+
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            return null;
+        }//end doInBackground
+
+        //after insert is complete, reload team selector with new team
+        protected void onPostExecute(Void _void) {
+
+        }//end onPostExecute
+    }
 
 }

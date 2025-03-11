@@ -50,5 +50,20 @@ public class PostInteractionClient {
 
         return response.body();
     }
+    public Void savePost(int postId) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
 
+        Call<Void> call = postInteractionApiEndpoints.savePost(postId, userId);
+        Response<Void> response = call.execute();
+
+        return response.body();
+    }
+    public Void unsavePost(int postId) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+
+        Call<Void> call = postInteractionApiEndpoints.unsavePost(postId, userId);
+        Response<Void> response = call.execute();
+
+        return response.body();
+    }
 }

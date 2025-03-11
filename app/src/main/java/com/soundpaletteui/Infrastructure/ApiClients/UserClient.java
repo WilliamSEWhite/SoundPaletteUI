@@ -42,7 +42,11 @@ public class UserClient {
         Response<UserProfileModel> response = call.execute();
         return response.body();
     }
-
+    public UserProfileModel getUserProfileByUsername(String username) throws IOException {
+        Call<UserProfileModel> call = userEndpoints.getUserProfileByUsername(username);
+        Response<UserProfileModel> response = call.execute();
+        return response.body();
+    }
     public UserProfileModel updateUserProfile(UserProfileModel userProfile) throws IOException {
         Call<UserProfileModel> call = userEndpoints.updateUserProfile(userProfile);
         Response<UserProfileModel> response = call.execute();

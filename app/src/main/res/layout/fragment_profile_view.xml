@@ -98,7 +98,6 @@
                 android:layout_gravity="left"
                 android:textSize="12dp"
                 android:padding="5dp"
-                android:text="Hello! This is going to be the bio for the profile."
                 >
             </TextView>
 
