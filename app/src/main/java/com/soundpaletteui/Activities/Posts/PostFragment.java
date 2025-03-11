@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,16 +16,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
-import com.soundpaletteui.Infrastructure.Models.PostContentModel;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
-import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
-import com.soundpaletteui.UISettings;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
