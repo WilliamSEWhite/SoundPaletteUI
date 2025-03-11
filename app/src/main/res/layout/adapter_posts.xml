@@ -59,11 +59,13 @@
             android:layout_gravity="center"/>
 
         <!-- Interactions Bar -->
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="35dp"
+            android:orientation="horizontal"
             android:background="@drawable/white_translucency_gradient_vertical">
-                <CheckBox
+
+            <CheckBox
                     android:id="@+id/postLikeButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -73,40 +75,58 @@
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:paddingStart="10dp"
                     android:button="@drawable/like_button"/>
-<!--                <ImageButton-->
-<!--                    android:id="@+id/postLikeButton"-->
-<!--                    android:layout_width="wrap_content"-->
-<!--                    android:layout_height="wrap_content"-->
-<!--                    android:layout_alignParentStart="true"-->
-<!--                    android:layout_centerVertical="true"-->
-<!--                    android:layout_marginStart="5dp"-->
-<!--                    android:background="?android:attr/selectableItemBackgroundBorderless"-->
-<!--                    android:paddingStart="10dp"-->
-<!--                    android:src="@drawable/post_fav_empty_24" />-->
 
-                <ImageButton
-                    android:id="@+id/postCommentButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="5dp"
-                    android:layout_toEndOf="@id/postLikeButton"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:padding="5dp"
-                    android:src="@drawable/post_comment_24" />
+            <TextView
+                android:id="@+id/postLikeValue"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:paddingTop="3dp"
+                android:layout_gravity="center"
+                android:text="LIKES"
+                android:textSize="20dp"/>
 
-                <ImageButton
-                    android:id="@+id/postSaveButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="5dp"
-                    android:background="?android:attr/selectableItemBackgroundBorderless"
-                    android:padding="5dp"
-                    android:paddingEnd="10dp"
-                    android:src="@drawable/post_saved_empty_24" />
+<!--            <ImageButton-->
+<!--                android:id="@+id/postLikeButton"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_alignParentStart="true"-->
+<!--                android:layout_centerVertical="true"-->
+<!--                android:layout_marginStart="5dp"-->
+<!--                android:background="?android:attr/selectableItemBackgroundBorderless"-->
+<!--                android:paddingStart="10dp"-->
+<!--                android:src="@drawable/post_fav_empty_24" />-->
 
-        </RelativeLayout>
+            <ImageButton
+                android:id="@+id/postCommentButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="5dp"
+                android:layout_toEndOf="@id/postLikeButton"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:padding="5dp"
+                android:src="@drawable/post_comment_24" />
+
+            <TextView
+                android:id="@+id/postCommentValue"
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:paddingTop="3dp"
+                android:layout_gravity="center"
+                android:text="COMMENT"
+                android:textSize="20dp"/>
+
+            <ImageButton
+                android:id="@+id/postSaveButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="5dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:padding="5dp"
+                android:paddingEnd="10dp"
+                android:src="@drawable/post_saved_empty_24" />
+        </LinearLayout>
 
 </LinearLayout>

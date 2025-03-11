@@ -21,7 +21,7 @@
             android:background="@drawable/white_translucency_gradient"
             android:contentDescription="TEXT"
             android:gravity="center"
-            android:text="POSTS"
+            android:text="TEXT"
             android:textColor="#FFFFFF"
             android:textSize="18sp" />
 

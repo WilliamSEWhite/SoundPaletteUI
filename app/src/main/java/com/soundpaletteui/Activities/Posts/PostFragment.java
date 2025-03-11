@@ -166,7 +166,50 @@ public class PostFragment extends Fragment {
 //                        posts = client.getAllPosts();
 //                        break;
 //                }
-//
+////    private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
+////        @Override
+////        protected List<PostModel> doInBackground(Void... voids) {
+////            try {
+////                PostClient client = SPWebApiRepository.getInstance().getPostClient();
+////                List<PostModel> posts;
+////
+////                String algorithmType = getArguments().getString(ARG_ALGO_TYPE, nul);
+////                String searchTerm = getArguments().getString(ARG_SEARCH_TERM, null);
+////
+////                switch (algorithmType) {
+////                    case "user":          //Posts by the current User
+////                        posts = client.getUsersPosts(userId);
+////                        break;
+////                    case "following":     //All posts based on User's followers
+////                        posts = client.getFollowingPosts(userId);
+////                        break;
+////                    case "saved":         //All saved posts
+////                        posts = client.getSavedPosts(userId);
+////                        break;
+////                    case "new":           //All new posts
+////                        posts = client.getNewestPosts();
+////                        break;
+////                    case "popular":       //All popular posts
+////                        posts = client.getPopularPosts();
+////                        break;
+////                    case "trending":      //All trending posts
+////                        posts = client.getTrendingPosts();
+////                        break;
+////                    case "searchTerm":    //Posts based on search term
+////                        posts = client.getSearchTermPosts(ARG_SEARCH_TERM);
+////                        break;
+////                    default:              //All posts
+////                        posts = client.getAllPosts();
+////                        break;
+////                }
+////
+////                return (posts != null) ? posts : new ArrayList<>();
+////            } catch (IOException e) {
+////                Log.e(TAG, "Error fetching posts", e);
+////                return new ArrayList<>();
+////            }
+////        }
+////
 //                return (posts != null) ? posts : new ArrayList<>();
 //            } catch (IOException e) {
 //                Log.e(TAG, "Error fetching posts", e);

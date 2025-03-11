@@ -52,12 +52,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         PostModel post = postList.get(position);
         int postId = post.getPostId();
-        int postUserId = 1; // Placeholder: Replace with actual user ID if available
+        String likeCount = String.valueOf(post.getLikeCount());
+        String commentCount = String.valueOf(post.getCommentCount());
+        int postUserId = 3; // Placeholder: Replace with actual user ID if available
         String postUsername = post.getUsername();
 
         holder.postUsername.setText(postUsername);
         holder.postCaption.setText(post.getPostCaption());
         holder.postFragmentDisplay.removeAllViews();
+        holder.postLikeValue.setText(likeCount);
+        holder.postCommentValue.setText(commentCount);
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View fragmentView;
@@ -75,17 +79,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else {
             fragmentView = new View(context);
         }
-/*
+
         // Open Poster's profile page
         holder.postersProfile.setOnClickListener(v -> {
-            ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUserId);
+            Log.d("ProfileViewFragment", "Selected to Load Profile User ID# " + postUsername);
+            ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUsername);
+            //ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUserId);
             FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.mainScreenFrame, profileViewFragment);
             transaction.addToBackStack(null);
             transaction.commit();
         });
-*/
+
         CheckBox postIsLiked = holder.likeButton;
         postIsLiked.setChecked(post.getIsLiked());
 
@@ -120,7 +126,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
-        TextView postUsername, postCaption;
+        TextView postUsername, postCaption, postLikeValue, postCommentValue;
         ViewGroup postFragmentDisplay;
         ImageButton postersProfile, commentButton, saveButton;
         CheckBox likeButton;
@@ -136,6 +142,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             likeButton = itemView.findViewById(R.id.postLikeButton);
             commentButton = itemView.findViewById(R.id.postCommentButton);
             saveButton = itemView.findViewById(R.id.postSaveButton);
+            postLikeValue = itemView.findViewById(R.id.postLikeValue);
+            postCommentValue = itemView.findViewById(R.id.postCommentValue);
         }
     }
 
