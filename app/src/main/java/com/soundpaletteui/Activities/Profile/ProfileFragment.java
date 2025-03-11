@@ -44,6 +44,7 @@ public class ProfileFragment extends Fragment {
     private UserClient userClient;
     private View framePosts;
     private GifImageView gifPosts;
+    private TextView usernameDisplay;
     private TextView profileBio;
     private TextView textPosts;
     private View frameSaved;
@@ -90,17 +91,21 @@ public class ProfileFragment extends Fragment {
         UISettings.applyBrightnessGradientBackground(rootView, 50f);
         framePosts = rootView.findViewById(R.id.frame_posts);
         gifPosts = rootView.findViewById(R.id.gif_posts);
-        textPosts = rootView.findViewById(R.id.posts_text);
+        textPosts = rootView.findViewById(R.id.postsToggle);
         frameSaved = rootView.findViewById(R.id.frame_saved);
         gifSaved = rootView.findViewById(R.id.gif_saved);
-        textSaved = rootView.findViewById(R.id.saved_text);
+        textSaved = rootView.findViewById(R.id.savedToggle);
+
+        // Assign username
+        usernameDisplay = rootView.findViewById(R.id.profileUsername);
+        usernameDisplay.setText(user.getUsername());
 
         // Assign text for User's Profile Bio
-        profileBio = rootView.findViewById(R.id.profile_bio);
+        profileBio = rootView.findViewById(R.id.profileBio);
         getProfileBio();
 
         // Edit Profile Button Actions
-        AppCompatImageButton buttonEdit = rootView.findViewById(R.id.edit_profile_button);
+        AppCompatImageButton buttonEdit = rootView.findViewById(R.id.editProfileButton);
         buttonEdit.setOnClickListener(v -> {
             ProfileEditFragment profileEditFragment = new ProfileEditFragment();
 
