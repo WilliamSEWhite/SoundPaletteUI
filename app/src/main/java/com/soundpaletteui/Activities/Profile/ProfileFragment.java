@@ -1,6 +1,5 @@
 package com.soundpaletteui.Activities.Profile;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,15 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.soundpaletteui.Infrastructure.Adapters.TagSelectAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
-import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
-import com.soundpaletteui.UISettings;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
@@ -28,15 +23,13 @@ import com.soundpaletteui.R;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
@@ -51,6 +44,7 @@ public class ProfileFragment extends Fragment {
     private UserClient userClient;
     private View framePosts;
     private GifImageView gifPosts;
+    private TextView usernameDisplay;
     private TextView profileBio;
     private TextView textPosts;
     private View frameSaved;
@@ -97,17 +91,21 @@ public class ProfileFragment extends Fragment {
         UISettings.applyBrightnessGradientBackground(rootView, 50f);
         framePosts = rootView.findViewById(R.id.frame_posts);
         gifPosts = rootView.findViewById(R.id.gif_posts);
-        textPosts = rootView.findViewById(R.id.posts_text);
+        textPosts = rootView.findViewById(R.id.postsToggle);
         frameSaved = rootView.findViewById(R.id.frame_saved);
         gifSaved = rootView.findViewById(R.id.gif_saved);
-        textSaved = rootView.findViewById(R.id.saved_text);
+        textSaved = rootView.findViewById(R.id.savedToggle);
+
+        // Assign username
+        usernameDisplay = rootView.findViewById(R.id.profileUsername);
+        usernameDisplay.setText(user.getUsername());
 
         // Assign text for User's Profile Bio
-        profileBio = rootView.findViewById(R.id.profile_bio);
+        profileBio = rootView.findViewById(R.id.profileBio);
         getProfileBio();
 
         // Edit Profile Button Actions
-        AppCompatImageButton buttonEdit = rootView.findViewById(R.id.edit_profile_button);
+        AppCompatImageButton buttonEdit = rootView.findViewById(R.id.editProfileButton);
         buttonEdit.setOnClickListener(v -> {
             ProfileEditFragment profileEditFragment = new ProfileEditFragment();
 

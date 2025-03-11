@@ -17,13 +17,10 @@ import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.UISettings;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import pl.droidsonroids.gif.GifImageView;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import java.io.IOException;
-
-import java.io.IOException;
 
 /**
  * Manages user login and registration actions within the app.

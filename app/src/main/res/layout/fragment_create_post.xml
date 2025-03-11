@@ -41,33 +41,38 @@
                 android:paddingTop="10dp"
                 android:hint="Enter your caption"/>
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dip"
-            android:orientation="vertical"
+            android:orientation="horizontal"
             android:paddingStart="10dp"
             android:paddingTop="10dp"
             android:paddingEnd="10dp"
             android:layout_column="0"
             android:layout_row="1"
-            android:layout_rowWeight="0.2"
-
-            >
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tags"
-                android:layout_gravity="start"
-                android:paddingStart="5dp"/>
+            android:layout_rowWeight="0.2">
+            <!-- add profile tags -->
             <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:backgroundTint="@color/sp_tan"
-                android:textColor="@color/white"
-                android:text="+"
+                android:id="@+id/addTags"
+                android:layout_width="95dp"
+                android:layout_height="40dp"
+                android:layout_gravity="left|center"
+                android:layout_margin="10dp"
+                android:text="TAGS"
                 android:textSize="@dimen/btn_text_size"
-                android:id="@+id/addTags"/>
+                android:textColor="@color/white"
+                android:backgroundTint="@color/colorOnSurface"/>
+            <!-- display profile tags -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/userProfileTags"
+                android:layout_width="0dp"
+                android:layout_height="100dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:layout_weight="1"
+                android:background="@color/white">
+            </androidx.recyclerview.widget.RecyclerView>
         </LinearLayout>
 
             <FrameLayout

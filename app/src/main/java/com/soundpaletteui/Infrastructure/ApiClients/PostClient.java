@@ -48,6 +48,65 @@ public class PostClient {
         Log.d("PostClient", "Fetched " + posts.size() + " posts.");
         return posts;
     }
+
+    public List<PostModel> getPostsForUser() throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+        Call<List<PostModel>> call = postApiEndpoints.getPostsForUser(userId);
+        Response<List<PostModel>> response = call.execute();
+
+        if (!response.isSuccessful()) {
+            Log.e("PostClient", "Error fetching posts: " + response.code() + " - " + response.message());
+            return new ArrayList<>();
+        }
+
+        List<PostModel> posts = response.body();
+        if (posts == null) {
+            Log.w("PostClient", "Received null response body for posts.");
+            return new ArrayList<>();
+        }
+
+        Log.d("PostClient", "Fetched " + posts.size() + " posts.");
+        return posts;
+    }
+    public List<PostModel> getSavedPostsForUser() throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+        Call<List<PostModel>> call = postApiEndpoints.getUserSavedPosts(userId);
+        Response<List<PostModel>> response = call.execute();
+
+        if (!response.isSuccessful()) {
+            Log.e("PostClient", "Error fetching posts: " + response.code() + " - " + response.message());
+            return new ArrayList<>();
+        }
+
+        List<PostModel> posts = response.body();
+        if (posts == null) {
+            Log.w("PostClient", "Received null response body for posts.");
+            return new ArrayList<>();
+        }
+
+        Log.d("PostClient", "Fetched " + posts.size() + " posts.");
+        return posts;
+    }
+    public List<PostModel> getPostsForUsername(String username) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+        Call<List<PostModel>> call = postApiEndpoints.getPostsForUsername(userId, username);
+        Response<List<PostModel>> response = call.execute();
+
+        if (!response.isSuccessful()) {
+            Log.e("PostClient", "Error fetching posts: " + response.code() + " - " + response.message());
+            return new ArrayList<>();
+        }
+
+        List<PostModel> posts = response.body();
+        if (posts == null) {
+            Log.w("PostClient", "Received null response body for posts.");
+            return new ArrayList<>();
+        }
+
+        Log.d("PostClient", "Fetched " + posts.size() + " posts.");
+        return posts;
+    }
+
     public Void deletePost(int postId, int userId) throws IOException {
 
         Call<Void> call = postApiEndpoints.deletePost(postId, userId);

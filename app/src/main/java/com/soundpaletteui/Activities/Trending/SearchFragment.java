@@ -7,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -17,43 +17,13 @@ import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
-import com.soundpaletteui.UISettings;
-import java.io.IOException;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-        import android.os.Bundle;
-        import android.util.Log;
-        import android.view.LayoutInflater;
-        import android.view.View;
-        import android.view.ViewGroup;
-        import android.widget.EditText;
-        import android.widget.ImageButton;
-        import android.widget.Toast;
 
-        import androidx.annotation.NonNull;
-        import androidx.annotation.Nullable;
-        import androidx.fragment.app.Fragment;
-        import androidx.fragment.app.FragmentManager;
-        import androidx.fragment.app.FragmentTransaction;
-        import androidx.recyclerview.widget.LinearLayoutManager;
-        import androidx.recyclerview.widget.RecyclerView;
-
-        import com.soundpaletteui.Activities.Messages.MessageFragment;
-        import com.soundpaletteui.Activities.Posts.PostFragment;
-        import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-        import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
-        import com.soundpaletteui.Infrastructure.Models.UserModel;
-        import com.soundpaletteui.Infrastructure.SPWebApiRepository;
-        import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
-        import com.soundpaletteui.R;
-
-        import java.io.IOException;
-        import java.util.ArrayList;
-        import java.util.List;
-        import java.util.Random;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 
 /**
  * Provides search functionality and displays relevant posts.

@@ -8,7 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -16,16 +16,13 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
-import com.soundpaletteui.Infrastructure.Models.PostContentModel;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
-import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
-import com.soundpaletteui.UISettings;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -94,9 +91,22 @@ public class PostFragment extends Fragment {
     private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
         @Override
         protected List<PostModel> doInBackground(Void... voids) {
-            List<PostModel> dummyPosts = null;
+            List<PostModel> posts = null;
             try {
-                dummyPosts = postClient.getPosts();
+                switch (ARG_ALGO_TYPE) {
+                    case "popular":          //Posts by the current User
+                        posts = postClient.getPosts();
+                        break;
+                    case "user":     //All posts based on User's followers
+                        posts = postClient.getPostsForUser();
+                        break;
+                    case "saved":         //All saved posts
+                        posts = postClient.getSavedPostsForUser();
+                        break;
+                    case "username":         //All saved posts
+                        posts = postClient.getPostsForUsername(ARG_SEARCH_TERM);
+                        break;
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -115,7 +125,7 @@ public class PostFragment extends Fragment {
 //            dummyPosts.add(new PostModel(11,  "A little jazz influence in this one.", null, new PostContentModel( "image21.png"), new Date(), "Username1", 3));
 //            dummyPosts.add(new PostModel(12,  "writing. dreaming. thinking.", null, new PostContentModel( "Blending jazz influences into my latest piece"), new Date(), "Username2", 1));
 
-            return dummyPosts;
+            return posts;
         }
 
         @Override
@@ -169,7 +179,50 @@ public class PostFragment extends Fragment {
 //                        posts = client.getAllPosts();
 //                        break;
 //                }
-//
+////    private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
+////        @Override
+////        protected List<PostModel> doInBackground(Void... voids) {
+////            try {
+////                PostClient client = SPWebApiRepository.getInstance().getPostClient();
+////                List<PostModel> posts;
+////
+////                String algorithmType = getArguments().getString(ARG_ALGO_TYPE, nul);
+////                String searchTerm = getArguments().getString(ARG_SEARCH_TERM, null);
+////
+////                switch (algorithmType) {
+////                    case "user":          //Posts by the current User
+////                        posts = client.getUsersPosts(userId);
+////                        break;
+////                    case "following":     //All posts based on User's followers
+////                        posts = client.getFollowingPosts(userId);
+////                        break;
+////                    case "saved":         //All saved posts
+////                        posts = client.getSavedPosts(userId);
+////                        break;
+////                    case "new":           //All new posts
+////                        posts = client.getNewestPosts();
+////                        break;
+////                    case "popular":       //All popular posts
+////                        posts = client.getPopularPosts();
+////                        break;
+////                    case "trending":      //All trending posts
+////                        posts = client.getTrendingPosts();
+////                        break;
+////                    case "searchTerm":    //Posts based on search term
+////                        posts = client.getSearchTermPosts(ARG_SEARCH_TERM);
+////                        break;
+////                    default:              //All posts
+////                        posts = client.getAllPosts();
+////                        break;
+////                }
+////
+////                return (posts != null) ? posts : new ArrayList<>();
+////            } catch (IOException e) {
+////                Log.e(TAG, "Error fetching posts", e);
+////                return new ArrayList<>();
+////            }
+////        }
+////
 //                return (posts != null) ? posts : new ArrayList<>();
 //            } catch (IOException e) {
 //                Log.e(TAG, "Error fetching posts", e);

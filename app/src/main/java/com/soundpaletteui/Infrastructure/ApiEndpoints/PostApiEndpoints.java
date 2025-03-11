@@ -17,6 +17,13 @@ public interface PostApiEndpoints {
 
     @GET("api/post/get-feed")
     Call<List<PostModel>> getPosts(@Query("userId") int userId);
+    @GET("api/post/get-user-posts")
+    Call<List<PostModel>> getPostsForUser(@Query("userId") int userId);
+
+    @GET("api/post/get-username-posts")
+    Call<List<PostModel>> getPostsForUsername(@Query("userId") int userId, @Query("username") String username);
+    @GET("api/post/get-user-saved-posts")
+    Call<List<PostModel>> getUserSavedPosts(@Query("userId") int userId);
 
     @GET("api/post/delete-post")
     Call<Void> deletePost(@Query("postId") int postId, @Query("userId") int userId);

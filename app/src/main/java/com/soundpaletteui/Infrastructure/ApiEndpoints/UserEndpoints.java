@@ -22,6 +22,9 @@ public interface UserEndpoints {
     Call<UserInfoModel> getUserInfo(@Path("id") int id);
     @GET("api/user/get-user-profile/{id}")
     Call<UserProfileModel> getUserProfile(@Path("id") int id);
+    @GET("api/user/get-user-profile-by-username/{username}")
+    Call<UserProfileModel> getUserProfileByUsername(@Path("username") String username);
+
     @POST("api/user/update-user-profile")
     Call<UserProfileModel> updateUserProfile(@Body UserProfileModel userProfile);
 }

@@ -1,4 +1,4 @@
-package com.soundpaletteui;
+package com.soundpaletteui.Infrastructure.Utilities;
 
 import android.animation.ValueAnimator;
 import android.graphics.Color;

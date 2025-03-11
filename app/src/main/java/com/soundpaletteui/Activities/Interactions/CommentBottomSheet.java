@@ -80,7 +80,9 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
             commentInput.setText("");
             if (!text.isEmpty()) {
                 new PostCommentAsync().execute(new NewPostCommentModel(user.getUserId(), postId, text));
-                recyclerView.smoothScrollToPosition(commentList.size() - 1);
+                if(commentList.size()>1){
+                    recyclerView.smoothScrollToPosition(commentList.size() - 1);
+                }
                 new FetchCommentsAsync().execute();
 
             }

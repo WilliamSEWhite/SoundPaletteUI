@@ -3,6 +3,7 @@ package com.soundpaletteui.Activities.Posts;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Home.HomeFragment;
@@ -33,6 +35,7 @@ import com.soundpaletteui.Activities.Profile.RegisterActivity;
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.TagRowAdapter;
+import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
 import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
 import com.soundpaletteui.Infrastructure.Models.LocationModel;
@@ -64,6 +67,8 @@ public class CreatePostFragment extends Fragment {
     private List<TagModel> tags;
     private ArrayList<TagModel> selectedTags = new ArrayList<TagModel>();
     private MainContentAdapter mainContentAdapter;
+    private UserTagAdapter adapter;
+    private RecyclerView recyclerView;
 
     public CreatePostFragment() {
         // Required empty public constructor
@@ -103,6 +108,9 @@ public class CreatePostFragment extends Fragment {
             savePost();
         });
         user = AppSettings.getInstance().getUser();
+        recyclerView = rootView.findViewById(R.id.userProfileTags);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
         return rootView;
 
     }
@@ -155,6 +163,7 @@ public class CreatePostFragment extends Fragment {
         builder.setPositiveButton("Save", (dialog, which) -> {
 
             dialog.dismiss();
+            refreshTagList();
         });//on delete, open delete dialog
 
         //show dialog
@@ -169,6 +178,19 @@ public class CreatePostFragment extends Fragment {
 
 
     }//end openTeam
+
+    private void refreshTagList() {
+            if (selectedTags != null && !selectedTags.isEmpty()) {
+                // Update the RecyclerView with the new tag list
+                adapter = new UserTagAdapter(selectedTags, getContext());
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+            else {
+                Log.d("ProfileEditFragment", "No tags received or empty list");
+            }
+
+    }
 
     private void savePost(){
         View v = getView();
@@ -202,9 +224,14 @@ public class CreatePostFragment extends Fragment {
     }
 
     private void finishPost(){
-
+        replaceMainFragment(new HomeFragment());
     }
-
+    private void replaceMainFragment(Fragment new_fragment) {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.mainScreenFrame, new_fragment);
+        transaction.commit();
+    }
     private class GetTagsAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             System.out.println("UpdateUserInfoAsync");

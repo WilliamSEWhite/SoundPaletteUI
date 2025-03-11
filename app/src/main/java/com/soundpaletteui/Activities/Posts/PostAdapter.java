@@ -52,12 +52,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         PostModel post = postList.get(position);
         int postId = post.getPostId();
-        int postUserId = 1; // Placeholder: Replace with actual user ID if available
+        String likeCount = String.valueOf(post.getLikeCount());
+        String commentCount = String.valueOf(post.getCommentCount());
+        int postUserId = 3; // Placeholder: Replace with actual user ID if available
         String postUsername = post.getUsername();
 
         holder.postUsername.setText(postUsername);
         holder.postCaption.setText(post.getPostCaption());
         holder.postFragmentDisplay.removeAllViews();
+        holder.postLikeValue.setText(likeCount);
+        holder.postCommentValue.setText(commentCount);
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View fragmentView;
@@ -75,17 +79,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else {
             fragmentView = new View(context);
         }
-/*
+
         // Open Poster's profile page
         holder.postersProfile.setOnClickListener(v -> {
-            ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUserId);
+            Log.d("ProfileViewFragment", "Selected to Load Profile User ID# " + postUsername);
+            ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUsername);
+            //ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUserId);
             FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.mainScreenFrame, profileViewFragment);
             transaction.addToBackStack(null);
             transaction.commit();
         });
-*/
+
         CheckBox postIsLiked = holder.likeButton;
         postIsLiked.setChecked(post.getIsLiked());
 
@@ -104,12 +110,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             commentBottomSheet.show(((FragmentActivity) v.getContext()).getSupportFragmentManager(), "CommentBottomSheet");
         });
 
-        // Save Button Actions
-        holder.saveButton.setOnClickListener(v -> {
-            holder.isSaved = !holder.isSaved;
-            holder.saveButton.setImageResource(holder.isSaved ? R.drawable.post_saved_filled_24 : R.drawable.post_saved_empty_24);
-            Log.d("Save Button", (holder.isSaved ? "Saved" : "Unsaved") + " Post ID#" + postId);
-        });
+        CheckBox postIsSaved = holder.saveButton;
+        postIsSaved.setChecked(post.getIsSaved());
+
+        postIsSaved.setOnClickListener(v -> toggleSaved(post, postIsSaved.isChecked()));
+
 
         holder.postFragmentDisplay.addView(fragmentView);
     }
@@ -120,10 +125,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
-        TextView postUsername, postCaption;
+        TextView postUsername, postCaption, postLikeValue, postCommentValue;
         ViewGroup postFragmentDisplay;
-        ImageButton postersProfile, commentButton, saveButton;
-        CheckBox likeButton;
+        ImageButton postersProfile, commentButton;
+        CheckBox likeButton, saveButton;
         boolean isLiked = false;
         boolean isSaved = false;
 
@@ -136,6 +141,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             likeButton = itemView.findViewById(R.id.postLikeButton);
             commentButton = itemView.findViewById(R.id.postCommentButton);
             saveButton = itemView.findViewById(R.id.postSaveButton);
+            postLikeValue = itemView.findViewById(R.id.postLikeValue);
+            postCommentValue = itemView.findViewById(R.id.postCommentValue);
         }
     }
 
@@ -143,8 +150,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         post.setIsLiked(isLiked);
         new ToggleLikeAsync().execute(new PostModel[]{post});
     }
-
-    //insert new team asynchronously
+    private void toggleSaved(PostModel post, boolean isSaved) {
+        post.setIsSaved(isSaved);
+        new ToggleSavedAsync().execute(new PostModel[]{post});
+    }
     private class ToggleLikeAsync extends AsyncTask<PostModel, Void, Void> {
         //update team in database and mark teams as unloaded
         protected Void doInBackground(PostModel... post) {
@@ -170,6 +179,32 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         protected void onPostExecute(Void _void) {
 
         }//end onPostExecute
-    }//end UpdateTeamAsync
+    }
+    private class ToggleSavedAsync extends AsyncTask<PostModel, Void, Void> {
+        //update team in database and mark teams as unloaded
+        protected Void doInBackground(PostModel... post) {
+            PostInteractionClient postInteractionClient = SPWebApiRepository.getInstance().getPostInteractionClient();
+            PostModel p = post[0];
+            try {
+                if (p.getIsSaved()) {
+                    postInteractionClient.savePost(p.getPostId());
+
+                } else {
+                    postInteractionClient.unsavePost(p.getPostId());
+
+
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            return null;
+        }//end doInBackground
+
+        //after insert is complete, reload team selector with new team
+        protected void onPostExecute(Void _void) {
+
+        }//end onPostExecute
+    }
 
 }
