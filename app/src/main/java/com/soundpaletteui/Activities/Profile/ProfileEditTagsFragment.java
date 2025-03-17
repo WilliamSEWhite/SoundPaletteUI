@@ -1,14 +1,17 @@
 package com.soundpaletteui.Activities.Profile;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.nfc.Tag;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +27,7 @@ import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
@@ -44,12 +48,15 @@ public class ProfileEditTagsFragment extends Fragment {
     private UserClient userClient;
     private int userId;
     private Button btnDone;
-
+    private int fragId;     // from which fragment did I come from?
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_user_tags, container, false);
-
+        // get the nav id to exit this fragment to the previous one
+        if(getArguments() != null) {
+            fragId = getArguments().getInt("nav", 0);
+        }
         initComponents(view);
         return view;
     }
@@ -89,32 +96,52 @@ public class ProfileEditTagsFragment extends Fragment {
         new Thread(() -> {
             try {
                 Response<ResponseBody> response = tagClient.updateTags(user.getUserId(), selectedTags);
-                requireActivity().runOnUiThread(() -> {
-                    if(response.isSuccessful()) {
-                        Toast.makeText(requireActivity(), "Tags saved successfully",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                    else {
-                        Toast.makeText(requireActivity(), "Failed to save tags",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
+                Activity activity = getActivity();
+                if(activity != null) {
+                    activity.runOnUiThread(() -> {
+                        if (response.isSuccessful()) {
+                            Toast.makeText(activity, "Tags saved successfully",
+                                    Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(activity, "Failed to save tags",
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
             } catch (IOException e) {
                 Toast.makeText(requireActivity(), "Error saving tags",
                         Toast.LENGTH_SHORT).show();
                 throw new RuntimeException(e);
             }
         }).start();
+
         Bundle args = new Bundle();
-        args.putParcelableArrayList("selectedTags", new ArrayList<>(selectedTags));
-
-        ProfileEditFragment profileEditFragment = new ProfileEditFragment();
-        profileEditFragment.setArguments(args);
-
         FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        transaction.addToBackStack(null);
-        transaction.replace(R.id.mainScreenFrame, profileEditFragment);
-        transaction.commit();
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        //fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        switch(fragId) {
+            case 0:     // return to profileFragment
+                Navigation.replaceFragment(fragmentManager, new ProfileFragment(),
+                        "PROFILE_FRAGMENT", R.id.mainScreenFrame);
+                /*
+                ProfileFragment profileFragment = new ProfileFragment();
+
+                transaction.addToBackStack(null);
+                transaction.replace(R.id.mainScreenFrame, profileFragment);
+                transaction.commit();*/
+                break;
+            case 1:     // return to profileEditFragment
+                args.putParcelableArrayList("selectedTags", new ArrayList<>(selectedTags));
+                Navigation.replaceFragment(fragmentManager, new ProfileEditFragment(),
+                        "PROFILE_EDIT_FRAGMENT", R.id.mainScreenFrame);
+                /*ProfileEditFragment profileEditFragment = new ProfileEditFragment();
+                profileEditFragment.setArguments(args);
+
+                transaction.addToBackStack(null);
+                transaction.replace(R.id.mainScreenFrame, profileEditFragment);
+                transaction.commit();*/
+                break;
+        }
     }
 
     /** retrieve user tags and mark selected */
@@ -130,11 +157,14 @@ public class ProfileEditTagsFragment extends Fragment {
                         }
                     }
                 }
-                requireActivity().runOnUiThread(() -> {
-                    //globalTags = tags;
-                    adapter = new TagSelectAdapter((ArrayList<TagModel>) globalTags, requireActivity());
-                    recyclerView.setAdapter(adapter);
-                });
+                Activity activity = getActivity();
+                if(activity != null) {
+                    activity.runOnUiThread(() -> {
+                        //globalTags = tags;
+                        adapter = new TagSelectAdapter((ArrayList<TagModel>) globalTags, requireActivity());
+                        recyclerView.setAdapter(adapter);
+                    });
+                }
             } catch (IOException e) {
                 requireActivity().runOnUiThread(() -> Toast.makeText(requireActivity(), "Error fetching tags", Toast.LENGTH_SHORT).show());
                 throw new RuntimeException(e);

@@ -19,6 +19,7 @@ import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
 import com.soundpaletteui.Infrastructure.Models.NewPostModel;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;

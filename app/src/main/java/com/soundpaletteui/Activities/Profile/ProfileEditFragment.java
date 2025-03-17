@@ -33,6 +33,7 @@ import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
@@ -67,6 +68,7 @@ public class ProfileEditFragment extends Fragment {
     private UserTagAdapter adapter;
     private List<TagModel> tagList;
     private Button btnAddTags;
+    private int fragId;     // from which fragment did I come from
 
     public ProfileEditFragment() {
         // Required empty public constructor
@@ -76,6 +78,9 @@ public class ProfileEditFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_profile_edit, container, false);
+        if(getArguments() != null) {
+            fragId = getArguments().getInt("nav", 0);
+        }
         try {
             initComponents();
         } catch (IOException e) {
@@ -118,7 +123,7 @@ public class ProfileEditFragment extends Fragment {
         btnSave = rootView.findViewById(R.id.btnSave);
         btnCancel = rootView.findViewById(R.id.btnCancel);
 
-        btnAddTags.setOnClickListener(v -> editUserTags());
+        btnAddTags.setOnClickListener(v -> editUserTags(new ProfileEditTagsFragment(), "PROFILE_EDIT_TAGS_FRAGMENT"));
         btnCancel.setOnClickListener(v -> returnToProfile());
         btnSave.setOnClickListener(v -> saveProfileEdit());
 
@@ -143,19 +148,20 @@ public class ProfileEditFragment extends Fragment {
         }
     }
 
-    private void editUserTags() {
-        ProfileEditTagsFragment tagsFragment = new ProfileEditTagsFragment();
-        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-        transaction.addToBackStack(null);
-        transaction.replace(R.id.mainScreenFrame, tagsFragment);
-        transaction.commit();
+    /** edit user tags */
+    private void editUserTags(Fragment newFragment, String tag) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("nav", 1);
+        newFragment.setArguments(bundle);
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
     }
 
     /** retrieves the list of tags from the user profile */
     private void getTags() {
         new Thread(() -> {
             try {
-                System.out.println("tags userId: " + user.getUserId());
+                //System.out.println("tags userId: " + user.getUserId());
                 List<TagModel> tags = tagClient.getUserTags(user.getUserId());
                 //List<TagModel> tags = tagClient.getTags();
                 requireActivity().runOnUiThread(() -> {
@@ -188,7 +194,7 @@ public class ProfileEditFragment extends Fragment {
             String email = profile_email.getText().toString();
             String phone = profile_phone.getText().toString();
             String bio = profile_bio.getText().toString();
-            System.out.println("bio: " + bio);
+            //System.out.println("bio: " + bio);
 
             CountrySelectAdapter adapter = (CountrySelectAdapter) location.getAdapter();
             LocationModel selectedLocation = adapter.getItem(location.getSelectedItemPosition());
@@ -211,24 +217,19 @@ public class ProfileEditFragment extends Fragment {
         }//end doInBackground
 
         protected void onPostExecute(Void v) {
-            System.out.println("returnToProfile()");
+            //System.out.println("returnToProfile()");
             returnToProfile();
         }//end onPostExecute
     }
 
     /** cancel editing user profile and return to profile fragment */
     private void returnToProfile() {
-        System.out.println("returning to profile!!");
         if(!isAdded()) {
             return;     // avoid crash if fragment has already detatched
         }
         ProfileFragment profileFragment = new ProfileFragment();
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        fragmentManager.beginTransaction()
-                .replace(R.id.mainScreenFrame, profileFragment)
-                .addToBackStack(null)
-                .commit();
+        Navigation.replaceFragment(fragmentManager, profileFragment, "PROFILE_FRAGMENT", R.id.mainScreenFrame);
     }
 
     /** pulls the user from the database */
@@ -241,10 +242,10 @@ public class ProfileEditFragment extends Fragment {
                 throw new RuntimeException(e);
             }
             profile_location = userInfo.getLocationId();
-            System.out.println("User Id: " + user.getUserId());
+            /*System.out.println("User Id: " + user.getUserId());
             System.out.println("User Name: " + user.getUsername());   // delete later
             System.out.println("User Email: " + userInfo.getEmail());   // delete later
-            System.out.println("UserInfo Location: " + profile_location);   // delete later
+            System.out.println("UserInfo Location: " + profile_location);   // delete later*/
 
             getCountries();
             requireActivity().runOnUiThread(this::populateView);
@@ -266,7 +267,7 @@ public class ProfileEditFragment extends Fragment {
         location.setAdapter(adapter); // Set the custom adapter to the spinner
         // You can create an anonymous listener to handle the event when is selected an spinner item
         location.setSelection(i-1);                              //retain previously selected value
-        System.out.println("Location: " + profile_location);
+        //System.out.println("Location: " + profile_location);
     }
 
     /** async call to pull countries from the database */
