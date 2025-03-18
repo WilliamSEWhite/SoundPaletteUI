@@ -230,7 +230,8 @@ public class CreatePostFragment extends Fragment {
     }
     private void replaceMainFragment(Fragment new_fragment, String tag) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        Navigation.replaceFragment(fragmentManager, new_fragment, tag, R.id.mainScreenFrame);
+        fragmentManager.popBackStack(); // returns to previous fragment after post
+        //Navigation.replaceFragment(fragmentManager, new_fragment, tag, R.id.mainScreenFrame);
         /*FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.mainScreenFrame, new_fragment, tag);
         transaction.commit();*/
