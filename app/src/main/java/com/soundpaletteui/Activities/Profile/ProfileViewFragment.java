@@ -265,7 +265,9 @@ public class ProfileViewFragment extends Fragment {
 
         protected void onPostExecute(UserProfileModel v) {
             profileBioDisplay.setText(v.getBio());
-
+            profileFollowersDisplay.setText(String.valueOf(v.getFollowerCount()));
+            profileFollowingDisplay.setText(String.valueOf(v.getFollowingCount()));
+            profileFollowingDisplay.setText(String.valueOf(v.getFollowingCount()));
         }//end onPostExecute
     }
 }

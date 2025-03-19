@@ -73,6 +73,9 @@ public class ProfileFragment extends Fragment {
     private List<TagModel> tagList;
     private Handler tagScrollHandler;
     private  int scrollPosition;
+    private TextView profileFollowersDisplay;
+    private TextView profileFollowingDisplay;
+
 
     public ProfileFragment() {
     }
@@ -122,6 +125,13 @@ public class ProfileFragment extends Fragment {
 
         // Assign text for User's Profile Bio
         profileBio = rootView.findViewById(R.id.profileBio);
+        profileFollowersDisplay = rootView.findViewById(R.id.profileFollowersDisplay);
+
+        // Assign number of following
+        profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
+
+
+
         getProfileBio();
 
         // Edit Profile Button Actions
@@ -251,6 +261,9 @@ public class ProfileFragment extends Fragment {
                 }
                 else {
                     profileBio.setText(userProfile.getBio());
+                    profileFollowersDisplay.setText(String.valueOf(userProfile.getFollowerCount()));
+                    profileFollowingDisplay.setText(String.valueOf(userProfile.getFollowingCount()));
+
                 }
             });
         }).start();

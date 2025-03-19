@@ -12,11 +12,24 @@ public class UserProfileModel {
     private String bio;
     @SerializedName("Picture")
     private String pic;
+    @SerializedName("FollowerCount")
+    private int followerCount;
+    @SerializedName("FollowingCount")
+    private int followingCount;
 
     public UserProfileModel(int userId, String bio, String pic) {
         this.userId = userId;
         this.bio = bio;
         this.pic = pic;
+        System.out.println("bio from model: " + bio);
+    }
+
+    public UserProfileModel(int userId, String bio, String pic, int followerCount, int followingCount) {
+        this.userId = userId;
+        this.bio = bio;
+        this.pic = pic;
+        this.followerCount = followerCount;
+        this.followingCount = followingCount;
         System.out.println("bio from model: " + bio);
     }
 
@@ -40,5 +53,11 @@ public class UserProfileModel {
     }
     public String getPic() {
         return pic;
+    }
+    public int getFollowerCount() {
+        return followerCount;
+    }
+    public int getFollowingCount() {
+        return followingCount;
     }
 }
