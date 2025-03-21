@@ -39,6 +39,7 @@ import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.LocationModel;
 import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
+import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
@@ -81,6 +82,7 @@ public class RegisterActivity extends AppCompatActivity {
     private FrameLayout frameSave;
     private GifImageView gifSave;
     private TextView textSave;
+    private UserProfileModel userProfileModel;
     /**
      * Sets up the layout and calls initialization.
      */
@@ -156,6 +158,7 @@ public class RegisterActivity extends AppCompatActivity {
         userClient = SPWebApiRepository.getInstance().getUserClient();
         getCountries();     // load countries from database
         user = AppSettings.getInstance().getUser();
+        userProfileModel = new UserProfileModel(user.getUserId(), "I haven't updated my bio yet...", "/dev/null");
     }
 
     /** shows a dialog with options Camera or Gallery */
@@ -276,7 +279,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void saveUserInfo() {
         // write saving code here
         new UpdateUserInfoAsync().execute();
-        Toast.makeText(RegisterActivity.this, "User profile saved" + userId, Toast.LENGTH_SHORT).show();
+        Toast.makeText(RegisterActivity.this, "User profile saved ", Toast.LENGTH_SHORT).show();
     }
 
     /** clear text fields in register activity */
@@ -380,6 +383,7 @@ public class RegisterActivity extends AppCompatActivity {
                     System.out.println("dob: " + dob);
                     System.out.println("dateCreated: " + dateCreated);
                     System.out.println("--------------");
+                    userClient.updateUserProfile(userProfileModel);
                 }
                 else {
                     Toast.makeText(RegisterActivity.this, "Please select a location.",

@@ -46,6 +46,7 @@ import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
@@ -119,7 +120,7 @@ public class CreatePostFragment extends Fragment {
                 switch (postType){
             case 1:
                 TextPostContentFragment textPostContent = TextPostContentFragment.newInstance();
-                replaceFragment(textPostContent);
+                replaceFragment(textPostContent, "TEXT_POST_CONTENT_FRAGMENT");
                 break;
             case 2:
                 break;
@@ -217,20 +218,23 @@ public class CreatePostFragment extends Fragment {
         return frag.getContent();
     }
 
-    private void replaceFragment(Fragment fragment){
+    private void replaceFragment(Fragment fragment, String tag){
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.postContentShell, fragment);
+        transaction.replace(R.id.postContentShell, fragment, tag);
         transaction.commit();
     }
 
     private void finishPost(){
-        replaceMainFragment(new HomeFragment());
+        // perhaps we should just pop the stack instead of go home. something to think about
+        replaceMainFragment(new HomeFragment(), "HOME_FRAGMENT");
     }
-    private void replaceMainFragment(Fragment new_fragment) {
+    private void replaceMainFragment(Fragment new_fragment, String tag) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.mainScreenFrame, new_fragment);
-        transaction.commit();
+        fragmentManager.popBackStack(); // returns to previous fragment after post
+        //Navigation.replaceFragment(fragmentManager, new_fragment, tag, R.id.mainScreenFrame);
+        /*FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.mainScreenFrame, new_fragment, tag);
+        transaction.commit();*/
     }
     private class GetTagsAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {

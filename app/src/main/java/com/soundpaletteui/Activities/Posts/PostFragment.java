@@ -106,6 +106,9 @@ public class PostFragment extends Fragment {
                     case "username":         //All saved posts
                         posts = postClient.getPostsForUsername(ARG_SEARCH_TERM);
                         break;
+                    case "following":         //All saved posts
+                        posts = postClient.getFollowingPosts();
+                        break;
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

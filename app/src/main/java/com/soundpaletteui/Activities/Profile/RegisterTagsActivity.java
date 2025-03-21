@@ -88,6 +88,7 @@ public class RegisterTagsActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show();
                     }
                     else {
+                        System.out.println("TagRegister: " + response.body());
                         Toast.makeText(RegisterTagsActivity.this, "Failed to save tags",
                                 Toast.LENGTH_SHORT).show();
                     }

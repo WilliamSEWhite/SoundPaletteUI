@@ -19,6 +19,7 @@ import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
 import com.soundpaletteui.Infrastructure.Models.NewPostModel;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
@@ -264,7 +265,9 @@ public class ProfileViewFragment extends Fragment {
 
         protected void onPostExecute(UserProfileModel v) {
             profileBioDisplay.setText(v.getBio());
-
+            profileFollowersDisplay.setText(String.valueOf(v.getFollowerCount()));
+            profileFollowingDisplay.setText(String.valueOf(v.getFollowingCount()));
+            profileFollowingDisplay.setText(String.valueOf(v.getFollowingCount()));
         }//end onPostExecute
     }
 }

@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
@@ -27,6 +28,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
@@ -168,10 +170,12 @@ public class HomeFragment extends Fragment {
 
     // Replaces the PostFragment based on the algorithmType and userId
     private void replacePostFragment(String algoType, String userId) {
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        //FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(algoType, userId);
-        transaction.replace(R.id.postFragment, postFragment);
-        transaction.commit();
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        /*transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
+        transaction.commit();*/
+        Navigation.replaceFragment(fragmentManager, postFragment, "POST_FRAGMENT", R.id.mainScreenFrame);
     }
 
     //Sets the text style for a TextView based on whether it is selected.

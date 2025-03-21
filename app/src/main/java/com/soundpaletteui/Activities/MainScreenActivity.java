@@ -32,6 +32,7 @@ import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.databinding.ActivityMainBinding;
@@ -67,7 +68,8 @@ public class MainScreenActivity extends AppCompatActivity {
         animateHeaderShadow();
         View toolbar = findViewById(R.id.toolbar);
         UISettings.applyFlippedBrightnessGradientBackground(toolbar, 120f);
-        replaceFragment(homeFragment);
+        //replaceFragment(homeFragment, "HOME_FRAGMENT");
+        Navigation.replaceFragment(getSupportFragmentManager(), homeFragment, "HOME_FRAGMENT", R.id.mainScreenFrame);
         setInitialHomeButtonColor();
         setupCustomBottomNav();
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -82,21 +84,25 @@ public class MainScreenActivity extends AppCompatActivity {
             if (selected == R.id.nav_home) {
                 hue = 30f;
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue);
-                replaceFragment(homeFragment);
+                //replaceFragment(homeFragment, "HOME_FRAGMENT");
+                Navigation.replaceFragment(getSupportFragmentManager(), homeFragment, "HOME_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_profile) {
                 hue = 55f;
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue);
-                replaceFragment(profileFragment);
+                //replaceFragment(profileFragment, "PROFILE_FRAGMENT");
+                Navigation.replaceFragment(getSupportFragmentManager(), profileFragment, "PROFILE_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_create) {
                 selectPostType();
             } else if (selected == R.id.nav_msg) {
                 hue = 240f;
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue);
-                replaceFragment(new MessageFragment());
+                //replaceFragment(new MessageFragment(), "MESSAGE_FRAGMENT");
+                Navigation.replaceFragment(getSupportFragmentManager(), new MessageFragment(), "MESSAGE_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_search) {
                 hue = 330f;
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue);
-                replaceFragment(searchFragment);
+                //replaceFragment(searchFragment, "SEARCH_FRAGMENT");
+                Navigation.replaceFragment(getSupportFragmentManager(), searchFragment, "SEARCH_FRAGMENT", R.id.mainScreenFrame);
             } else {
                 hue = 30f;
             }
@@ -107,6 +113,16 @@ public class MainScreenActivity extends AppCompatActivity {
             updateBottomNavShadows(item.getItemId(), hue);
             return true;
         });
+    }
+
+    // Initializes Fragment Activities to replace Main Fragment
+    private void initComponents() {
+        // Get the Intent that started this activity
+        userList = new ArrayList<>();
+        mainContentAdapter = new MainContentAdapter(userList);
+        homeFragment = new HomeFragment();
+        profileFragment = new ProfileFragment();
+        searchFragment = new SearchFragment();
     }
 
     // Function for Post creation - type selection
@@ -150,7 +166,8 @@ public class MainScreenActivity extends AppCompatActivity {
     // Function to create a post
     private void createPost(int postType){
         CreatePostFragment createPostFragment = CreatePostFragment.newInstance(postType);
-        replaceFragment(createPostFragment);
+        //replaceFragment(createPostFragment, "CREATE_POST_FRAGMENT");
+        Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "CREATE_POST_FRAGMENT", R.id.mainScreenFrame);
     }
 
     // Animates a "breathing" shadow effect on the header text.
@@ -206,16 +223,6 @@ public class MainScreenActivity extends AppCompatActivity {
         binding.bottomNavigationView.setItemTextColor(homeButtonTint);
     }
 
-    // Initializes Fragment Activities to replace Main Fragment
-    private void initComponents() {
-        // Get the Intent that started this activity
-        userList = new ArrayList<>();
-        mainContentAdapter = new MainContentAdapter(userList);
-        homeFragment = new HomeFragment();
-        profileFragment = new ProfileFragment();
-        searchFragment = new SearchFragment();
-    }
-
     // Updates the adapter list once user data is retrieved.
     private void populateView() {
         if (user != null) {
@@ -225,13 +232,31 @@ public class MainScreenActivity extends AppCompatActivity {
         }
     }
 
-    // Replaces the main Fragment based on bottom navigation selection
-    private void replaceFragment(Fragment fragment) {
+    /** replaces fragment with navigated fragment */
+    /*private void replaceFragment(Fragment fragment, String tag) {
         FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment currentFragment = fragmentManager.findFragmentById(R.id.mainScreenFrame);
+        // don't add the same fragment
+        if(currentFragment != null && currentFragment.getTag() != null &&
+                currentFragment.getTag().equals(tag)) {
+            return;
+        }
+        // check the back stack for current fragment
+        boolean isInBackStack = false;
+        for(int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
+            if(fragmentManager.getBackStackEntryAt(i).getName().equals(tag)) {
+                isInBackStack = true;
+                break;
+            }
+        }
+        if(isInBackStack) {
+            fragmentManager.popBackStack(tag, 0);
+        }
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.mainScreenFrame, fragment);
+        fragmentTransaction.replace(R.id.mainScreenFrame, fragment, tag);
+        fragmentTransaction.addToBackStack(tag);
         fragmentTransaction.commit();
-    }
+    }*/
 
     //Sets up custom layouts for bottom navigation items.
     private void setupCustomBottomNav() {

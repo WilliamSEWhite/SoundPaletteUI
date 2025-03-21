@@ -8,10 +8,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
+import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
+import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
@@ -30,6 +36,10 @@ import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
@@ -53,6 +63,19 @@ public class ProfileFragment extends Fragment {
     private Handler gifHandler = new Handler(Looper.getMainLooper());
     private final int FULL_ALPHA = 255;
     private final int TRANSPARENT_ALPHA = 77;
+    /** buttons */
+    Button btnEditTags, btnEditSaved;
+    /** Tag stuff */
+    private LinearLayoutManager linearLayoutManager;
+    private TagClient tagClient;
+    private RecyclerView recyclerView;
+    private UserTagAdapter adapter;
+    private List<TagModel> tagList;
+    private Handler tagScrollHandler;
+    private  int scrollPosition;
+    private TextView profileFollowersDisplay;
+    private TextView profileFollowingDisplay;
+
 
     public ProfileFragment() {
     }
@@ -102,19 +125,18 @@ public class ProfileFragment extends Fragment {
 
         // Assign text for User's Profile Bio
         profileBio = rootView.findViewById(R.id.profileBio);
+        profileFollowersDisplay = rootView.findViewById(R.id.profileFollowersDisplay);
+
+        // Assign number of following
+        profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
+
+
+
         getProfileBio();
 
         // Edit Profile Button Actions
         AppCompatImageButton buttonEdit = rootView.findViewById(R.id.editProfileButton);
-        buttonEdit.setOnClickListener(v -> {
-            ProfileEditFragment profileEditFragment = new ProfileEditFragment();
-
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .replace(R.id.mainScreenFrame, profileEditFragment)
-                    .addToBackStack(null)
-                    .commit();
-        });
+        buttonEdit.setOnClickListener(v -> editProfile(new ProfileEditFragment(), "PROFILE_EDIT_FRAGMENT"));
 
         // Post Button Actions
         framePosts.setOnClickListener(v -> {
@@ -182,6 +204,38 @@ public class ProfileFragment extends Fragment {
         return rootView;
     }
 
+    /** Initializes views and loads user data. */
+    private void initComponents(View view) {
+        // Get arguments instead of Intent
+        user = AppSettings.getInstance().getUser();
+        userList = new ArrayList<>();
+        mainContentAdapter = new MainContentAdapter(userList);
+        userClient = SPWebApiRepository.getInstance().getUserClient();
+
+        tagClient = SPWebApiRepository.getInstance().getTagClient();
+        tagList = new ArrayList<>();
+
+        btnEditTags = view.findViewById(R.id.editTagsButton);
+        btnEditSaved = view.findViewById(R.id.editSavedButton);
+
+        btnEditTags.setOnClickListener(v -> editUserTags(new ProfileEditTagsFragment(), "PROFILE_EDIT_TAGS_FRAGMENT"));
+        btnEditSaved.setOnClickListener(v -> editSaved(new ProfileEditFragment(), "PROFILE_EDIT_FRAGMENT"));
+
+        recyclerView = view.findViewById(R.id.recycler_tag);
+        linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        tagScrollHandler = new Handler();
+
+        getTags();
+    }
+
+    /** move to edit profile fragment */
+    private void editProfile(Fragment newFragment, String tag) {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
+    }
+
     private void getProfileBio() {
         getUserBio();
     }
@@ -207,19 +261,82 @@ public class ProfileFragment extends Fragment {
                 }
                 else {
                     profileBio.setText(userProfile.getBio());
+                    profileFollowersDisplay.setText(String.valueOf(userProfile.getFollowerCount()));
+                    profileFollowingDisplay.setText(String.valueOf(userProfile.getFollowingCount()));
+
                 }
             });
         }).start();
     }
 
+    private void editSaved(Fragment newFragment, String tag) {
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
+    }
 
-    // Initializes views and loads user data.
-    private void initComponents(View view) {
-        // Get arguments instead of Intent
-        user = AppSettings.getInstance().getUser();
-        userList = new ArrayList<>();
-        mainContentAdapter = new MainContentAdapter(userList);
-        userClient = SPWebApiRepository.getInstance().getUserClient();
+    /** edit user tags */
+    private void editUserTags(Fragment newFragment, String tag) {
+        Bundle bundle = new Bundle();
+        bundle.putInt("nav", 0);
+        newFragment.setArguments(bundle);
+        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
+    }
+
+    /** auto scrolls the horizontal list of tags */
+    private void startAutoScroll() {
+        tagScrollHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if(scrollPosition < adapter.getItemCount()) {
+                    recyclerView.smoothScrollToPosition(scrollPosition++);
+                }
+                else {
+                    scrollPosition = 0;
+                    recyclerView.smoothScrollToPosition(scrollPosition);
+                }
+                tagScrollHandler.postDelayed(this, 2000);
+            }
+        }, 2000);
+    }
+
+    /** refreshes the user tag list in the recycler view */
+    private void refreshTagList() {
+        if (getArguments() != null && getArguments().containsKey("selectedTags")) {
+            ArrayList<TagModel> selectedTags = getArguments().getParcelableArrayList("selectedTags");
+
+            if (selectedTags != null && !selectedTags.isEmpty()) {
+                // Update the RecyclerView with the new tag list
+                adapter = new UserTagAdapter(selectedTags, getContext());
+                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+            }
+            else {
+                Log.d("ProfileEditFragment", "No tags received or empty list");
+            }
+        }
+    }
+
+    /** retrieves the list of tags from the user profile */
+    private void getTags() {
+        new Thread(() -> {
+            try {
+                List<TagModel> tags = tagClient.getUserTags(user.getUserId());
+                //List<TagModel> tags = tagClient.getTags();
+                requireActivity().runOnUiThread(() -> {
+                    tagList = tags;
+                    adapter = new UserTagAdapter((ArrayList<TagModel>) tagList, requireActivity());
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setNestedScrollingEnabled(false);
+                    SnapHelper snapHelper = new LinearSnapHelper();
+                    snapHelper.attachToRecyclerView(recyclerView);
+                });
+                startAutoScroll();
+            } catch (IOException e) {
+                requireActivity().runOnUiThread(() -> Toast.makeText(requireActivity(), "Error fetching tags", Toast.LENGTH_SHORT).show());
+                throw new RuntimeException(e);
+            }
+        }).start();
     }
 
     // Replaces the PostFragment based on the algorithmType and userId
