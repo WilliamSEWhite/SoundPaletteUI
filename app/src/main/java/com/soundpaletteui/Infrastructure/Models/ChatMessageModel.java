@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public class MessageModel {
+public class ChatMessageModel {
     @SerializedName("MessageId")
     private int messageId;
     @SerializedName("Message")
@@ -17,7 +17,7 @@ public class MessageModel {
     @SerializedName("IsActiveUser")
     private boolean isActiveUser;
 
-    public MessageModel(int messageId, String message, String sentBy, Date sentDate, boolean isActiveUser)
+    public ChatMessageModel(int messageId, String message, String sentBy, Date sentDate, boolean isActiveUser)
     {
         this.messageId = messageId;
         this.message = message;
