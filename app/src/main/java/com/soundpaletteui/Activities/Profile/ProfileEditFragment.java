@@ -34,6 +34,7 @@ import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
@@ -86,6 +87,8 @@ public class ProfileEditFragment extends Fragment {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        UISettings.applyBrightnessGradientBackground(rootView, 50f);
+
         return rootView;
     }
 
