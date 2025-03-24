@@ -24,7 +24,10 @@ public interface UserEndpoints {
     Call<UserProfileModel> getUserProfile(@Path("id") int id);
     @GET("api/user/get-user-profile-by-username/{username}")
     Call<UserProfileModel> getUserProfileByUsername(@Path("username") String username);
-
     @POST("api/user/update-user-profile")
     Call<UserProfileModel> updateUserProfile(@Body UserProfileModel userProfile);
+    @GET("api/user/follow-user")
+    Call<Void> followUser(@Query("followerId") int followerId, @Query("followingUsername") String followingUsername);
+    @GET("api/user/unfollow-user")
+    Call<Void> unfollowUser(@Query("followerId") int followerId, @Query("followingUsername") String followingUsername);
 }

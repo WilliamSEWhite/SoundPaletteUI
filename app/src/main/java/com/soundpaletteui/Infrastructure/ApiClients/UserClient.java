@@ -5,6 +5,7 @@ import com.soundpaletteui.Infrastructure.ApiEndpoints.UserEndpoints;
 import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 
 import java.io.IOException;
 
@@ -50,6 +51,22 @@ public class UserClient {
     public UserProfileModel updateUserProfile(UserProfileModel userProfile) throws IOException {
         Call<UserProfileModel> call = userEndpoints.updateUserProfile(userProfile);
         Response<UserProfileModel> response = call.execute();
+        return response.body();
+    }
+    public Void followUser(String followingUsername) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+
+        Call<Void> call = userEndpoints.followUser(userId, followingUsername);
+        Response<Void> response = call.execute();
+
+        return response.body();
+    }
+    public Void unfollowUser(String followingUsername) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+
+        Call<Void> call = userEndpoints.unfollowUser(userId, followingUsername);
+        Response<Void> response = call.execute();
+
         return response.body();
     }
 }
