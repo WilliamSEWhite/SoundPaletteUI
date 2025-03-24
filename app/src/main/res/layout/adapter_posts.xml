@@ -44,7 +44,7 @@
                             android:id="@+id/postCaption"
                             android:layout_width="match_parent"
                             android:layout_height="55dp"
-                            android:background="@drawable/white_translucency_gradient_horizontal"
+                            android:background="@drawable/white_translucency_gradient_horizontal_bottom"
                             android:text="CAPTION"
                             android:textColor="@color/black"
                             android:textSize="14dp" />
@@ -63,7 +63,7 @@
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:orientation="horizontal"
-            android:background="@drawable/white_translucency_gradient_vertical">
+            android:background="@drawable/white_translucency_gradient_vertical_post">
 
             <CheckBox
                     android:id="@+id/postLikeButton"
@@ -74,7 +74,8 @@
                     android:layout_marginStart="5dp"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
                     android:paddingStart="10dp"
-                    android:button="@drawable/like_button"/>
+                    android:button="@drawable/like_button"
+                />
 
             <TextView
                 android:id="@+id/postLikeValue"
@@ -82,6 +83,7 @@
                 android:layout_height="match_parent"
                 android:paddingTop="3dp"
                 android:layout_gravity="center"
+
                 android:text="LIKES"
                 android:textSize="20dp"/>
 

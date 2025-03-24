@@ -28,6 +28,7 @@ import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
@@ -58,6 +59,8 @@ public class ProfileEditTagsFragment extends Fragment {
             fragId = getArguments().getInt("nav", 0);
         }
         initComponents(view);
+        UISettings.applyBrightnessGradientBackground(view, 50f);
+
         return view;
     }
 

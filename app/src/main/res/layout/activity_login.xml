@@ -57,7 +57,7 @@
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/white_translucency_gradient_horizontal"
+        android:background="@drawable/white_translucency_gradient_login"
         android:hint="Username"
         android:inputType="text"
         android:maxLength="25"
@@ -70,7 +70,8 @@
         android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/white_translucency_gradient_horizontal"
+        android:background="@drawable/white_translucency_gradient_login"
+
         android:hint="Password"
         android:inputType="text"
         android:maxLength="25"
