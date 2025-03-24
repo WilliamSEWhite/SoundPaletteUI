@@ -7,6 +7,8 @@
         android:state_enabled="true"
         android:drawable="@drawable/post_fav_filled_24" />
 
+
+
     <item
         android:state_checked="false"
         android:state_window_focused="true"

@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
 
-public class ChatRoomModel {
+public class ChatroomModel {
     @SerializedName("ChatRoomId")
 
     private int chatRoomId;
@@ -19,7 +19,7 @@ public class ChatRoomModel {
     @SerializedName("IsGroupChat")
     private Boolean isGroupChat;
 
-    public ChatRoomModel(int chatRoomId, String chatRoomName, String lastMessage, Date lastMessageDate, String lastMessageBy, boolean isGroupChat)
+    public ChatroomModel(int chatRoomId, String chatRoomName, String lastMessage, Date lastMessageDate, String lastMessageBy, boolean isGroupChat)
     {
         this.chatRoomId = chatRoomId;
         this.chatRoomName = chatRoomName;

@@ -28,7 +28,6 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
@@ -85,7 +84,7 @@ public class HomeFragment extends Fragment {
         textFollower = rootView.findViewById(R.id.follower_text);
 
         frameExplore.setOnClickListener(v -> {
-            // Setting the Post Fragment with "Popular" algorithm
+            // Setting the PostFragment with "Popular" algorithm
             Log.d("HomeFragment", "Explore Selected");
             replacePostFragment("popular", null);
 
@@ -97,7 +96,7 @@ public class HomeFragment extends Fragment {
                 frameFollower.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
                 UISettings.applyBrightnessGradientBackground(rootLayout, 30f);
                 exploreGifDrawable.start();
-                gifHandler.postDelayed(() -> exploreGifDrawable.stop(), 800);
+                gifHandler.postDelayed(exploreGifDrawable::stop, 800);
             } catch (ClassCastException e) {
                 e.printStackTrace();
                 Toast.makeText(requireContext(),
@@ -115,12 +114,13 @@ public class HomeFragment extends Fragment {
             gifFollower.setAlpha(0.3f);
             setButtonTextSelected(textExplore, true);
             setButtonTextSelected(textFollower, false);
+
             View toolbar = requireActivity().findViewById(R.id.toolbar);
             UISettings.applyFlippedBrightnessGradientBackground(toolbar, 30f);
         });
 
         frameFollower.setOnClickListener(v -> {
-            // Setting the Post Fragment with posts based on User's Following
+            // Setting the PostFragment with posts based on User's Following
             Log.d("HomeFragment", "Followers Selected for UserID #" + userId);
             replacePostFragment("following", userId);
 
@@ -132,7 +132,7 @@ public class HomeFragment extends Fragment {
                 frameExplore.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
                 UISettings.applyBrightnessGradientBackground(rootLayout, 330f);
                 followerGifDrawable.start();
-                gifHandler.postDelayed(() -> followerGifDrawable.stop(), 800);
+                gifHandler.postDelayed(followerGifDrawable::stop, 800);
             } catch (ClassCastException e) {
                 e.printStackTrace();
                 Toast.makeText(requireContext(),
@@ -155,6 +155,7 @@ public class HomeFragment extends Fragment {
             UISettings.applyFlippedBrightnessGradientBackground(toolbar, 330f);
         });
 
+        // Default view is the "Explore" tab
         frameExplore.performClick();
         return rootView;
     }
@@ -168,14 +169,14 @@ public class HomeFragment extends Fragment {
         userClient = SPWebApiRepository.getInstance().getUserClient();
     }
 
-    // Replaces the PostFragment based on the algorithmType and userId
+
     private void replacePostFragment(String algoType, String userId) {
-        //FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(algoType, userId);
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        /*transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
-        transaction.commit();*/
-        Navigation.replaceFragment(fragmentManager, postFragment, "POST_FRAGMENT", R.id.mainScreenFrame);
+
+
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
+        transaction.commit();
     }
 
     //Sets the text style for a TextView based on whether it is selected.

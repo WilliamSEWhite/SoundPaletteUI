@@ -8,27 +8,24 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class PostFragment extends Fragment {
-    private static String ARG_ALGO_TYPE = "AlgorithmType";
-    private static String ARG_SEARCH_TERM = "SearchTerm";
+    private static final String ARG_ALGO_TYPE = "AlgorithmType";
+    private static final String ARG_SEARCH_TERM = "SearchTerm";
     private static final String ARG_BASE_HUE = "base_hue";
     private static final String TAG = "PostFragment";
     private float baseHue = -1f;
@@ -36,6 +33,8 @@ public class PostFragment extends Fragment {
     private RecyclerView recyclerView;
 
     private final PostClient postClient = SPWebApiRepository.getInstance().getPostClient();
+    private String algoType;
+    private String searchTerm;
 
     // New Instance of a PostFragment with algorithmType only
     public static PostFragment newInstance(String algorithmType) {
@@ -62,13 +61,13 @@ public class PostFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            ARG_ALGO_TYPE = getArguments().getString(ARG_ALGO_TYPE, null);
-            ARG_SEARCH_TERM = getArguments().getString(ARG_SEARCH_TERM, null);
-            baseHue = getArguments().getFloat(ARG_BASE_HUE, -1f);
+            this.algoType = getArguments().getString(ARG_ALGO_TYPE);
+            this.searchTerm = getArguments().getString(ARG_SEARCH_TERM);
+            this.baseHue = getArguments().getFloat(ARG_BASE_HUE, -1f);
         }
     }
 
-    // Sets the View to fragment_post.xml (only contains the RecyclerView which will call on PostAdapter)
+    // Sets the View to fragment_post.xml (only contains the RecyclerView)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -79,39 +78,43 @@ public class PostFragment extends Fragment {
         if (baseHue >= 0f) {
             UISettings.applyBrightnessGradientBackground(view, baseHue);
         }
-
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
+
 
         new GetPostsTask().execute();
         return view;
     }
 
-    // Manually create PostModel (remove when connection to API Server successful
+    // Gets Posts from the client (dummy or real).
     private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
         @Override
         protected List<PostModel> doInBackground(Void... voids) {
             List<PostModel> posts = null;
             try {
-                switch (ARG_ALGO_TYPE) {
-                    case "popular":          //Posts by the current User
+                switch (algoType) {
+                    case "popular":
                         posts = postClient.getPosts();
                         break;
-                    case "user":     //All posts based on User's followers
+                    case "user":
                         posts = postClient.getPostsForUser();
                         break;
-                    case "saved":         //All saved posts
+                    case "saved":
                         posts = postClient.getSavedPostsForUser();
                         break;
-                    case "username":         //All saved posts
-                        posts = postClient.getPostsForUsername(ARG_SEARCH_TERM);
+                    case "username":
+                        posts = postClient.getPostsForUsername(searchTerm);
                         break;
-                    case "following":         //All saved posts
+                    case "following":
                         posts = postClient.getFollowingPosts();
                         break;
+                    default:
+                        // fallback if needed
+                        posts = postClient.getPosts();
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                Log.e(TAG, "Error fetching posts", e);
+                posts = new ArrayList<>();
             }
 
 //            dummyPosts.add(new PostModel(1,  "new lyrics in the works! just need some good vocals…", null, new PostContentModel("Sharing some thoughts on my latest sound exploration"), new Date(), "Username1", 1));
@@ -270,5 +273,4 @@ public class PostFragment extends Fragment {
         gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
         rootView.setBackground(gradientDrawable);
     }
-
 }

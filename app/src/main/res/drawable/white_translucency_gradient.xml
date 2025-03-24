@@ -10,5 +10,8 @@
         android:startColor="#33FFFFFF"
         android:endColor="#E5FFFFFF"
         android:type="linear" />
+    <corners
+        android:topLeftRadius="16dp"
+      />
 
 </shape>

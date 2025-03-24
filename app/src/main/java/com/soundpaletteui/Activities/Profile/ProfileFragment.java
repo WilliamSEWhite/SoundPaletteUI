@@ -1,5 +1,6 @@
 package com.soundpaletteui.Activities.Profile;
 
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -130,7 +131,8 @@ public class ProfileFragment extends Fragment {
         // Assign number of following
         profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
 
-
+        btnEditTags.setBackgroundColor(Color.parseColor("#FFD700")); // Golden Yellow
+        btnEditSaved.setBackgroundColor(Color.parseColor("#FFD700")); // Golden Yellow
 
         getProfileBio();
 
