@@ -91,7 +91,7 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        new Handler(Looper.getMainLooper()).postDelayed(() -> getProfileBio(), 500);
+        new Handler(Looper.getMainLooper()).postDelayed(() -> getProfileBio(), 1000);
     }
 
     // Inflates the layout and sets up UI for posts and saved content.

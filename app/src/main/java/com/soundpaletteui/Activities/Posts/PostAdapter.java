@@ -24,6 +24,7 @@ import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
 import com.soundpaletteui.Infrastructure.ApiClients.PostInteractionClient;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
@@ -84,12 +85,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.postersProfile.setOnClickListener(v -> {
             Log.d("ProfileViewFragment", "Selected to Load Profile User ID# " + postUsername);
             ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUsername);
-            //ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUserId);
             FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
+            Navigation.replaceFragment(fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame);
+            //ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUserId);
+            /*FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.mainScreenFrame, profileViewFragment);
             transaction.addToBackStack(null);
-            transaction.commit();
+            transaction.commit();*/
         });
 
         CheckBox postIsLiked = holder.likeButton;
