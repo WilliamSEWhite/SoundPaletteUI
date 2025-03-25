@@ -1,0 +1,81 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Activities.Messages.MessageFragment"
+    android:orientation="vertical"
+    android:background="@drawable/background2">
+
+    <!-- Poster's Profile -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/background1">
+
+        <TextView
+            android:id="@+id/chatroomName"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="\@USERNAME"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="20dp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- RecyclerView to display messages -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewMessages"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9"
+        android:layout_above="@id/messageInputLayout"
+        android:padding="15dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"/>
+
+    <!-- Send Message Linear Layout -->
+    <LinearLayout
+        android:id="@+id/messageInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/background1"
+        android:orientation="horizontal"
+        android:padding="12dp">
+
+        <EditText
+            android:id="@+id/editTextMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/background4"
+            android:hint="Type a message..."
+            android:text="This is an extremely long message to see how large this box will actually get will it grow or remain small?"
+            android:minHeight="28dp"
+            android:maxHeight="96dp"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            android:textColorHint="@android:color/darker_gray" />
+
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/frosted_glass_button"
+            android:text="Reply"
+            android:textColor="@android:color/white" />
+
+    </LinearLayout>
+
+</LinearLayout>

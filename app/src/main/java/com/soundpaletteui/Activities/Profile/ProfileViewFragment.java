@@ -11,14 +11,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.soundpaletteui.Activities.Messages.MessageFragment;
+import com.soundpaletteui.Activities.Posts.PostAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
+import com.soundpaletteui.Infrastructure.ApiClients.PostInteractionClient;
 import com.soundpaletteui.Infrastructure.Models.NewPostModel;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
+import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
@@ -50,6 +54,7 @@ public class ProfileViewFragment extends Fragment {
     private static int viewUserId;
     private UserModel user;
     private UserModel viewUser;
+    private UserProfileModelLite viewProfile;
     private UserClient userClient;
     private UserClient viewUserClient;
     private static String viewUsername;
@@ -57,7 +62,7 @@ public class ProfileViewFragment extends Fragment {
     private TextView profileBioDisplay;
     private TextView profileFollowersDisplay;
     private TextView profileFollowingDisplay;
-    private Button followButton;
+    private CheckBox followButton;
     private Button messageButton;
     private View framePosts;
     private GifImageView gifPosts;
@@ -113,24 +118,17 @@ public class ProfileViewFragment extends Fragment {
         textTagged = rootView.findViewById(R.id.taggedToggle);
         followButton = rootView.findViewById(R.id.followButton);
         messageButton = rootView.findViewById(R.id.messageButton);
-
-        // Assign username
-        profileUsernameDisplay = rootView.findViewById(R.id.profileUsername);
-        profileUsernameDisplay.setText(viewUsername);
-
-        // Assign text for User's Profile Bio
         profileBioDisplay = rootView.findViewById(R.id.profileBio);
-        //profileBioDisplay.setText(viewUser.getBio());
-
-        // Assign number of followers
         profileFollowersDisplay = rootView.findViewById(R.id.profileFollowersDisplay);
-        //profileFollowersDisplay.setText(viewUser.getFollowerCount());
-
-        // Assign number of following
         profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
-        //profileFollowingDisplay.setText(viewUser.getFollowingCount());
+        profileUsernameDisplay = rootView.findViewById(R.id.profileUsername);
 
         // Follow Button Actions
+        followButton.setChecked(viewProfile.isFollowing());
+        followButton.setOnClickListener(v -> {
+            toggleFollow(viewProfile, followButton.isChecked());
+        });
+
         followButton.setOnClickListener(v -> {
             Log.d("Follow Button", userId+" wants to follow: "+ viewUserId);
         });
@@ -143,7 +141,7 @@ public class ProfileViewFragment extends Fragment {
 
         // Post Button Actions
         framePosts.setOnClickListener(v -> {
-            // Setting the Post Fragment with ViewUser's post algorithm
+            // Setting the Post Fragment with viewProfile's post algorithm
             Log.d("ProfileFragment", "Posts selected for User ID# " + viewUserId);
             replacePostFragment("username", String.valueOf(viewUserId));
 
@@ -209,14 +207,9 @@ public class ProfileViewFragment extends Fragment {
         return rootView;
     }
 
-
     // Initializes views and loads user data and viewUser
     private void initComponents(View view) {
         user = AppSettings.getInstance().getUser();
-
-        //viewUser = // Set UserModel for account being viewed
-        //viewUserId = viewUser.getUserId();
-
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
         new GetProfileAsync().execute();
@@ -248,13 +241,15 @@ public class ProfileViewFragment extends Fragment {
             textView.setTextSize(18);
         }
     }
-    private class GetProfileAsync extends AsyncTask<Void,Void, UserProfileModel> {
-        protected UserProfileModel doInBackground(Void... d) {
+
+    // Get a UserProfileModelLite of the user's profile
+    private class GetProfileAsync extends AsyncTask<Void,Void, UserProfileModelLite> {
+        protected UserProfileModelLite doInBackground(Void... d) {
             System.out.println("UpdateUserInfoAsync");
             try {
                 UserClient client = SPWebApiRepository.getInstance().getUserClient();
-                UserProfileModel profile = client.getUserProfileByUsername(viewUsername);
-                return profile;
+                viewProfile = client.getUserProfileByUsername(viewUsername);
+                return viewProfile;
             } catch (IOException e) {
                 Toast.makeText(requireContext(),
                         "Error making post",
@@ -263,13 +258,50 @@ public class ProfileViewFragment extends Fragment {
             return null;
         }//end doInBackground
 
-        protected void onPostExecute(UserProfileModel v) {
+        // Set the bio, follower count, following count and username
+        protected void onPostExecute(UserProfileModelLite v) {
+            profileUsernameDisplay.setText(viewUsername);
             profileBioDisplay.setText(v.getBio());
             profileFollowersDisplay.setText(String.valueOf(v.getFollowerCount()));
             profileFollowingDisplay.setText(String.valueOf(v.getFollowingCount()));
-            profileFollowingDisplay.setText(String.valueOf(v.getFollowingCount()));
         }//end onPostExecute
     }
+
+    // Connect to API Server to perform "Follow" actions
+    private void toggleFollow(UserProfileModelLite profile, boolean isFollowing) {
+        profile.setIsFollowing(isFollowing);
+        new ToggleFollowAsync().execute(profile);
+    }
+
+    private class ToggleFollowAsync extends AsyncTask<UserProfileModelLite, Void, UserProfileModelLite> {
+        protected UserProfileModelLite doInBackground(UserProfileModelLite... profiles) {
+            UserProfileModelLite profile = profiles[0];
+            UserClient client = SPWebApiRepository.getInstance().getUserClient();
+
+            try {
+                if (profile.isFollowing()) {
+                    client.followUser(viewUsername);
+                } else {
+                    client.unfollowUser(viewUsername);
+                }
+                return client.getUserProfileByUsername(viewUsername);
+            } catch (IOException e) {
+                Log.e("ToggleFollow", "Error toggling follow", e);
+                return null;
+            }
+        }
+
+        protected void onPostExecute(UserProfileModelLite updatedProfile) {
+            if (updatedProfile != null) {
+                viewProfile = updatedProfile;
+                profileFollowersDisplay.setText(String.valueOf(viewProfile.getFollowerCount()));
+                followButton.setChecked(viewProfile.isFollowing());
+            } else {
+                Toast.makeText(requireContext(), "Failed to update follow status", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }
 
 

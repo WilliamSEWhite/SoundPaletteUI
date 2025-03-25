@@ -3,6 +3,7 @@ package com.soundpaletteui.Infrastructure.ApiEndpoints;
 import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
+import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -23,7 +24,7 @@ public interface UserEndpoints {
     @GET("api/user/get-user-profile/{id}")
     Call<UserProfileModel> getUserProfile(@Path("id") int id);
     @GET("api/user/get-user-profile-by-username/{username}")
-    Call<UserProfileModel> getUserProfileByUsername(@Path("username") String username);
+    Call<UserProfileModelLite> getUserProfileByUsername(@Path("username") String username, @Query("userId") int userId);
     @POST("api/user/update-user-profile")
     Call<UserProfileModel> updateUserProfile(@Body UserProfileModel userProfile);
     @GET("api/user/follow-user")
