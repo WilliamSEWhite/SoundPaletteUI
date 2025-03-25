@@ -97,7 +97,7 @@ public class ProfileEditFragment extends Fragment {
     public void onResume() {
         super.onResume();
         getUser();
-        //requireActivity().runOnUiThread(() -> getTags());
+        requireActivity().runOnUiThread(() -> getTags());
         refreshTagList();
     }
 
