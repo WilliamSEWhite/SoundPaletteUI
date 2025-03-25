@@ -31,7 +31,6 @@ public class PostFragment extends Fragment {
     private float baseHue = -1f;
     private ArrayList<PostModel> allPosts = new ArrayList<>();
     private RecyclerView recyclerView;
-
     private final PostClient postClient = SPWebApiRepository.getInstance().getPostClient();
     private String algoType;
     private String searchTerm;
@@ -81,12 +80,11 @@ public class PostFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
-
         new GetPostsTask().execute();
         return view;
     }
 
-    // Gets Posts from the client (dummy or real).
+    // Gets Posts from the client
     private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
         @Override
         protected List<PostModel> doInBackground(Void... voids) {
@@ -117,20 +115,6 @@ public class PostFragment extends Fragment {
                 posts = new ArrayList<>();
             }
 
-//            dummyPosts.add(new PostModel(1,  "new lyrics in the works! just need some good vocals…", null, new PostContentModel("Sharing some thoughts on my latest sound exploration"), new Date(), "Username1", 1));
-//            dummyPosts.add(new PostModel(2,  "Finished my latest track!", null, new PostContentModel("image02.png"), new Date(), "Username1", 3));
-//            dummyPosts.add(new PostModel(3,  "What my Friday nights are looking like..", null, new PostContentModel( "Excited to finally share this track with everyone!"), new Date(), "Username1", 1));
-//            dummyPosts.add(new PostModel(4,  "Trying out a new genre today!", null, new PostContentModel( "image07.png"), new Date(), "Username2", 3));
-//            dummyPosts.add(new PostModel(5,  "they call this position the birds eye view I believe", null, new PostContentModel( "Trying out something new and unexpected today!"), new Date(), "Username2", 1));
-//            dummyPosts.add(new PostModel(6,  "Inspired by nature", null, new PostContentModel( "image09.png"), new Date(), "Username2", 3));
-//            dummyPosts.add(new PostModel(7,  "Sunday Funday!", null, new PostContentModel( "Nature always inspires my melodies"), new Date(), "Username3", 1));
-//            dummyPosts.add(new PostModel(8,  "Here’s a snippet from my next album.", null, new PostContentModel( "image14.png"), new Date(), "Username3", 3));
-//            dummyPosts.add(new PostModel(9,  "just my morning commute guys…", null, new PostContentModel( "A sneak peek at my upcoming album. Hope you like it!"), new Date(), "Username3", 1));
-//            dummyPosts.add(new PostModel(10,  "Collab opportunity for vocalists!", null, new PostContentModel( "image18.png"), new Date(), "Username1", 3));
-//            dummyPosts.add(new PostModel(11,  "inspiration.", null, new PostContentModel( "Looking for a vocalist to collaborate with on my next track."), new Date(), "Username1", 1));
-//            dummyPosts.add(new PostModel(11,  "A little jazz influence in this one.", null, new PostContentModel( "image21.png"), new Date(), "Username1", 3));
-//            dummyPosts.add(new PostModel(12,  "writing. dreaming. thinking.", null, new PostContentModel( "Blending jazz influences into my latest piece"), new Date(), "Username2", 1));
-
             return posts;
         }
 
@@ -145,6 +129,30 @@ public class PostFragment extends Fragment {
             allPosts.addAll(posts);
             setupRecyclerView();
         }
+    }
+
+    // Sets the RecyclerView by sending through a List of all PostModels
+    private void setupRecyclerView() {
+        if (recyclerView.getAdapter() == null) {
+            recyclerView.setAdapter(new PostAdapter(allPosts));
+        } else {
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+    }
+
+    private void setRandomGradientBackground(View rootView) {
+        Random random = new Random();
+        int alpha = 128 + random.nextInt(128);
+        int red   = random.nextInt(256);
+        int green = random.nextInt(256);
+        int blue  = random.nextInt(256);
+        int randomColor = Color.argb(alpha, red, green, blue);
+        GradientDrawable gradientDrawable = new GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{Color.WHITE, randomColor}
+        );
+        gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+        rootView.setBackground(gradientDrawable);
     }
 
 // Untested getPostsTask that should connect to the API Server
@@ -249,28 +257,4 @@ public class PostFragment extends Fragment {
 //        }
 //    }
 
-
-    // Sets the RecyclerView by sending through a List of all PostModels
-    private void setupRecyclerView() {
-        if (recyclerView.getAdapter() == null) {
-            recyclerView.setAdapter(new PostAdapter(allPosts));
-        } else {
-            recyclerView.getAdapter().notifyDataSetChanged();
-        }
-    }
-
-    private void setRandomGradientBackground(View rootView) {
-        Random random = new Random();
-        int alpha = 128 + random.nextInt(128);
-        int red   = random.nextInt(256);
-        int green = random.nextInt(256);
-        int blue  = random.nextInt(256);
-        int randomColor = Color.argb(alpha, red, green, blue);
-        GradientDrawable gradientDrawable = new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{Color.WHITE, randomColor}
-        );
-        gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
-        rootView.setBackground(gradientDrawable);
-    }
 }

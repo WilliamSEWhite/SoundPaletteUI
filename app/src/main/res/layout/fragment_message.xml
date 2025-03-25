@@ -1,19 +1,23 @@
-<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.Messages.MessageFragment"
     android:orientation="vertical"
-    android:background="@color/colorPrimaryVariant">
+    android:background="@drawable/background2">
 
-    <TextView
-        android:id="@+id/messages_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20dp"
-        android:layout_gravity="center"
-        />
-    </LinearLayout>
+    <!-- RecyclerView to display messages -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewMessages"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="9"
+        android:layout_above="@id/messageInputLayout"
+        android:padding="15dp"
+        android:clipToPadding="false"
+        android:scrollbars="vertical"/>
+
+    <!-- Button to create a Chatrooom -->
+
+</LinearLayout>

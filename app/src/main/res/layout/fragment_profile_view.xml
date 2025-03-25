@@ -36,13 +36,17 @@
             android:paddingEnd="5dp"
             android:layout_weight="2">
 
-            <Button
+            <!-- Follow Buttons -->
+            <CheckBox
                 android:id="@+id/followButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="FOLLOW"
-                android:textSize="7dp">
-            </Button>
+                android:textSize="7dp"
+                android:gravity="center"
+                android:background="@android:drawable/btn_default"
+                android:button="@null"
+                android:textColor="@color/button_default" />
         </LinearLayout>
 
         <LinearLayout
@@ -57,7 +61,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="MESSAGE"
-                android:textSize="7dp">
+                android:textSize="7dp"
+                android:gravity="center"
+                android:background="@android:drawable/btn_default"
+                android:textColor="@color/button_default">
             </Button>
         </LinearLayout>
     </LinearLayout>
