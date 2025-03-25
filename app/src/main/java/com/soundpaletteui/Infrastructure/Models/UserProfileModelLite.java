@@ -16,7 +16,7 @@ public class UserProfileModelLite {
     private int followerCount;
     @SerializedName("FollowingCount")
     private int followingCount;
-    @SerializedName("isFollowing")
+    @SerializedName("IsFollowing")
     private boolean isFollowing;
 
     public UserProfileModelLite(String username) {
@@ -43,6 +43,9 @@ public class UserProfileModelLite {
     }
 
     /** getter methods */
+    public String getUsername() {
+        return username;
+    }
     public String getBio() {
         return bio;
     }

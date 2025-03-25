@@ -60,7 +60,6 @@
             android:layout_marginBottom="5dp"
             android:background="@drawable/background4"
             android:hint="Type a message..."
-            android:text="This is an extremely long message to see how large this box will actually get will it grow or remain small?"
             android:minHeight="28dp"
             android:maxHeight="96dp"
             android:padding="8dp"
@@ -73,7 +72,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:background="@drawable/frosted_glass_button"
-            android:text="Reply"
+            android:text="Send"
             android:textColor="@android:color/white" />
 
     </LinearLayout>

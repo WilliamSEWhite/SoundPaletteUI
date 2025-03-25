@@ -141,7 +141,7 @@ public class ChatroomFragment extends Fragment {
         @Override
         protected Boolean doInBackground(String... params) {
             try {
-                NewMessageModel newMessage = new NewMessageModel(userId, params[0], chatRoomId);
+                NewMessageModel newMessage = new NewMessageModel(AppSettings.getInstance().getUserId(), params[0], chatRoomId);
                 messageClient.sendMessage(newMessage);
                 return true;
             } catch (IOException e) {

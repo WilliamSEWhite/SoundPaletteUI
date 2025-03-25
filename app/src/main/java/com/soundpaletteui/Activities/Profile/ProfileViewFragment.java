@@ -15,10 +15,13 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundpaletteui.Activities.Messages.ChatroomFragment;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
 import com.soundpaletteui.Activities.Posts.PostAdapter;
+import com.soundpaletteui.Infrastructure.ApiClients.ChatClient;
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
 import com.soundpaletteui.Infrastructure.ApiClients.PostInteractionClient;
+import com.soundpaletteui.Infrastructure.Models.ChatroomModelLite;
 import com.soundpaletteui.Infrastructure.Models.NewPostModel;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
@@ -52,7 +55,7 @@ public class ProfileViewFragment extends Fragment {
     private List<UserModel> userList;
     private int userId;
     private static int viewUserId;
-    private UserModel user;
+    UserProfileModelLite profile;
     private UserModel viewUser;
     private UserProfileModelLite viewProfile;
     private UserClient userClient;
@@ -124,19 +127,12 @@ public class ProfileViewFragment extends Fragment {
         profileUsernameDisplay = rootView.findViewById(R.id.profileUsername);
 
         // Follow Button Actions
-        followButton.setChecked(viewProfile.isFollowing());
         followButton.setOnClickListener(v -> {
             toggleFollow(viewProfile, followButton.isChecked());
         });
-
-        followButton.setOnClickListener(v -> {
-            Log.d("Follow Button", userId+" wants to follow: "+ viewUserId);
-        });
-
         // Message Button Actions
         messageButton.setOnClickListener(v -> {
-            MessageFragment messageFragment = new MessageFragment();
-            replaceMainFragment(messageFragment);
+            openPrivateMessage();
         });
 
         // Post Button Actions
@@ -209,7 +205,6 @@ public class ProfileViewFragment extends Fragment {
 
     // Initializes views and loads user data and viewUser
     private void initComponents(View view) {
-        user = AppSettings.getInstance().getUser();
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
         new GetProfileAsync().execute();
@@ -260,10 +255,15 @@ public class ProfileViewFragment extends Fragment {
 
         // Set the bio, follower count, following count and username
         protected void onPostExecute(UserProfileModelLite v) {
+            profile = v;
             profileUsernameDisplay.setText(viewUsername);
             profileBioDisplay.setText(v.getBio());
             profileFollowersDisplay.setText(String.valueOf(v.getFollowerCount()));
             profileFollowingDisplay.setText(String.valueOf(v.getFollowingCount()));
+            followButton.setChecked(viewProfile.isFollowing());
+            followButton.setText(viewProfile.isFollowing() ? "Unfollow" : "Follow");
+
+
         }//end onPostExecute
     }
 
@@ -271,34 +271,55 @@ public class ProfileViewFragment extends Fragment {
     private void toggleFollow(UserProfileModelLite profile, boolean isFollowing) {
         profile.setIsFollowing(isFollowing);
         new ToggleFollowAsync().execute(profile);
+
     }
 
-    private class ToggleFollowAsync extends AsyncTask<UserProfileModelLite, Void, UserProfileModelLite> {
-        protected UserProfileModelLite doInBackground(UserProfileModelLite... profiles) {
+    private class ToggleFollowAsync extends AsyncTask<UserProfileModelLite, Void, Void> {
+        protected Void doInBackground(UserProfileModelLite... profiles) {
             UserProfileModelLite profile = profiles[0];
             UserClient client = SPWebApiRepository.getInstance().getUserClient();
-
             try {
                 if (profile.isFollowing()) {
                     client.followUser(viewUsername);
                 } else {
                     client.unfollowUser(viewUsername);
+
                 }
-                return client.getUserProfileByUsername(viewUsername);
+                return null;
             } catch (IOException e) {
                 Log.e("ToggleFollow", "Error toggling follow", e);
                 return null;
             }
         }
 
-        protected void onPostExecute(UserProfileModelLite updatedProfile) {
-            if (updatedProfile != null) {
-                viewProfile = updatedProfile;
-                profileFollowersDisplay.setText(String.valueOf(viewProfile.getFollowerCount()));
-                followButton.setChecked(viewProfile.isFollowing());
-            } else {
-                Toast.makeText(requireContext(), "Failed to update follow status", Toast.LENGTH_SHORT).show();
+        protected void onPostExecute(Void v) {
+            new GetProfileAsync().execute();
+        }
+    }
+
+    private void openPrivateMessage(){
+        new OpenPrivateMessageAsync().execute();
+    }
+
+    private void openChatroom(ChatroomModelLite chatroom){
+        ChatroomFragment chatroomFragment = ChatroomFragment.newInstance(chatroom.getChatroomId(), chatroom.getName());
+        replaceMainFragment(chatroomFragment);
+    }
+
+    private class OpenPrivateMessageAsync extends AsyncTask<Void, Void, ChatroomModelLite> {
+        protected ChatroomModelLite doInBackground(Void ...v) {
+            ChatClient client = SPWebApiRepository.getInstance().getChatClient();
+            try {
+                ChatroomModelLite chatroom = client.getPrivateChatroom(profile.getUsername());
+                return chatroom;
+            } catch (IOException e) {
+                Log.e("ToggleFollow", "Error toggling follow", e);
+                return null;
             }
+        }
+
+        protected void onPostExecute(ChatroomModelLite chatroom) {
+            openChatroom(chatroom);
         }
     }
 

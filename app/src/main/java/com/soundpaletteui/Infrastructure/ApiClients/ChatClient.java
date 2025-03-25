@@ -4,6 +4,7 @@ import com.soundpaletteui.Infrastructure.ApiEndpoints.ChatApiEndpoints;
 import com.soundpaletteui.Infrastructure.ApiEndpoints.LocationApiEndpoints;
 import com.soundpaletteui.Infrastructure.Models.ChatMessageModel;
 import com.soundpaletteui.Infrastructure.Models.ChatroomModel;
+import com.soundpaletteui.Infrastructure.Models.ChatroomModelLite;
 import com.soundpaletteui.Infrastructure.Models.NewChatroomModel;
 import com.soundpaletteui.Infrastructure.Models.NewMessageModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
@@ -36,17 +37,17 @@ public class ChatClient {
 
         return response.body();
     }
-    public ChatroomModel getPrivateChatroom(String username) throws IOException {
+    public ChatroomModelLite getPrivateChatroom(String username) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
 
-        Call<ChatroomModel> call = apiEndpoints.getPrivateChatroom(userId, username);
-        Response<ChatroomModel> response = call.execute();
+        Call<ChatroomModelLite> call = apiEndpoints.getPrivateChatroom(userId, username);
+        Response<ChatroomModelLite> response = call.execute();
 
         return response.body();
     }
-    public ChatroomModel createChatroom(NewChatroomModel newChatroom) throws IOException {
-        Call<ChatroomModel> call = apiEndpoints.createChatroom(newChatroom);
-        Response<ChatroomModel> response = call.execute();
+    public ChatroomModelLite createChatroom(NewChatroomModel newChatroom) throws IOException {
+        Call<ChatroomModelLite> call = apiEndpoints.createChatroom(newChatroom);
+        Response<ChatroomModelLite> response = call.execute();
 
         return response.body();
     }
