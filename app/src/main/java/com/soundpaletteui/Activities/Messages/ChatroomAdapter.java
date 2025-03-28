@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Models.ChatroomModel;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
 import java.util.ArrayList;
@@ -51,11 +52,13 @@ public class ChatroomAdapter extends RecyclerView.Adapter<ChatroomAdapter.Chatro
             ChatroomFragment chatroomFragment = ChatroomFragment.newInstance(chatroomId, chatroom.getChatRoomName());
 
             // Replace the fragment with the chatroomFragment
+            /** use the Navigation utility class to stop stack crashing issues!!! */
             FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            Navigation.replaceFragment(fragmentManager, chatroomFragment, "CHATROOM_FRAGMENT", R.id.mainScreenFrame);
+            /*FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.mainScreenFrame, chatroomFragment);
             transaction.addToBackStack(null);
-            transaction.commit();
+            transaction.commit();*/
         });
     }
 
