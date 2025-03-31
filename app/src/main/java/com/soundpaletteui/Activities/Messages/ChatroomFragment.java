@@ -14,6 +14,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,7 +42,7 @@ public class ChatroomFragment extends Fragment {
     private RecyclerView recyclerView;
     private TextView chatroomNameDisplay;
     private EditText editTextMessage;
-    private Button btnSend;
+    private Button btnSend, editChatroomButton, leaveChatroomButton;
     private UserModel user;
     private UserClient userClient;
     private int userId;
@@ -100,6 +103,27 @@ public class ChatroomFragment extends Fragment {
             }
         });
 
+        // Action for "Edit Chatroom"
+        editChatroomButton = rootView.findViewById(R.id.editChatroomButton);
+        editChatroomButton.setOnClickListener(v -> {
+            // Open the chatroom settings
+            EditChatroomFragment editChatroomFragment = EditChatroomFragment.newInstance(chatRoomId, chatRoomName);
+
+            // Replace the fragment with the editChatroomFragment
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.mainScreenFrame, editChatroomFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        });
+
+        // Action for "Leave Chatroom"
+        leaveChatroomButton = rootView.findViewById(R.id.leaveChatroomButton);
+        leaveChatroomButton.setOnClickListener(v -> {
+            new LeaveChatroomTask().execute();
+            Log.d("LEAVE CHATROOM", userId+" wantst to leave chatroom");
+        });
+
         new LoadMessagesTask().execute();
         return rootView;
     }
@@ -157,4 +181,27 @@ public class ChatroomFragment extends Fragment {
             }
         }
     }
+
+    private class LeaveChatroomTask extends AsyncTask<Void, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                messageClient.removeUserFromChatroom(chatRoomId);
+                return true;
+            } catch (IOException e) {
+                Log.e("ChatroomFragment", "Error leaving chatroom", e);
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (success) {
+                // Go back to the previous fragment (MessageFragment or ChatroomListFragment)
+                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+                fragmentManager.popBackStack();  // or navigate explicitly if needed
+            }
+        }
+    }
+
 }
