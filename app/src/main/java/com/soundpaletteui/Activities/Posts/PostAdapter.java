@@ -83,6 +83,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.postersProfile.setOnClickListener(v -> {
             Log.d("ProfileViewFragment", "Selected to Load Profile User ID# " + postUsername);
             ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUsername);
+
+            // Replace the fragment with the User's Profile
             FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
             FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.mainScreenFrame, profileViewFragment);

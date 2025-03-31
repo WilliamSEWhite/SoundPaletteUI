@@ -36,11 +36,13 @@ public class ChatroomAdapter extends RecyclerView.Adapter<ChatroomAdapter.Chatro
         return new ChatroomViewHolder(view);
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull ChatroomViewHolder holder, int position) {
         ChatroomModel chatroom = chatroomList.get(position);
         holder.chatroomName.setText(chatroom.getChatRoomName());
         holder.lastMessage.setText(chatroom.getLastMessage());
+        holder.lastMessageDate.setText(chatroom.getLastMessageDate().toString());
 
         // Adapter onClick Listener
         holder.itemView.setOnClickListener(v -> {
@@ -65,12 +67,13 @@ public class ChatroomAdapter extends RecyclerView.Adapter<ChatroomAdapter.Chatro
     }
 
     public static class ChatroomViewHolder extends RecyclerView.ViewHolder {
-        TextView chatroomName, lastMessage;
+        TextView chatroomName, lastMessage, lastMessageDate;
 
         public ChatroomViewHolder(@NonNull View itemView) {
             super(itemView);
             chatroomName = itemView.findViewById(R.id.chatroomName);
             lastMessage = itemView.findViewById(R.id.lastMessage);
+            lastMessageDate = itemView.findViewById(R.id.lastMessageDate);
         }
     }
 }
