@@ -5,6 +5,8 @@ import com.soundpaletteui.Infrastructure.ApiEndpoints.UserEndpoints;
 import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
+import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 
 import java.io.IOException;
 
@@ -42,9 +44,10 @@ public class UserClient {
         Response<UserProfileModel> response = call.execute();
         return response.body();
     }
-    public UserProfileModel getUserProfileByUsername(String username) throws IOException {
-        Call<UserProfileModel> call = userEndpoints.getUserProfileByUsername(username);
-        Response<UserProfileModel> response = call.execute();
+    public UserProfileModelLite getUserProfileByUsername(String username) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+        Call<UserProfileModelLite> call = userEndpoints.getUserProfileByUsername(username, userId);
+        Response<UserProfileModelLite> response = call.execute();
         return response.body();
     }
     public UserProfileModel updateUserProfile(UserProfileModel userProfile) throws IOException {
@@ -52,4 +55,21 @@ public class UserClient {
         Response<UserProfileModel> response = call.execute();
         return response.body();
     }
+    public Void followUser(String followingUsername) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+
+        Call<Void> call = userEndpoints.followUser(userId, followingUsername);
+        Response<Void> response = call.execute();
+
+        return response.body();
+    }
+    public Void unfollowUser(String followingUsername) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+
+        Call<Void> call = userEndpoints.unfollowUser(userId, followingUsername);
+        Response<Void> response = call.execute();
+
+        return response.body();
+    }
+
 }

@@ -1,0 +1,59 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="end"
+    android:padding="8dp"
+    android:orientation="horizontal">
+
+    <!-- Sender's Profile -->
+    <ImageButton
+        android:id="@+id/senderProfile"
+        android:layout_width="75dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/white_translucency_gradient"
+        android:padding="15dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/navigation_profile_24"/>
+
+    <LinearLayout
+        android:layout_width="235dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/chatbox_inactive"
+        android:maxWidth="225dp"
+        android:orientation="vertical"
+        android:padding="12dp">
+
+        <!-- Other Account's Username -->
+        <TextView
+            android:id="@+id/textMessageUsername"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="USERNAME"
+            android:textColor="#A02D0A"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <!-- Sent Date from Other Account/User -->
+        <TextView
+            android:id="@+id/textMessageDate"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="01/01/2000"
+            android:textColor="#A02D0A"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <!-- Message Context for Other Account/User -->
+        <TextView
+            android:id="@+id/textMessage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="This is a really long example of a message and how it would appear on the actual screen"
+            android:textColor="#AE5C42"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+</LinearLayout>
+

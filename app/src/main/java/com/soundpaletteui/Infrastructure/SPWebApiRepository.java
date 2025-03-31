@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.soundpaletteui.Infrastructure.ApiClients.ChatClient;
 import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
@@ -67,5 +68,7 @@ public class SPWebApiRepository {
     public static PostInteractionClient getPostInteractionClient(){
         return new PostInteractionClient(retrofit);
     }
-
+    public static ChatClient getChatClient(){
+        return new ChatClient(retrofit);
+    }
 }

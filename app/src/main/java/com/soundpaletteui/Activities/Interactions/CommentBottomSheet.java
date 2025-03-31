@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.CommentClient;
 import com.soundpaletteui.Infrastructure.ApiClients.PostInteractionClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.CommentModel;
@@ -43,7 +41,6 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
     private Button sendButton;
     private int postId;
     private int userId;
-    private CommentClient commentClient;
 
     public static CommentBottomSheet newInstance(int postId) {
         CommentBottomSheet fragment = new CommentBottomSheet();
