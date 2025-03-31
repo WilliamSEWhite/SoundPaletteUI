@@ -19,5 +19,13 @@
         android:scrollbars="vertical"/>
 
     <!-- Button to create a Chatrooom -->
+    <ImageButton
+        android:id="@+id/createChatroomButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/icon_create_24"/>
 
 </LinearLayout>

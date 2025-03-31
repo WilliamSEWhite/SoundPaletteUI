@@ -7,11 +7,60 @@
     android:orientation="vertical"
     android:background="@drawable/background2">
 
+    <!-- Edit Chatroom and Leave Chatroom Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:paddingTop="10dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/blankSpace"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="5">
+        </TextView>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:layout_weight="2">
+
+            <Button
+                android:id="@+id/editChatroomButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="EDIT"
+                android:textSize="8dp"
+                android:background="@drawable/frosted_glass_button">
+            </Button>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:layout_weight="2">
+
+            <Button
+                android:id="@+id/leaveChatroomButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="LEAVE"
+                android:textSize="8dp"
+                android:background="@drawable/frosted_glass_button">
+            </Button>
+        </LinearLayout>
+    </LinearLayout>
+
     <!-- Poster's Profile -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="75dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginBottom="10dp"
