@@ -124,7 +124,7 @@ public class NewChatroomFragment extends Fragment {
 
             // If the selected Users is empty
             if (selectedUsers.isEmpty()) {
-                Log.d("CREATE CHATROOM", "No users selected.");
+                Log.d("NewChatroomFragment", "No users selected.");
                 new AlertDialog.Builder(getContext())
                         .setTitle("Error")
                         .setMessage("Chatroom users cannot be empty.")
@@ -139,34 +139,40 @@ public class NewChatroomFragment extends Fragment {
         return rootView;
     }
 
-    private class CreateChatroomTaskAsync extends AsyncTask<Void, Void, Void> {
-        protected Void doInBackground(Void... d) {
+    // Sends the actions to create a new Chatroom in the API Server
+    private class CreateChatroomTaskAsync extends AsyncTask<Void, Void, ChatroomModelLite> {
+        protected ChatroomModelLite doInBackground(Void... d) {
             try {
-                // Get the Chatroom Name assigned
                 String chatRoomName = chatroomNameEdit.getText().toString().trim();
-
-                // Convert usernames into a List of Strings for NewChatroomModel
                 List<String> usernames = new ArrayList<>();
                 for (UserProfileModelLite user : selectedUsers) {
                     usernames.add(user.getUsername());
                 }
 
-                // Push the new Chatroom to API Server
-                Log.d("NewChatroomFragment", "Creating a new Chatroom titled: "+ chatRoomName);
+                Log.d("NewChatroomFragment", "Creating a new Chatroom titled: " + chatRoomName);
                 NewChatroomModel newChatroom = new NewChatroomModel(chatRoomName, usernames);
-                chatClient.createChatroom(newChatroom);
-                Log.d("NewChatroomFragment", chatRoomName+ " created with: "+usernames);
-
-                // Replace the MainScreenFragment with new Chatroom
-                ChatroomModelLite chatroomFragment = new ChatroomModelLite();
-                openChatroom(chatroomFragment);
+                return chatClient.createChatroom(newChatroom);
 
             } catch (IOException e) {
                 Log.e("NewChatroomFragment", "Failed to create chatroom: " + e.getMessage());
+                return null;
             }
-            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ChatroomModelLite createdChatroom) {
+            if (createdChatroom != null) {
+                openChatroom(createdChatroom);
+            } else {
+                new AlertDialog.Builder(getContext())
+                        .setTitle("Error")
+                        .setMessage("Chatroom could not be created. Please try again.")
+                        .setPositiveButton("OK", null)
+                        .show();
+            }
         }
     }
+
 
     private void openChatroom(ChatroomModelLite chatroom){
         ChatroomFragment chatroomFragment = ChatroomFragment.newInstance(chatroom.getChatroomId(), chatroom.getName());
@@ -194,7 +200,7 @@ public class NewChatroomFragment extends Fragment {
                 });
 
             } catch (IOException e) {
-                Log.e("NEW CHATROOM", "Failed to load dummy users: " + e.getMessage());
+                Log.e("NewChatroomFragment", "Failed to load dummy users: " + e.getMessage());
             }
         }).start();
     }
