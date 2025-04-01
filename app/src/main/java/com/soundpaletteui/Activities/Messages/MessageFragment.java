@@ -6,15 +6,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Posts.PostAdapter;
 import com.soundpaletteui.Activities.Posts.PostFragment;
+import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.ChatClient;
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
@@ -39,6 +44,7 @@ public class MessageFragment extends Fragment {
     private int userId;
     private String username;
     private RecyclerView messagesRecyclerView;
+    private ImageButton createChatroomButton;
     private ArrayList<ChatroomModel> allChatrooms = new ArrayList<>();
     private final ChatClient messageClient = SPWebApiRepository.getInstance().getChatClient();
 
@@ -57,6 +63,18 @@ public class MessageFragment extends Fragment {
 
         messagesRecyclerView = rootView.findViewById(R.id.recyclerViewMessages);
         messagesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
+
+        // Create New Chatroom button listener
+        createChatroomButton = rootView.findViewById(R.id.createChatroomButton);
+        createChatroomButton.setOnClickListener(v -> {
+            NewChatroomFragment newChatroomFragment = NewChatroomFragment.newInstance();
+
+            FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
+            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.mainScreenFrame, newChatroomFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();
+        });
         new GetChatroomsTask().execute();
 
         return rootView;
@@ -73,7 +91,7 @@ public class MessageFragment extends Fragment {
         }
     }
 
-    // Gets Chatrooms from the client for user
+    // Get Chatrooms from the client for user
     private class GetChatroomsTask extends AsyncTask<Void, Void, List<ChatroomModel>> {
         @Override
         protected List<ChatroomModel> doInBackground(Void... voids) {
