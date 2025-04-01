@@ -27,6 +27,7 @@ import com.soundpaletteui.Infrastructure.Models.NewMessageModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
@@ -111,10 +112,11 @@ public class ChatroomFragment extends Fragment {
 
             // Replace the fragment with the editChatroomFragment
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            Navigation.replaceFragment(fragmentManager, editChatroomFragment, "EDIT_CHATROOM_FRAGMENT", R.id.mainScreenFrame);
+            /*FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.mainScreenFrame, editChatroomFragment);
             transaction.addToBackStack(null);
-            transaction.commit();
+            transaction.commit();*/
         });
 
         // Action for "Leave Chatroom"

@@ -19,6 +19,7 @@ import com.soundpaletteui.Infrastructure.Models.ChatMessageModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
 import java.text.SimpleDateFormat;
@@ -106,10 +107,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 
             // Replace the fragment with the User's Profile
             FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            Navigation.replaceFragment(fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame);
+            /*FragmentTransaction transaction = fragmentManager.beginTransaction();
             transaction.replace(R.id.mainScreenFrame, profileViewFragment);
             transaction.addToBackStack(null);
-            transaction.commit();
+            transaction.commit();*/
         });
     }
 

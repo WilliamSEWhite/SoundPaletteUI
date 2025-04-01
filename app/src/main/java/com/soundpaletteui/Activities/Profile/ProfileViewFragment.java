@@ -213,17 +213,22 @@ public class ProfileViewFragment extends Fragment {
     // Replaces the Main Screen Fragment in Main Activity
     private void replaceMainFragment(Fragment new_fragment) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        Navigation.replaceFragment(fragmentManager, new_fragment, "CHATROOM_FRAGMENT", R.id.mainScreenFrame);
+        /*FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.mainScreenFrame, new_fragment);
-        transaction.commit();
+        transaction.commit();*/
     }
 
     // Replaces the PostFragment based on the algorithmType and userId
     private void replacePostFragment(String algoType, String userId) {
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        //FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        //FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(algoType, viewUsername);
-        transaction.replace(R.id.postFragment, postFragment);
-        transaction.commit();
+        //transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
+        //transaction.commit();
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Navigation.replaceFragment(fragmentManager, fragmentTransaction, postFragment, "POST_FRAGMENT", R.id.postFragment);
     }
 
     // Sets the style of a TextView to selected or unselected.
