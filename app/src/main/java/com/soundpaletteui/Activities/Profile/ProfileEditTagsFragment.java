@@ -1,24 +1,19 @@
 package com.soundpaletteui.Activities.Profile;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.nfc.Tag;
 import android.os.Bundle;
-
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.soundpaletteui.Activities.MainScreenActivity;
 import com.soundpaletteui.Infrastructure.Adapters.TagSelectAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
@@ -29,14 +24,12 @@ import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.ResponseBody;
-import retrofit2.Response;
 
 public class ProfileEditTagsFragment extends Fragment {
 
@@ -54,19 +47,20 @@ public class ProfileEditTagsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_edit_user_tags, container, false);
-        // get the nav id to exit this fragment to the previous one
         if(getArguments() != null) {
             fragId = getArguments().getInt("nav", 0);
         }
-        initComponents(view);
-        UISettings.applyBrightnessGradientBackground(view, 50f);
+        // Apply dark mode gradient background
+        boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(view.getContext());
+        UISettings.applyBrightnessGradientBackground(view, 50f, isDarkMode);
 
+        initComponents(view);
         return view;
     }
 
     private void initComponents(View view) {
         user = AppSettings.getInstance().getUser();
-        tagClient = SPWebApiRepository.getInstance().getTagClient();;
+        tagClient = SPWebApiRepository.getInstance().getTagClient();
 
         recyclerView = view.findViewById(R.id.userTagList);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -74,8 +68,8 @@ public class ProfileEditTagsFragment extends Fragment {
         btnDone = view.findViewById(R.id.btnDone);
         btnDone.setOnClickListener(v -> done());
 
-        List<TagModel> globalTags = new ArrayList<>();
-        List<TagModel> userTags = new ArrayList<>();
+        globalTags = new ArrayList<>();
+        userTags = new ArrayList<>();
 
         getTags();
     }
@@ -98,17 +92,12 @@ public class ProfileEditTagsFragment extends Fragment {
         }
         new Thread(() -> {
             try {
-                Response<ResponseBody> response = tagClient.updateTags(user.getUserId(), selectedTags);
+                tagClient.updateTags(user.getUserId(), selectedTags);
                 Activity activity = getActivity();
                 if(activity != null) {
                     activity.runOnUiThread(() -> {
-                        if (response.isSuccessful()) {
-                            Toast.makeText(activity, "Tags saved successfully",
-                                    Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(activity, "Failed to save tags",
-                                    Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(activity, "Tags saved successfully",
+                                Toast.LENGTH_SHORT).show();
                     });
                 }
             } catch (IOException e) {
@@ -119,35 +108,20 @@ public class ProfileEditTagsFragment extends Fragment {
         }).start();
 
         Bundle args = new Bundle();
-        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        //fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         switch(fragId) {
-            case 0:     // return to profileFragment
+            case 0:
                 Navigation.replaceFragment(fragmentManager, new ProfileFragment(),
                         "PROFILE_FRAGMENT", R.id.mainScreenFrame);
-                /*
-                ProfileFragment profileFragment = new ProfileFragment();
-
-                transaction.addToBackStack(null);
-                transaction.replace(R.id.mainScreenFrame, profileFragment);
-                transaction.commit();*/
                 break;
-            case 1:     // return to profileEditFragment
+            case 1:
                 args.putParcelableArrayList("selectedTags", new ArrayList<>(selectedTags));
                 Navigation.replaceFragment(fragmentManager, new ProfileEditFragment(),
                         "PROFILE_EDIT_FRAGMENT", R.id.mainScreenFrame);
-                /*ProfileEditFragment profileEditFragment = new ProfileEditFragment();
-                profileEditFragment.setArguments(args);
-
-                transaction.addToBackStack(null);
-                transaction.replace(R.id.mainScreenFrame, profileEditFragment);
-                transaction.commit();*/
                 break;
         }
     }
 
-    /** retrieve user tags and mark selected */
     private void getTags() {
         new Thread(() -> {
             try {
@@ -163,7 +137,6 @@ public class ProfileEditTagsFragment extends Fragment {
                 Activity activity = getActivity();
                 if(activity != null) {
                     activity.runOnUiThread(() -> {
-                        //globalTags = tags;
                         adapter = new TagSelectAdapter((ArrayList<TagModel>) globalTags, requireActivity());
                         recyclerView.setAdapter(adapter);
                     });
@@ -174,5 +147,4 @@ public class ProfileEditTagsFragment extends Fragment {
             }
         }).start();
     }
-
 }

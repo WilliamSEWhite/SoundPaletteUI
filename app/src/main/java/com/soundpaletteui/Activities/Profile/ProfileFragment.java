@@ -1,10 +1,12 @@
 package com.soundpaletteui.Activities.Profile;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +28,9 @@ import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.R;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +45,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
-
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
@@ -73,24 +76,42 @@ public class ProfileFragment extends Fragment {
     private UserTagAdapter adapter;
     private List<TagModel> tagList;
     private Handler tagScrollHandler;
-    private  int scrollPosition;
+    private int scrollPosition;
     private TextView profileFollowersDisplay;
     private TextView profileFollowingDisplay;
 
+    private boolean darkMode;
+    private String selectedTab = "posts";
+    private SharedPreferences.OnSharedPreferenceChangeListener darkModeListener =
+            (sharedPreferences, key) -> {
+                if ("dark_mode_enabled".equals(key)) {
+                    updateUI();
+                }
+            };
 
     public ProfileFragment() {
     }
 
-    // Initializes the fragment with any arguments provided.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Register dark mode listener
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        sp.registerOnSharedPreferenceChangeListener(darkModeListener);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        sp.unregisterOnSharedPreferenceChangeListener(darkModeListener);
     }
 
     /** refreshes profile data when resuming fragment */
     @Override
     public void onResume() {
         super.onResume();
+        updateUI();
         new Handler(Looper.getMainLooper()).postDelayed(() -> getProfileBio(), 500);
     }
 
@@ -102,17 +123,19 @@ public class ProfileFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
 
+        final View rootLayout = rootView.findViewById(R.id.root_layout);
+        darkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
+        UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
+
         initComponents(rootView);
 
-        // check if user profile is loaded
-        if(user != null) {
+        // Check if user profile is loaded
+        if (user != null) {
             userId = String.valueOf(user.getUserId());
-        }
-        else {
+        } else {
             Toast.makeText(requireContext(), "User profile not loaded.", Toast.LENGTH_SHORT).show();
         }
 
-        UISettings.applyBrightnessGradientBackground(rootView, 50f);
         framePosts = rootView.findViewById(R.id.frame_posts);
         gifPosts = rootView.findViewById(R.id.gif_posts);
         textPosts = rootView.findViewById(R.id.postsToggle);
@@ -124,11 +147,9 @@ public class ProfileFragment extends Fragment {
         usernameDisplay = rootView.findViewById(R.id.profileUsername);
         usernameDisplay.setText(user.getUsername());
 
-        // Assign text for User's Profile Bio
+        // Assign text for User's Profile Bio and follower/following counts
         profileBio = rootView.findViewById(R.id.profileBio);
         profileFollowersDisplay = rootView.findViewById(R.id.profileFollowersDisplay);
-
-        // Assign number of following
         profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
 
         btnEditTags.setBackgroundColor(Color.parseColor("#FFD700")); // Golden Yellow
@@ -142,11 +163,11 @@ public class ProfileFragment extends Fragment {
 
         // Post Button Actions
         framePosts.setOnClickListener(v -> {
+            selectedTab = "posts"; // update selected tab
             try {
                 final GifDrawable postsGifDrawable = (GifDrawable) gifPosts.getDrawable();
                 framePosts.getBackground().mutate().setAlpha(FULL_ALPHA);
                 frameSaved.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-                UISettings.applyBrightnessGradientBackground(rootView, 50f);
                 postsGifDrawable.start();
                 gifHandler.postDelayed(() -> postsGifDrawable.stop(), 800);
             } catch (ClassCastException e) {
@@ -169,15 +190,16 @@ public class ProfileFragment extends Fragment {
 
             Log.d("ProfileFragment", "Posts selected for User ID# " + userId);
             replaceFragment("user", String.valueOf(userId));
+            UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
         });
 
         // Saved Button Actions
         frameSaved.setOnClickListener(v -> {
+            selectedTab = "saved"; // update selected tab
             try {
                 final GifDrawable savedGifDrawable = (GifDrawable) gifSaved.getDrawable();
                 frameSaved.getBackground().mutate().setAlpha(FULL_ALPHA);
                 framePosts.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-                UISettings.applyBrightnessGradientBackground(rootView, 60f);
                 savedGifDrawable.start();
                 gifHandler.postDelayed(() -> savedGifDrawable.stop(), 800);
             } catch (ClassCastException e) {
@@ -198,12 +220,31 @@ public class ProfileFragment extends Fragment {
             setButtonTextSelected(textSaved, true);
             setButtonTextSelected(textPosts, false);
 
-            Log.d("ProfileFragment", "Saved clicked for User ID# "+userId);
+            Log.d("ProfileFragment", "Saved clicked for User ID# " + userId);
             replaceFragment("saved", userId);
+            // Re-apply the UI background for saved
+            UISettings.applyBrightnessGradientBackground(rootLayout, 60f, darkMode);
         });
 
+        // Default view is the "posts" tab
         framePosts.performClick();
         return rootView;
+    }
+
+    // Updates the UI background based on the current dark mode setting and selected tab.
+    private void updateUI() {
+        View rootLayout = getView().findViewById(R.id.root_layout);
+        darkMode = DarkModePreferences.isDarkModeEnabled(getContext());
+        if ("posts".equals(selectedTab)) {
+            UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
+        } else {
+            UISettings.applyBrightnessGradientBackground(rootLayout, 60f, darkMode);
+        }
+    }
+
+    public void setTheme(boolean darkM) {
+        darkMode = darkM;
+        updateUI();
     }
 
     /** Initializes views and loads user data. */
@@ -260,12 +301,10 @@ public class ProfileFragment extends Fragment {
                 // check if the bio field is empty or null and respond accordingly
                 if(userProfile.getBio() == null || userProfile.getBio().trim().isEmpty()) {
                     profileBio.setText("I still need to fill out my bio...");
-                }
-                else {
+                } else {
                     profileBio.setText(userProfile.getBio());
                     profileFollowersDisplay.setText(String.valueOf(userProfile.getFollowerCount()));
                     profileFollowingDisplay.setText(String.valueOf(userProfile.getFollowingCount()));
-
                 }
             });
         }).start();
@@ -290,10 +329,9 @@ public class ProfileFragment extends Fragment {
         tagScrollHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                if(scrollPosition < adapter.getItemCount()) {
+                if (scrollPosition < adapter.getItemCount()) {
                     recyclerView.smoothScrollToPosition(scrollPosition++);
-                }
-                else {
+                } else {
                     scrollPosition = 0;
                     recyclerView.smoothScrollToPosition(scrollPosition);
                 }
@@ -312,8 +350,7 @@ public class ProfileFragment extends Fragment {
                 adapter = new UserTagAdapter(selectedTags, getContext());
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
-            }
-            else {
+            } else {
                 Log.d("ProfileEditFragment", "No tags received or empty list");
             }
         }
@@ -324,7 +361,6 @@ public class ProfileFragment extends Fragment {
         new Thread(() -> {
             try {
                 List<TagModel> tags = tagClient.getUserTags(user.getUserId());
-                //List<TagModel> tags = tagClient.getTags();
                 requireActivity().runOnUiThread(() -> {
                     tagList = tags;
                     adapter = new UserTagAdapter((ArrayList<TagModel>) tagList, requireActivity());

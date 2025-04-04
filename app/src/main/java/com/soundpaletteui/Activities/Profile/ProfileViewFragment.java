@@ -112,7 +112,7 @@ public class ProfileViewFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_profile_view, container, false);
         initComponents(rootView);
 
-        UISettings.applyBrightnessGradientBackground(rootView, 50f);
+//        UISettings.applyBrightnessGradientBackground(rootView, 50f);
         framePosts = rootView.findViewById(R.id.frame_posts);
         gifPosts = rootView.findViewById(R.id.gif_posts);
         textPosts = rootView.findViewById(R.id.postsToggle);
@@ -145,7 +145,7 @@ public class ProfileViewFragment extends Fragment {
                 final GifDrawable postsGifDrawable = (GifDrawable) gifPosts.getDrawable();
                 framePosts.getBackground().mutate().setAlpha(FULL_ALPHA);
                 frameTagged.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-                UISettings.applyBrightnessGradientBackground(rootView, 50f);
+//                UISettings.applyBrightnessGradientBackground(rootView, 50f);
                 postsGifDrawable.start();
                 gifHandler.postDelayed(() -> postsGifDrawable.stop(), 800);
             } catch (ClassCastException e) {
@@ -177,7 +177,7 @@ public class ProfileViewFragment extends Fragment {
                 final GifDrawable savedGifDrawable = (GifDrawable) gifTagged.getDrawable();
                 frameTagged.getBackground().mutate().setAlpha(FULL_ALPHA);
                 framePosts.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-                UISettings.applyBrightnessGradientBackground(rootView, 60f);
+//                UISettings.applyBrightnessGradientBackground(rootView, 60f);
                 savedGifDrawable.start();
                 gifHandler.postDelayed(() -> savedGifDrawable.stop(), 800);
             } catch (ClassCastException e) {
