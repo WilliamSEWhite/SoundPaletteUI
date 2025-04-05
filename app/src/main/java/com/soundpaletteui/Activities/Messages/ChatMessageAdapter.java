@@ -1,5 +1,6 @@
 package com.soundpaletteui.Activities.Messages;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,13 +8,18 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.ChatMessageModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
 import java.text.SimpleDateFormat;
@@ -81,9 +87,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     @Override
     public void onBindViewHolder(@NonNull ChatMessageViewHolder holder, int position) {
         ChatMessageModel message = messageList.get(position);
+        String senderUsername = message.getSentBy();
 
         holder.textMessage.setText(message.getMessage());
-        holder.textMessageUsername.setText(message.getSentBy());
+        holder.textMessageUsername.setText(senderUsername);
 
         // Format and display message timestamp
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy hh:mm a", Locale.getDefault());
@@ -92,6 +99,20 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
         } else {
             holder.textMessageDate.setText("Unknown date");
         }
+
+        // Open Chat Message Sender's profile page
+        holder.senderProfile.setOnClickListener(v -> {
+            Log.d("ProfileViewFragment", "Selected to Load Profile User ID# " + senderUsername);
+            ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(senderUsername);
+
+            // Replace the fragment with the User's Profile
+            FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
+            Navigation.replaceFragment(fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame);
+            /*FragmentTransaction transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.mainScreenFrame, profileViewFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();*/
+        });
     }
 
     @Override

@@ -75,7 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
     private UserModel user;
     private UserClient userClient;
     private int userId;
-//    private Date dob, dateCreated;
+    //    private Date dob, dateCreated;
     private Date dob, dateCreated;
     private String Dob;
     private GifImageView gifClear;
@@ -91,7 +91,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         View rootView = findViewById(R.id.root_layout);
-        UISettings.applyBrightnessGradientBackground(rootView, 50f);
+//        UISettings.applyBrightnessGradientBackground(rootView, 50f);
         initComponents();
     }
 
@@ -142,7 +142,7 @@ public class RegisterActivity extends AppCompatActivity {
             try {
                 final GifDrawable saveGif = (GifDrawable) gifSave.getDrawable();
                 frameSave.getBackground().mutate().setAlpha(255);
-                UISettings.applyBrightnessGradientBackground(findViewById(R.id.root_layout), 60f);
+//                UISettings.applyBrightnessGradientBackground(findViewById(R.id.root_layout), 60f);
                 saveGif.start();
                 new android.os.Handler().postDelayed(() -> saveGif.stop(), 800);
             } catch (ClassCastException e) {
@@ -194,7 +194,7 @@ public class RegisterActivity extends AppCompatActivity {
                     imageUri = result.getData().getData();
                     loadImage();
                 }
-    });
+            });
 
     /** loads the image */
     private void loadImage() {
@@ -343,7 +343,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
             return null;
         }
-    /** init country spinner after data retrieval */
+        /** init country spinner after data retrieval */
         @Override
         protected void onPostExecute(Void v) {
             if(countries != null && !countries.isEmpty()) {

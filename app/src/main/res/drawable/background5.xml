@@ -2,8 +2,7 @@
     <!-- Background Blur Effect -->
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="#2338A4B2" /> <!-- Light transparent white -->
-            <corners android:radius="16dp" />
+            <solid android:color="#2F7CB342" /> <!-- Light transparent white -->
         </shape>
     </item>
 
@@ -11,10 +10,9 @@
     <item>
         <shape android:shape="rectangle">
             <solid android:color="@android:color/transparent" />
-            <corners android:radius="16dp" />
             <stroke
                 android:width="1dp"
-                android:color="#4A5F949B" /> <!-- Semi-transparent white border -->
+                android:color="#6D43A047" /> <!-- Semi-transparent white border -->
         </shape>
     </item>
 
@@ -22,10 +20,10 @@
     <item android:left="2dp" android:right="2dp" android:top="2dp" android:bottom="2dp">
         <shape android:shape="rectangle">
             <solid android:color="@android:color/transparent" />
-            <corners android:radius="16dp" />
             <stroke
                 android:width="1dp"
                 android:color="#20FFFFFF" />
         </shape>
     </item>
+
 </layer-list>

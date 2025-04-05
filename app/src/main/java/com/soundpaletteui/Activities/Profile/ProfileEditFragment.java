@@ -15,13 +15,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.TagRowAdapter;
-import com.soundpaletteui.Infrastructure.Adapters.TagSelectAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
 import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
@@ -35,12 +33,11 @@ import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
 
@@ -62,8 +59,8 @@ public class ProfileEditFragment extends Fragment {
     Button btnCancel;
     Button btnSave;
     private String userName;
-    private Spinner location;               // country
-    private ArrayList<LocationModel> countries;             // list of countries
+    private Spinner location;
+    private ArrayList<LocationModel> countries;
     private TagClient tagClient;
     private RecyclerView recyclerView;
     private UserTagAdapter adapter;
@@ -87,21 +84,20 @@ public class ProfileEditFragment extends Fragment {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        UISettings.applyBrightnessGradientBackground(rootView, 50f);
+        // Apply dark mode gradient background
+        boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
+        UISettings.applyBrightnessGradientBackground(rootView, 50f, isDarkMode);
 
         return rootView;
     }
 
-    /** refreshes profile data when resuming fragment */
     @Override
     public void onResume() {
         super.onResume();
         getUser();
-        //requireActivity().runOnUiThread(() -> getTags());
         refreshTagList();
     }
 
-    /** initializes components in the fragment */
     private void initComponents() throws IOException {
         // Get arguments instead of Intent
         user = AppSettings.getInstance().getUser();
@@ -134,13 +130,11 @@ public class ProfileEditFragment extends Fragment {
         getTags();
     }
 
-    /** refreshes the user tag list in the recycler view */
     private void refreshTagList() {
         if (getArguments() != null && getArguments().containsKey("selectedTags")) {
             ArrayList<TagModel> selectedTags = getArguments().getParcelableArrayList("selectedTags");
 
             if (selectedTags != null && !selectedTags.isEmpty()) {
-                // Update the RecyclerView with the new tag list
                 adapter = new UserTagAdapter(selectedTags, getContext());
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -151,7 +145,6 @@ public class ProfileEditFragment extends Fragment {
         }
     }
 
-    /** edit user tags */
     private void editUserTags(Fragment newFragment, String tag) {
         Bundle bundle = new Bundle();
         bundle.putInt("nav", 1);
@@ -160,13 +153,10 @@ public class ProfileEditFragment extends Fragment {
         Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
     }
 
-    /** retrieves the list of tags from the user profile */
     private void getTags() {
         new Thread(() -> {
             try {
-                //System.out.println("tags userId: " + user.getUserId());
                 List<TagModel> tags = tagClient.getUserTags(user.getUserId());
-                //List<TagModel> tags = tagClient.getTags();
                 requireActivity().runOnUiThread(() -> {
                     tagList = tags;
                     adapter = new UserTagAdapter((ArrayList<TagModel>) tagList, requireActivity());
@@ -179,25 +169,21 @@ public class ProfileEditFragment extends Fragment {
         }).start();
     }
 
-    /** saves the user profile to the database and returns to profile fragment */
     private void saveProfileEdit() {
         saveUserProfile();
         returnToProfile();
     }
 
-    /** saves user profile - calls save async method */
     private void saveUserProfile(){
-        new ProfileEditFragment.UpdateUserInfoAsync().execute();
+        new UpdateUserInfoAsync().execute();
     }
 
-    /** updates user profile information to the database */
     private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             String picLocation = "/my/profilePic.jpg";
             String email = profile_email.getText().toString();
             String phone = profile_phone.getText().toString();
             String bio = profile_bio.getText().toString();
-            //System.out.println("bio: " + bio);
 
             CountrySelectAdapter adapter = (CountrySelectAdapter) location.getAdapter();
             LocationModel selectedLocation = adapter.getItem(location.getSelectedItemPosition());
@@ -206,36 +192,31 @@ public class ProfileEditFragment extends Fragment {
                 UserInfoModel userInfoModel = new UserInfoModel(user.getUserId(), selectedLocation.getLocationId(), email, phone, userInfo.getDob());
                 UserProfileModel userProfileModel = new UserProfileModel(user.getUserId(), bio, picLocation);
                 try {
-                    UserInfoModel updateUserInfo = userClient.updateUserInfo(user.getUserId(), userInfoModel).getUserInfo();
-                    UserProfileModel updateUserProfile = userClient.updateUserProfile(userProfileModel);
+                    userClient.updateUserInfo(user.getUserId(), userInfoModel);
+                    userClient.updateUserProfile(userProfileModel);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-
             }
             else {
                 Toast.makeText(requireContext(), "Error fetching locations", Toast.LENGTH_SHORT).show();
             }
             return null;
-        }//end doInBackground
-
+        }
         protected void onPostExecute(Void v) {
-            //System.out.println("returnToProfile()");
             returnToProfile();
-        }//end onPostExecute
+        }
     }
 
-    /** cancel editing user profile and return to profile fragment */
     private void returnToProfile() {
         if(!isAdded()) {
-            return;     // avoid crash if fragment has already detatched
+            return;
         }
         ProfileFragment profileFragment = new ProfileFragment();
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         Navigation.replaceFragment(fragmentManager, profileFragment, "PROFILE_FRAGMENT", R.id.mainScreenFrame);
     }
 
-    /** pulls the user from the database */
     private void getUser() {
         new Thread(() -> {
             try {
@@ -245,35 +226,25 @@ public class ProfileEditFragment extends Fragment {
                 throw new RuntimeException(e);
             }
             profile_location = userInfo.getLocationId();
-            /*System.out.println("User Id: " + user.getUserId());
-            System.out.println("User Name: " + user.getUsername());   // delete later
-            System.out.println("User Email: " + userInfo.getEmail());   // delete later
-            System.out.println("UserInfo Location: " + profile_location);   // delete later*/
-
             getCountries();
             requireActivity().runOnUiThread(this::populateView);
         }).start();
     }
 
-    /** initialize Spinner with list of countries */
     private void getCountries() {
-        new ProfileEditFragment.GetLocationsAsync().execute();
+        new GetLocationsAsync().execute();
     }
 
-    /** pulls countries from the database for the spinner */
     private void initCountries(){
         int i = userInfo.getLocationId();
         CountrySelectAdapter adapter = new CountrySelectAdapter(requireContext(),
                 android.R.layout.simple_spinner_item,
                 countries);
-        location = (Spinner) rootView.findViewById(R.id.profile_location);
-        location.setAdapter(adapter); // Set the custom adapter to the spinner
-        // You can create an anonymous listener to handle the event when is selected an spinner item
-        location.setSelection(i-1);                              //retain previously selected value
-        //System.out.println("Location: " + profile_location);
+        location = rootView.findViewById(R.id.profile_location);
+        location.setAdapter(adapter);
+        location.setSelection(i-1);
     }
 
-    /** async call to pull countries from the database */
     private class GetLocationsAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             try {
@@ -284,8 +255,7 @@ public class ProfileEditFragment extends Fragment {
                 throw new RuntimeException(e);
             }
             return null;
-        }//end doInBackground
-
+        }
         protected void onPostExecute(Void v) {
             if(countries != null && !countries.isEmpty()) {
                 initCountries();
@@ -294,7 +264,7 @@ public class ProfileEditFragment extends Fragment {
                 Toast.makeText(requireContext(), "Failed to load countries!",
                         Toast.LENGTH_SHORT).show();
             }
-        }//end onPostExecute
+        }
     }
 
     private void populateView() {

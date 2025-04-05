@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -14,14 +15,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.appcompat.widget.Toolbar; // Make sure to import Toolbar
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
-
 import android.widget.Button;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundpaletteui.Activities.Home.HomeFragment;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
@@ -32,11 +33,11 @@ import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.databinding.ActivityMainBinding;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,34 +49,46 @@ public class MainScreenActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
-    private int userId;
     private UserModel user;
-    private UserClient userClient;
     private ActivityMainBinding binding;
     private HomeFragment homeFragment;
     private ProfileFragment profileFragment;
     private SearchFragment searchFragment;
 
-    //Sets up components, layout, and initializes default fragment on creation.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Apply dark mode setting before setting content view.
+        if (DarkModePreferences.isDarkModeEnabled(this)) {
+        } else {
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        }
         super.onCreate(savedInstanceState);
+        setTitle("");
         user = AppSettings.getInstance().getUser();
-
         initComponents();
+
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
         animateHeaderShadow();
-        View toolbar = findViewById(R.id.toolbar);
-        UISettings.applyFlippedBrightnessGradientBackground(toolbar, 120f);
-        //replaceFragment(homeFragment, "HOME_FRAGMENT");
+
         Navigation.replaceFragment(getSupportFragmentManager(), homeFragment, "HOME_FRAGMENT", R.id.mainScreenFrame);
         setInitialHomeButtonColor();
-        setupCustomBottomNav();
+        // Invalidate the menu so the three dots become visible (since HomeFragment is active)
+        supportInvalidateOptionsMenu();
+
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
-            binding.bottomNavigationView.setBackgroundColor(
-                    ContextCompat.getColor(this, R.color.white)
-            );
+            boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(this);
+
+            if (isDarkMode) {
+                binding.bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_dark));
+            } else {
+                binding.bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.white));
+            }
+
             View toolbarView = findViewById(R.id.toolbar);
             ColorStateList tint;
             float hue = 0;
@@ -83,25 +96,21 @@ public class MainScreenActivity extends AppCompatActivity {
 
             if (selected == R.id.nav_home) {
                 hue = 30f;
-                UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue);
-                //replaceFragment(homeFragment, "HOME_FRAGMENT");
+                UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), homeFragment, "HOME_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_profile) {
                 hue = 55f;
-                UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue);
-                //replaceFragment(profileFragment, "PROFILE_FRAGMENT");
+                UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), profileFragment, "PROFILE_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_create) {
                 selectPostType();
             } else if (selected == R.id.nav_msg) {
                 hue = 240f;
-                UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue);
-                //replaceFragment(new MessageFragment(), "MESSAGE_FRAGMENT");
+                UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), new MessageFragment(), "MESSAGE_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_search) {
                 hue = 330f;
-                UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue);
-                //replaceFragment(searchFragment, "SEARCH_FRAGMENT");
+                UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), searchFragment, "SEARCH_FRAGMENT", R.id.mainScreenFrame);
             } else {
                 hue = 30f;
@@ -111,13 +120,59 @@ public class MainScreenActivity extends AppCompatActivity {
             binding.bottomNavigationView.setItemIconTintList(tint);
             binding.bottomNavigationView.setItemTextColor(tint);
             updateBottomNavShadows(item.getItemId(), hue);
+            // Refresh the options menu so that the three dots are visible only on HomeFragment
+            supportInvalidateOptionsMenu();
             return true;
         });
     }
 
-    // Initializes Fragment Activities to replace Main Fragment
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_header, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
+        MenuItem darkModeToggle = menu.findItem(R.id.action_toggle_dark_mode);
+        if (darkModeToggle != null) {
+            if (currentFragment instanceof HomeFragment) {
+                darkModeToggle.setVisible(true);
+            } else {
+                darkModeToggle.setVisible(false);
+            }
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    // Handle menu item clicks, including the dark mode toggle.
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_toggle_dark_mode) {
+            System.out.println("Button change");
+            UISettings.applyFlippedBrightnessGradientBackground(recyclerView, 120f, homeFragment.darkMode);
+
+            // Toggle the dark mode preference.
+            boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(this);
+            DarkModePreferences.setDarkModeEnabled(this, !isDarkMode);
+            System.out.println("DARK MODE: " + isDarkMode);
+            if (!isDarkMode) {
+                binding.bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_dark));
+
+            } else {
+                binding.bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.white));
+            }
+//            homeFragment.setTheme(isDarkMode);
+            recreate();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    // Initializes Fragment Activities to replace Main Fragment.
     private void initComponents() {
-        // Get the Intent that started this activity
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
         homeFragment = new HomeFragment();
@@ -125,7 +180,7 @@ public class MainScreenActivity extends AppCompatActivity {
         searchFragment = new SearchFragment();
     }
 
-    // Function for Post creation - type selection
+    // Function for Post creation - type selection.
     private void selectPostType(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final View addPost = getLayoutInflater().inflate(R.layout.post_type_select_dialog, null);
@@ -133,41 +188,29 @@ public class MainScreenActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
 
-        Button textPostButton = (Button) dialog.findViewById(R.id.create_text);
-        Button audioPostButton = (Button) dialog.findViewById(R.id.create_sound);
-        Button imagePostButton = (Button) dialog.findViewById(R.id.create_image);
+        Button textPostButton = dialog.findViewById(R.id.create_text);
+        Button audioPostButton = dialog.findViewById(R.id.create_sound);
+        Button imagePostButton = dialog.findViewById(R.id.create_image);
 
-        // if button is clicked, close the custom dialog
-        textPostButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                createPost(1);
-            }
+        textPostButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            createPost(1);
         });
-        audioPostButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                createPost(2);
-
-            }
+        audioPostButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            createPost(2);
         });
-        imagePostButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-                createPost(3);
-
-            }
+        imagePostButton.setOnClickListener(v -> {
+            dialog.dismiss();
+            createPost(3);
         });
     }
 
-    // Function to create a post
+    // Function to create a post.
     private void createPost(int postType){
         CreatePostFragment createPostFragment = CreatePostFragment.newInstance(postType);
-        //replaceFragment(createPostFragment, "CREATE_POST_FRAGMENT");
         Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "CREATE_POST_FRAGMENT", R.id.mainScreenFrame);
+        supportInvalidateOptionsMenu();
     }
 
     // Animates a "breathing" shadow effect on the header text.
@@ -180,9 +223,7 @@ public class MainScreenActivity extends AppCompatActivity {
         final float[] currentRadius = {initialRadius};
         final float[] currentDx = {2f};
         final float[] currentDy = {2f};
-        Runnable updateShadow = () -> {
-            titleCenter.setShadowLayer(currentRadius[0], currentDx[0], currentDy[0], shadowColor);
-        };
+        Runnable updateShadow = () -> titleCenter.setShadowLayer(currentRadius[0], currentDx[0], currentDy[0], shadowColor);
         ValueAnimator radiusAnimator = ValueAnimator.ofFloat(initialRadius, finalRadius);
         radiusAnimator.setDuration(120000);
         radiusAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
@@ -223,56 +264,6 @@ public class MainScreenActivity extends AppCompatActivity {
         binding.bottomNavigationView.setItemTextColor(homeButtonTint);
     }
 
-    // Updates the adapter list once user data is retrieved.
-    private void populateView() {
-        if (user != null) {
-            userList.clear();
-            userList.add(user);
-            mainContentAdapter.notifyDataSetChanged();
-        }
-    }
-
-    /** replaces fragment with navigated fragment */
-    /*private void replaceFragment(Fragment fragment, String tag) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        Fragment currentFragment = fragmentManager.findFragmentById(R.id.mainScreenFrame);
-        // don't add the same fragment
-        if(currentFragment != null && currentFragment.getTag() != null &&
-                currentFragment.getTag().equals(tag)) {
-            return;
-        }
-        // check the back stack for current fragment
-        boolean isInBackStack = false;
-        for(int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
-            if(fragmentManager.getBackStackEntryAt(i).getName().equals(tag)) {
-                isInBackStack = true;
-                break;
-            }
-        }
-        if(isInBackStack) {
-            fragmentManager.popBackStack(tag, 0);
-        }
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.mainScreenFrame, fragment, tag);
-        fragmentTransaction.addToBackStack(tag);
-        fragmentTransaction.commit();
-    }*/
-
-    //Sets up custom layouts for bottom navigation items.
-    private void setupCustomBottomNav() {
-        BottomNavigationView bottomNav = binding.bottomNavigationView;
-        for (int i = 0; i < bottomNav.getMenu().size(); i++) {
-            MenuItem item = bottomNav.getMenu().getItem(i);
-            View customView = LayoutInflater.from(this)
-                    .inflate(R.layout.bottom_nav_item, bottomNav, false);
-            ImageView icon = customView.findViewById(R.id.bottom_nav_icon);
-            TextView label = customView.findViewById(R.id.bottom_nav_label);
-            icon.setImageDrawable(item.getIcon());
-            label.setText(item.getTitle());
-            item.setActionView(customView);
-        }
-    }
-
     // Updates the shadow effect on the selected bottom navigation item.
     private void updateBottomNavShadows(int checkedItemId, float hue) {
         BottomNavigationView bottomNav = binding.bottomNavigationView;
@@ -303,5 +294,3 @@ public class MainScreenActivity extends AppCompatActivity {
         return Color.HSVToColor(hsv);
     }
 }
-
-

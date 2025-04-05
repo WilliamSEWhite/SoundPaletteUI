@@ -1,0 +1,106 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background3"
+    android:padding="16dp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:orientation="vertical"
+            android:gravity="center_vertical">
+
+            <!-- Chatroom Name -->
+            <EditText
+                android:id="@+id/chatroomNameEdit"
+                android:layout_width="330dp"
+                android:layout_height="40dp"
+                android:background="@drawable/background4"
+                android:autoSizeMaxTextSize="30dp"
+                android:hint="Chatroom Name..."
+                android:textColorHint="#B8DEE3"
+                android:textColor="@color/white"
+                android:paddingStart="12dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Chatroom Name"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:layout_marginEnd="8dp"/>
+
+
+            <!-- Usernames of Members in Chatrooom -->
+            <EditText
+                android:id="@+id/userSearchInput"
+                android:layout_width="330dp"
+                android:layout_height="40dp"
+                android:background="@drawable/background4"
+                android:autoSizeMaxTextSize="30dp"
+                android:hint="Enter a Username.."
+                android:textColorHint="#B8DEE3"
+                android:textColor="@color/white"
+                android:paddingStart="12dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="40dp"
+                android:text="Member Usernames"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:layout_marginEnd="8dp"/>
+
+            <!-- Search results -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/userSearchResults"
+                android:layout_width="match_parent"
+                android:layout_height="100dp"
+                android:background="@drawable/background4"
+                android:layout_marginTop="8dp"/>
+
+            <!-- Selected Members -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/selectedUsersView"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/background4"
+                android:orientation="horizontal"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="60dp"/>
+
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:background="@drawable/frosted_glass_button"
+                android:text="SAVE"
+                android:textColor="@android:color/white" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="100dp"/>
+
+        </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

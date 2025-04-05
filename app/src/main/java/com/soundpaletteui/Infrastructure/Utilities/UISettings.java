@@ -19,12 +19,18 @@ public class UISettings {
     /**
      * Applies an animated gradient background that changes brightness over time.
      */
-    public static void applyBrightnessGradientBackground(View rootView, float baseHue) {
+    public static void applyBrightnessGradientBackground(View rootView, float baseHue, boolean isDarkMode) {
         if (rootView == null) {
             return;
         }
         final int alpha = 200;
-        int startingColor = Color.HSVToColor(alpha, new float[]{baseHue, LIGHT_SATURATION, MAX_BRIGHTNESS});
+        int startingColor;
+        if (!isDarkMode) {
+            startingColor = Color.HSVToColor(alpha, new float[]{baseHue, LIGHT_SATURATION, MAX_BRIGHTNESS});
+        } else {
+            startingColor = Color.argb(alpha, 0, 0, 0);
+        }
+
         int initialBottomColor = Color.HSVToColor(alpha, new float[]{baseHue, 1f, MAX_BRIGHTNESS});
         final GradientDrawable animatedGradientDrawable = new GradientDrawable(
                 GradientDrawable.Orientation.TOP_BOTTOM,
@@ -50,15 +56,25 @@ public class UISettings {
     /**
      * Applies an animated flipped gradient from the bottom to the top.
      */
-    public static void applyFlippedBrightnessGradientBackground(View view, float hue) {
+    public static void applyFlippedBrightnessGradientBackground(View rootView, float baseHue, boolean isDarkMode) {
+        if (rootView == null) {
+            return;
+        }
         final int alpha = 200;
-        int startingColor = Color.HSVToColor(alpha, new float[]{hue, LIGHT_SATURATION, MAX_BRIGHTNESS});
-        int initialColor = Color.HSVToColor(alpha, new float[]{hue, 1f, MIN_BRIGHTNESS});
-        final GradientDrawable gradient = new GradientDrawable(
+        int startingColor;
+        if (!isDarkMode) {
+            startingColor = Color.HSVToColor(alpha, new float[]{baseHue, LIGHT_SATURATION, MAX_BRIGHTNESS});
+        } else {
+            startingColor = Color.argb(alpha, 0, 0, 0);
+        }
+
+        int initialBottomColor = Color.HSVToColor(alpha, new float[]{baseHue, 1f, MAX_BRIGHTNESS});
+        final GradientDrawable animatedGradientDrawable = new GradientDrawable(
                 GradientDrawable.Orientation.BOTTOM_TOP,
-                new int[]{startingColor, initialColor}
+                new int[]{startingColor, initialBottomColor}
         );
-        view.setBackground(gradient);
+        animatedGradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
+        rootView.setBackground(animatedGradientDrawable);
 
         ValueAnimator brightnessAnimator = ValueAnimator.ofFloat(MAX_BRIGHTNESS, MIN_BRIGHTNESS);
         brightnessAnimator.setDuration(ANIMATION_DURATION);
@@ -67,9 +83,9 @@ public class UISettings {
         brightnessAnimator.setInterpolator(new LinearInterpolator());
         brightnessAnimator.addUpdateListener(animation -> {
             float brightness = (float) animation.getAnimatedValue();
-            int animatedColor = Color.HSVToColor(alpha, new float[]{hue, 1f, brightness});
-            gradient.setColors(new int[]{startingColor, animatedColor});
-            view.setBackground(gradient);
+            int animatedColor = Color.HSVToColor(alpha, new float[]{baseHue, 1f, brightness});
+            animatedGradientDrawable.setColors(new int[]{startingColor, animatedColor});
+            rootView.setBackground(animatedGradientDrawable);
         });
         brightnessAnimator.start();
     }

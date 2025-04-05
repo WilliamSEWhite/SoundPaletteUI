@@ -1,6 +1,7 @@
 package com.soundpaletteui.Infrastructure.Utilities;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -40,7 +41,8 @@ public class Navigation {
     }
 
     /** replaces fragment with navigated fragment */
-    public static void replacePostFragment(FragmentManager fragmentManager, Fragment fragment, String tag, int containerId) {
+    public static void replaceFragment(FragmentManager fragmentManager, FragmentTransaction fragmentTransaction, Fragment fragment, String tag, int containerId) {
+
         System.out.println("Fragment Tag: " + tag);
         if(tag == null) {
             System.out.println("Fragment Tag was null");
@@ -63,7 +65,6 @@ public class Navigation {
         if(isInBackStack) {
             fragmentManager.popBackStack(tag, 0);
         }
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(containerId, fragment, tag);
         fragmentTransaction.addToBackStack(tag);
         fragmentTransaction.commit();

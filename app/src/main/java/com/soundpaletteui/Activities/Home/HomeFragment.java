@@ -1,17 +1,19 @@
 package com.soundpaletteui.Activities.Home;
 
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
@@ -21,10 +23,8 @@ import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -54,16 +54,36 @@ public class HomeFragment extends Fragment {
     private final int TRANSPARENT_ALPHA = 77;
     private final int FULL_ALPHA = 255;
 
+    public boolean darkMode;
+    // Track currently selected tab; default to "explore"
+    private String selectedTab = "explore";
+
+    // Listener for dark mode preference changes
+    private SharedPreferences.OnSharedPreferenceChangeListener darkModeListener =
+            (sharedPreferences, key) -> {
+                if ("dark_mode_enabled".equals(key)) {
+                    updateTabUI();
+                }
+            };
+
     public HomeFragment() {
     }
 
-    // Initializes the fragment with the arguments passed in.
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        // Register the dark mode listener
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        sp.registerOnSharedPreferenceChangeListener(darkModeListener);
     }
 
-    // Sets the Parent View as fragment_home, and Child View for fragment_post.xml
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
+        sp.unregisterOnSharedPreferenceChangeListener(darkModeListener);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -74,7 +94,9 @@ public class HomeFragment extends Fragment {
         userId = String.valueOf(user.getUserId());
 
         final View rootLayout = rootView.findViewById(R.id.root_layout);
-        UISettings.applyBrightnessGradientBackground(rootLayout, 120f);
+        boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
+        darkMode = isDarkMode;
+        UISettings.applyBrightnessGradientBackground(rootLayout, 120f, isDarkMode);
 
         frameExplore = rootView.findViewById(R.id.frame_explore);
         gifExplore = rootView.findViewById(R.id.gif_explore);
@@ -84,17 +106,17 @@ public class HomeFragment extends Fragment {
         textFollower = rootView.findViewById(R.id.follower_text);
 
         frameExplore.setOnClickListener(v -> {
-            // Setting the PostFragment with "Popular" algorithm
+            selectedTab = "explore";
             Log.d("HomeFragment", "Explore Selected");
             replacePostFragment("popular", null);
-
             try {
                 final GifDrawable exploreGifDrawable = (GifDrawable) gifExplore.getDrawable();
                 frameExplore.getBackground().mutate().setTint(ORANGE_COLOR);
                 frameExplore.getBackground().mutate().setAlpha(FULL_ALPHA);
                 frameFollower.getBackground().mutate().setTint(ORANGE_COLOR);
                 frameFollower.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-                UISettings.applyBrightnessGradientBackground(rootLayout, 30f);
+
+                UISettings.applyBrightnessGradientBackground(rootLayout, 30f, darkMode);
                 exploreGifDrawable.start();
                 gifHandler.postDelayed(exploreGifDrawable::stop, 800);
             } catch (ClassCastException e) {
@@ -116,21 +138,21 @@ public class HomeFragment extends Fragment {
             setButtonTextSelected(textFollower, false);
 
             View toolbar = requireActivity().findViewById(R.id.toolbar);
-            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 30f);
+            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 30f, isDarkMode);
         });
 
         frameFollower.setOnClickListener(v -> {
-            // Setting the PostFragment with posts based on User's Following
+            selectedTab = "following";
             Log.d("HomeFragment", "Followers Selected for UserID #" + userId);
             replacePostFragment("following", userId);
-
             try {
                 final GifDrawable followerGifDrawable = (GifDrawable) gifFollower.getDrawable();
                 frameFollower.getBackground().mutate().setTint(PINK_COLOR);
                 frameFollower.getBackground().mutate().setAlpha(FULL_ALPHA);
                 frameExplore.getBackground().mutate().setTint(PINK_COLOR);
                 frameExplore.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-                UISettings.applyBrightnessGradientBackground(rootLayout, 330f);
+
+                UISettings.applyBrightnessGradientBackground(rootLayout, 330f, darkMode);
                 followerGifDrawable.start();
                 gifHandler.postDelayed(followerGifDrawable::stop, 800);
             } catch (ClassCastException e) {
@@ -152,7 +174,7 @@ public class HomeFragment extends Fragment {
             setButtonTextSelected(textExplore, false);
 
             View toolbar = requireActivity().findViewById(R.id.toolbar);
-            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 330f);
+            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 330f, isDarkMode);
         });
 
         // Default view is the "Explore" tab
@@ -160,26 +182,53 @@ public class HomeFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateTabUI();
+    }
+
+    // Updates the backgrounds and toolbar based on the selected tab and current dark mode setting.
+    private void updateTabUI() {
+        boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(getContext());
+        darkMode = isDarkMode;
+        View rootLayout = getView().findViewById(R.id.root_layout);
+        View toolbar = requireActivity().findViewById(R.id.toolbar);
+        if ("explore".equals(selectedTab)) {
+            UISettings.applyBrightnessGradientBackground(rootLayout, 30f, isDarkMode);
+            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 30f, isDarkMode);
+        } else {
+            UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
+            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 330f, isDarkMode);
+        }
+    }
+
+    @Nullable
+    @Override
+    public View getView() {
+        return super.getView();
+    }
+
+    public void setTheme(boolean darkM){
+        updateTabUI();
+    }
+
     // Initializes views and loads user data.
     private void initComponents(View view) {
-        // Get arguments instead of Intent
         user = AppSettings.getInstance().getUser();
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
         userClient = SPWebApiRepository.getInstance().getUserClient();
     }
 
-
     private void replacePostFragment(String algoType, String userId) {
         PostFragment postFragment = PostFragment.newInstance(algoType, userId);
-
-
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
         transaction.commit();
     }
 
-    //Sets the text style for a TextView based on whether it is selected.
+    // Sets the text style for a TextView based on whether it is selected.
     private void setButtonTextSelected(TextView textView, boolean isSelected) {
         if (isSelected) {
             textView.setTypeface(null, Typeface.BOLD);

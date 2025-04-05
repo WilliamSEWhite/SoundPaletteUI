@@ -75,7 +75,7 @@ public class PostFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_post, container, false);
 
         if (baseHue >= 0f) {
-            UISettings.applyBrightnessGradientBackground(view, baseHue);
+//            UISettings.applyBrightnessGradientBackground(view, baseHue);
         }
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));

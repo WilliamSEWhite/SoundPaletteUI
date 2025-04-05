@@ -112,7 +112,7 @@ public class ProfileViewFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_profile_view, container, false);
         initComponents(rootView);
 
-        UISettings.applyBrightnessGradientBackground(rootView, 50f);
+//        UISettings.applyBrightnessGradientBackground(rootView, 50f);
         framePosts = rootView.findViewById(R.id.frame_posts);
         gifPosts = rootView.findViewById(R.id.gif_posts);
         textPosts = rootView.findViewById(R.id.postsToggle);
@@ -145,7 +145,7 @@ public class ProfileViewFragment extends Fragment {
                 final GifDrawable postsGifDrawable = (GifDrawable) gifPosts.getDrawable();
                 framePosts.getBackground().mutate().setAlpha(FULL_ALPHA);
                 frameTagged.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-                UISettings.applyBrightnessGradientBackground(rootView, 50f);
+//                UISettings.applyBrightnessGradientBackground(rootView, 50f);
                 postsGifDrawable.start();
                 gifHandler.postDelayed(() -> postsGifDrawable.stop(), 800);
             } catch (ClassCastException e) {
@@ -177,7 +177,7 @@ public class ProfileViewFragment extends Fragment {
                 final GifDrawable savedGifDrawable = (GifDrawable) gifTagged.getDrawable();
                 frameTagged.getBackground().mutate().setAlpha(FULL_ALPHA);
                 framePosts.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-                UISettings.applyBrightnessGradientBackground(rootView, 60f);
+//                UISettings.applyBrightnessGradientBackground(rootView, 60f);
                 savedGifDrawable.start();
                 gifHandler.postDelayed(() -> savedGifDrawable.stop(), 800);
             } catch (ClassCastException e) {
@@ -213,17 +213,22 @@ public class ProfileViewFragment extends Fragment {
     // Replaces the Main Screen Fragment in Main Activity
     private void replaceMainFragment(Fragment new_fragment) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        Navigation.replaceFragment(fragmentManager, new_fragment, "CHATROOM_FRAGMENT", R.id.mainScreenFrame);
+        /*FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.replace(R.id.mainScreenFrame, new_fragment);
-        transaction.commit();
+        transaction.commit();*/
     }
 
     // Replaces the PostFragment based on the algorithmType and userId
     private void replacePostFragment(String algoType, String userId) {
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        //FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+        //FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(algoType, viewUsername);
-        transaction.replace(R.id.postFragment, postFragment);
-        transaction.commit();
+        //transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
+        //transaction.commit();
+        FragmentManager fragmentManager = getChildFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Navigation.replaceFragment(fragmentManager, fragmentTransaction, postFragment, "POST_FRAGMENT", R.id.postFragment);
     }
 
     // Sets the style of a TextView to selected or unselected.

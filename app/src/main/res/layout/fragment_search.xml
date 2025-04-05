@@ -45,9 +45,80 @@
             android:background="@android:color/transparent"
             android:padding="15dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/navigation_search_24"
+            android:src="@drawable/navigation_search_24"/>
+    </LinearLayout>
 
-        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="match_parent"/>
+
+        <CheckBox
+            android:id="@+id/searchUsersCheckbox"
+            android:layout_width="15dp"
+            android:buttonTint="@color/white"
+            android:shadowColor="@color/black"
+            android:shadowRadius="2"
+            android:layout_height="15dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Users"
+            android:textSize="5pt"
+            android:textColor="@color/white"
+            android:shadowColor="@color/black"
+            android:shadowDx="2"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:textStyle="bold"
+            android:paddingLeft="5dp"
+            android:paddingRight="30dp"/>
+
+        <CheckBox
+            android:id="@+id/searchPostsCheckbox"
+            android:layout_width="15dp"
+            android:buttonTint="@color/white"
+            android:shadowColor="@color/black"
+            android:shadowRadius="2"
+            android:layout_height="15dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Posts"
+            android:textColor="@color/white"
+            android:shadowColor="@color/black"
+            android:shadowDx="2"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:textStyle="bold"
+            android:textSize="5pt"
+            android:paddingLeft="5dp"
+            android:paddingRight="30dp"/>
+
+        <CheckBox
+            android:id="@+id/searchCationsCheckbox"
+            android:layout_width="15dp"
+            android:buttonTint="@color/white"
+            android:shadowColor="@color/black"
+            android:shadowRadius="2"
+
+            android:layout_height="15dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Captions"
+            android:textColor="@color/white"
+            android:shadowColor="@color/black"
+            android:shadowDx="2"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:textSize="5pt"
+            android:textStyle="bold"
+            android:paddingLeft="5dp"/>
 
     </LinearLayout>
 
