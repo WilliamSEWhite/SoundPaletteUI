@@ -1,7 +1,10 @@
 package com.soundpaletteui.Infrastructure.ApiClients;
 
+import android.util.Log;
+
 import com.soundpaletteui.Infrastructure.ApiEndpoints.LoginRegisterApiEndpoints;
 import com.soundpaletteui.Infrastructure.ApiEndpoints.UserEndpoints;
+import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
@@ -9,6 +12,8 @@ import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -70,6 +75,27 @@ public class UserClient {
         Response<Void> response = call.execute();
 
         return response.body();
+    }
+
+    public List<String> searchUsers(String searchTerm) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+
+        Call<List<String>> call = userEndpoints.searchUsers(userId, searchTerm);
+        Response<List<String>> response = call.execute();
+
+        if (!response.isSuccessful()) {
+            Log.e("PostClient", "Error fetching users: " + response.code() + " - " + response.message());
+            return new ArrayList<>();
+        }
+
+        List<String> users = response.body();
+        if (users == null) {
+            Log.w("UserClient", "Received null response body for users.");
+            return new ArrayList<>();
+        }
+
+        Log.d("UserClient", "Fetched " + users.size() + " user.");
+        return users;
     }
 
 }

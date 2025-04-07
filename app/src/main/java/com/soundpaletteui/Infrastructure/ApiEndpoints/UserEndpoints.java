@@ -5,6 +5,8 @@ import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -31,4 +33,7 @@ public interface UserEndpoints {
     Call<Void> followUser(@Query("followerId") int followerId, @Query("followingUsername") String followingUsername);
     @GET("api/user/unfollow-user")
     Call<Void> unfollowUser(@Query("followerId") int followerId, @Query("followingUsername") String followingUsername);
+    @GET("api/user/search-users")
+    Call<List<String>> searchUsers(@Query("userId") int userId, @Query("searchTerm") String searchTerm);
+
 }

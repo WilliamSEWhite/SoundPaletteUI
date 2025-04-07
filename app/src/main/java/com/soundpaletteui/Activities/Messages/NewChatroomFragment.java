@@ -51,8 +51,8 @@ public class NewChatroomFragment extends Fragment {
     private ChatClient chatClient;
     private UserModel currentUser;
 
-    private List<UserProfileModelLite> selectedUsers = new ArrayList<>();
-    private List<UserProfileModelLite> searchResults = new ArrayList<>();
+    private List<String> selectedUsers = new ArrayList<>();
+    private List<String> searchResults = new ArrayList<>();
 
     private UserSearchAdapter userSearchAdapter;
     private UserSelectedAdapter selectedUsersAdapter;
@@ -106,14 +106,17 @@ public class NewChatroomFragment extends Fragment {
         selectedUsersView.setAdapter(selectedUsersAdapter);
 
         // Dummy data for user search results
-        populateDummyUsersAsync();
-
         userSearchInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             // Prompt for API return at 3 letters, then again at 5+
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                if(s.length()>3){
+                    searchUsersAsync(s.toString());
+                }
+            }
             @Override
             public void afterTextChanged(Editable s) {}
         });
@@ -145,9 +148,8 @@ public class NewChatroomFragment extends Fragment {
             try {
                 String chatRoomName = chatroomNameEdit.getText().toString().trim();
                 List<String> usernames = new ArrayList<>();
-                for (UserProfileModelLite user : selectedUsers) {
-                    usernames.add(user.getUsername());
-                }
+                usernames.addAll(selectedUsers);
+                usernames.add(AppSettings.getInstance().getUsername());
 
                 Log.d("NewChatroomFragment", "Creating a new Chatroom titled: " + chatRoomName);
                 NewChatroomModel newChatroom = new NewChatroomModel(chatRoomName, usernames);
@@ -183,15 +185,11 @@ public class NewChatroomFragment extends Fragment {
         transaction.commit();
     }
 
-    private void populateDummyUsersAsync() {
+    private void searchUsersAsync(String searchTerm) {
         new Thread(() -> {
             try {
                 UserClient client = SPWebApiRepository.getInstance().getUserClient();
-                List<UserProfileModelLite> results = new ArrayList<>();
-                results.add(client.getUserProfileByUsername("user1"));
-                results.add(client.getUserProfileByUsername("user2"));
-                results.add(client.getUserProfileByUsername("user3"));
-                results.add(client.getUserProfileByUsername("user4"));
+                List<String> results = client.searchUsers(searchTerm);
 
                 requireActivity().runOnUiThread(() -> {
                     searchResults.clear();

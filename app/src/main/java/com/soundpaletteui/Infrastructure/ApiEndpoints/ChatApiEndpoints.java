@@ -1,6 +1,7 @@
 package com.soundpaletteui.Infrastructure.ApiEndpoints;
 
 import com.soundpaletteui.Infrastructure.Models.ChatMessageModel;
+import com.soundpaletteui.Infrastructure.Models.ChatroomInfoModel;
 import com.soundpaletteui.Infrastructure.Models.ChatroomModel;
 import com.soundpaletteui.Infrastructure.Models.ChatroomModelLite;
 import com.soundpaletteui.Infrastructure.Models.NewChatroomModel;
@@ -34,4 +35,7 @@ public interface ChatApiEndpoints {
     Call<Void> removeUserFromChatroom(@Query("chatroomId") int chatroomId, @Query("userId") int userId);
     @POST("api/chat/update-chatroom")
     Call<Void> updateChatroom(@Body UpdateChatroomModel request);
+    @GET("api/chat/get-chatroom")
+    Call<ChatroomInfoModel> getChatroomInfo(@Query("userId") int userId, @Query("chatroomId") int chatroomId);
+
 }

@@ -2,6 +2,7 @@ package com.soundpaletteui.Infrastructure.ApiClients;
 
 import com.soundpaletteui.Infrastructure.ApiEndpoints.ChatApiEndpoints;
 import com.soundpaletteui.Infrastructure.Models.ChatMessageModel;
+import com.soundpaletteui.Infrastructure.Models.ChatroomInfoModel;
 import com.soundpaletteui.Infrastructure.Models.ChatroomModel;
 import com.soundpaletteui.Infrastructure.Models.ChatroomModelLite;
 import com.soundpaletteui.Infrastructure.Models.NewChatroomModel;
@@ -89,5 +90,11 @@ public class ChatClient {
             throw new IOException("Failed to update chatroom: " + response.code());
         }
     }
+    public ChatroomInfoModel getChatroomInfo(int chatroomId) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+        Call<ChatroomInfoModel> call = apiEndpoints.getChatroomInfo(userId, chatroomId);
+        Response<ChatroomInfoModel> response = call.execute();
+        return response.body();
 
+    }
 }

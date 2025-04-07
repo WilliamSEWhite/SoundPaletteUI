@@ -3,6 +3,7 @@ package com.soundpaletteui.Infrastructure.Models;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class ChatroomModel {
     @SerializedName("ChatRoomId")
@@ -30,7 +31,7 @@ public class ChatroomModel {
     }
     public int getChatRoomId() { return chatRoomId; }
     public String getChatRoomName() { return chatRoomName; }
-    public String getLastMessage() { return isGroupChat ? lastMessageBy + ": " + lastMessage : lastMessage; }
+    public String getLastMessage() { return isGroupChat && !Objects.equals(lastMessageBy, "") ? lastMessageBy + ": " + lastMessage : lastMessage; }
     public Date getLastMessageDate() { return lastMessageDate; }
 
 }

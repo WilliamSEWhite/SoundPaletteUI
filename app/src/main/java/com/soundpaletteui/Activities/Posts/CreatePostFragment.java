@@ -65,8 +65,8 @@ public class CreatePostFragment extends Fragment {
     private UserModel user;
     private List<TagModel> tags;
     private int userId;
-    private List<UserProfileModelLite> selectedUsers = new ArrayList<>();
-    private List<UserProfileModelLite> searchResults = new ArrayList<>();
+    private List<String> selectedUsers = new ArrayList<>();
+    private List<String> searchResults = new ArrayList<>();
     private List<TagModel> selectedTags = new ArrayList<>();
     private List<TagModel> searchTags = new ArrayList<>();
     private TagSearchAdapter tagSearchAdapter;
@@ -476,17 +476,17 @@ public class CreatePostFragment extends Fragment {
         new Thread(() -> {
             try {
                 UserClient client = SPWebApiRepository.getInstance().getUserClient();
-                List<UserProfileModelLite> results = new ArrayList<>();
-                results.add(client.getUserProfileByUsername("user1"));
-                results.add(client.getUserProfileByUsername("user2"));
-                results.add(client.getUserProfileByUsername("user3"));
-                results.add(client.getUserProfileByUsername("user4"));
+                List<String> results = new ArrayList<>();
+                results.add("user1");
+                results.add("user2");
+                results.add("user3");
+                results.add("user4");
                 requireActivity().runOnUiThread(() -> {
                     searchResults.clear();
                     searchResults.addAll(results);
                     userSearchAdapter.notifyDataSetChanged();
                 });
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Log.e("NewPostFragment", "Failed to load dummy users: " + e.getMessage());
             }
         }).start();

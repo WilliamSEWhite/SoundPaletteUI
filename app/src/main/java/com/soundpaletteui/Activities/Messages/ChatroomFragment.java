@@ -108,7 +108,7 @@ public class ChatroomFragment extends Fragment {
         editChatroomButton = rootView.findViewById(R.id.editChatroomButton);
         editChatroomButton.setOnClickListener(v -> {
             // Open the chatroom settings
-            EditChatroomFragment editChatroomFragment = EditChatroomFragment.newInstance(chatRoomId, chatRoomName);
+            EditChatroomFragment editChatroomFragment = EditChatroomFragment.newInstance(chatRoomId);
 
             // Replace the fragment with the editChatroomFragment
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
@@ -117,13 +117,6 @@ public class ChatroomFragment extends Fragment {
             transaction.replace(R.id.mainScreenFrame, editChatroomFragment);
             transaction.addToBackStack(null);
             transaction.commit();*/
-        });
-
-        // Action for "Leave Chatroom"
-        leaveChatroomButton = rootView.findViewById(R.id.leaveChatroomButton);
-        leaveChatroomButton.setOnClickListener(v -> {
-            new LeaveChatroomTask().execute();
-            Log.d("LEAVE CHATROOM", userId+" wantst to leave chatroom");
         });
 
         new LoadMessagesTask().execute();
@@ -184,26 +177,5 @@ public class ChatroomFragment extends Fragment {
         }
     }
 
-    private class LeaveChatroomTask extends AsyncTask<Void, Void, Boolean> {
-        @Override
-        protected Boolean doInBackground(Void... voids) {
-            try {
-                messageClient.removeUserFromChatroom(chatRoomId);
-                return true;
-            } catch (IOException e) {
-                Log.e("ChatroomFragment", "Error leaving chatroom", e);
-                return false;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Boolean success) {
-            if (success) {
-                // Go back to the previous fragment (MessageFragment or ChatroomListFragment)
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                fragmentManager.popBackStack();  // or navigate explicitly if needed
-            }
-        }
-    }
 
 }

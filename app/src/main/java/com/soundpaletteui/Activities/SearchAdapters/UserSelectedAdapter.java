@@ -9,6 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.soundpaletteui.Infrastructure.Models.UserModel;
+import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
 import com.soundpaletteui.R;
 
@@ -17,13 +19,13 @@ import java.util.List;
 public class UserSelectedAdapter extends RecyclerView.Adapter<com.soundpaletteui.Activities.SearchAdapters.UserSelectedAdapter.SelectedUserViewHolder> {
 
     public interface OnRemoveUserClickListener {
-        void onRemoveUser(UserProfileModelLite user);
+        void onRemoveUser(String user);
     }
 
-    private final List<UserProfileModelLite> selectedUsers;
+    private final List<String> selectedUsers;
     private final OnRemoveUserClickListener listener;
 
-    public UserSelectedAdapter(List<UserProfileModelLite> selectedUsers, OnRemoveUserClickListener listener) {
+    public UserSelectedAdapter(List<String> selectedUsers, OnRemoveUserClickListener listener) {
         this.selectedUsers = selectedUsers;
         this.listener = listener;
     }
@@ -38,7 +40,7 @@ public class UserSelectedAdapter extends RecyclerView.Adapter<com.soundpaletteui
 
     @Override
     public void onBindViewHolder(@NonNull SelectedUserViewHolder holder, int position) {
-        UserProfileModelLite user = selectedUsers.get(position);
+        String user = selectedUsers.get(position);
         holder.bind(user);
     }
 
@@ -48,17 +50,17 @@ public class UserSelectedAdapter extends RecyclerView.Adapter<com.soundpaletteui
     }
 
     class SelectedUserViewHolder extends RecyclerView.ViewHolder {
-        private final TextView searchResultItem;
+        private final TextView usernameText;
         private final ImageView removeIcon;
 
         public SelectedUserViewHolder(@NonNull View itemView) {
             super(itemView);
-            searchResultItem = itemView.findViewById(R.id.searchResultItem);
+            usernameText = itemView.findViewById(R.id.searchResultItem);
             removeIcon = itemView.findViewById(R.id.removeIcon);
         }
 
-        public void bind(final UserProfileModelLite user) {
-            searchResultItem.setText(user.getUsername());
+        public void bind(final String user) {
+            usernameText.setText(user);
             removeIcon.setOnClickListener(v -> listener.onRemoveUser(user));
         }
     }
