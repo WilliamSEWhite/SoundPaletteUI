@@ -22,12 +22,13 @@ import pl.droidsonroids.gif.GifImageView;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 /**
  * Manages user login and registration actions within the app.
  */
 public class LoginActivity extends AppCompatActivity {
 
-    private LoginRegisterClient loginRegisterClient;
     private final AppSettings appSettings = AppSettings.getInstance();
 
     private UserModel user;
@@ -35,8 +36,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordBox;
     private Button registerBtn;
     private Button loginBtn;
-    private String username;
-    private String password;
+    private boolean isLoggedIn = false;
     FrameLayout frameRegister;
     GifImageView gifRegister;
     TextView registerText;
@@ -52,8 +52,19 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         UISettings.applyWhiteTopHueGradientBackground(findViewById(R.id.root_layout), 330f);
+        getCredentials();
         initComponents();
         animateShadow();
+    }
+
+    private void getCredentials(){
+        String username = AppSettings.getUsernameValue(this);
+        String password = AppSettings.getPasswordValue(this);
+
+        if(!Objects.equals(username, "") && !Objects.equals(password, "")){
+            isLoggedIn = true;
+            new LoginUserAsync().execute(username, password);
+        }
     }
 
     /**
@@ -98,7 +109,6 @@ public class LoginActivity extends AppCompatActivity {
      * Initializes UI components and listeners for login/registration.
      */
     private void initComponents() {
-        loginRegisterClient = SPWebApiRepository.getInstance().getLoginRegisterClient();
         usernameBox = findViewById(R.id.username);
         passwordBox = findViewById(R.id.password);
         frameRegister = findViewById(R.id.frame_register);
@@ -160,6 +170,10 @@ public class LoginActivity extends AppCompatActivity {
     void loginUser(){
         //System.out.println("login username: " + username);
         UserModel user = appSettings.getUser();
+        if(!isLoggedIn){
+            AppSettings.setUsernameValue(this, user.getUsername());
+            AppSettings.setPasswordValue(this, user.getPassword());
+        }
         if(user != null) {
             if(user.getUserInfo() != null){
                 Toast.makeText(this, "User logged in with Id " + user.getUserId(),
@@ -179,6 +193,8 @@ public class LoginActivity extends AppCompatActivity {
     }
     void registerUser(){
         UserModel user = appSettings.getUser();
+        AppSettings.setUsernameValue(this, user.getUsername());
+        AppSettings.setPasswordValue(this, user.getPassword());
         System.out.println("register username: " + user.getUsername());
         if(user != null) {
             Toast.makeText(this, "User registered with Id " + user.getUserId(),
@@ -216,8 +232,10 @@ public class LoginActivity extends AppCompatActivity {
             String username = params[0];
             String password = params[1];
             try {
+                LoginRegisterClient client = SPWebApiRepository.getInstance().getLoginRegisterClient();
+
                 // Call the registerUser method of the API client to register the user
-                appSettings.setUser(loginRegisterClient.registerUser(username, password));
+                appSettings.setUser(client.registerUser(username, password));
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -241,8 +259,10 @@ public class LoginActivity extends AppCompatActivity {
             String username = params[0];
             String password = params[1];
             try {
+                LoginRegisterClient client = SPWebApiRepository.getInstance().getLoginRegisterClient();
+
                 // Call the loginUser method of the API client to log in the user
-                appSettings.setUser(loginRegisterClient.loginUser(username, password));
+                appSettings.setUser(client.loginUser(username, password));
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
