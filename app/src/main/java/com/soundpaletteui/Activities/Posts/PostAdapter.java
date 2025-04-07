@@ -88,10 +88,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             // Replace the fragment with the User's Profile
             FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
             Navigation.replaceFragment(fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame);
-            /*FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.mainScreenFrame, profileViewFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();*/
         });
 
         // Like Button Actions

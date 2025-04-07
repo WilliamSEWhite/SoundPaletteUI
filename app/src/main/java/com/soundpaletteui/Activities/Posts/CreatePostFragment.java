@@ -1,9 +1,15 @@
 package com.soundpaletteui.Activities.Posts;
 
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +19,13 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.media.MediaScannerConnection;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -51,8 +61,7 @@ import java.util.Date;
 import java.util.List;
 
 public class CreatePostFragment extends Fragment {
-
-    private int postType;
+    private int postPrompt, postType;
     private UserModel user;
     private List<TagModel> tags;
     private int userId;
@@ -74,7 +83,6 @@ public class CreatePostFragment extends Fragment {
     private Button previewButton, postButton;
     private ImageButton mediaButton;
     private MaterialButton backgroundColourSelector, fontColourSelector;
-
     private CheckBox isMatureCheckbox, followerOnlyCheckbox;
     private int defaultBackgroundColor = 0xFFFFFFFF;
     private int defaultFontColor = 0xFF000000;
@@ -82,12 +90,14 @@ public class CreatePostFragment extends Fragment {
     private String fontHex = "#000000";
     private boolean selectingBackground = true;
 
+    private ActivityResultLauncher<Intent> mediaPickerLauncher;
+
     public CreatePostFragment() {}
 
-    public static CreatePostFragment newInstance(int postType) {
+    public static CreatePostFragment newInstance(int postPrompt) {
         CreatePostFragment fragment = new CreatePostFragment();
         Bundle args = new Bundle();
-        args.putInt("Post_Type", postType);
+        args.putInt("postPrompt", postPrompt);
         fragment.setArguments(args);
         return fragment;
     }
@@ -96,10 +106,74 @@ public class CreatePostFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            postType = getArguments().getInt("Post_Type", -1);
+            postPrompt = getArguments().getInt("postPrompt", -1);
+        }
+
+        if (postPrompt == 1) {
+            postType = 1;
+        } else {
+            // Set up the media picker so user can select an image or audio file
+            mediaPickerLauncher = registerForActivityResult(
+                    new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                            Uri selectedUri = result.getData().getData();
+                            if (selectedUri != null) {
+                                String mimeType = requireContext().getContentResolver().getType(selectedUri);
+
+                                // Check if the file type is an image or audio, and assign the postType accordingly
+                                if (mimeType != null) {
+                                    if (mimeType.startsWith("image/")) {
+                                        postType = 3;
+                                        Log.d("Create Media Post", "Post Type Assigned: "+postType);
+                                    } else if (mimeType.startsWith("audio/")) {
+                                        postType = 2;
+                                        Log.d("Create Media Post", "Post Type Assigned: "+postType);
+                                    } else {
+                                        // Send alert  dialog, file not allowed
+                                        Log.d("Create Media Post", "There was an error with the file selected.");
+                                        new AlertDialog.Builder(requireContext())
+                                                .setTitle("Invalid Selection")
+                                                .setMessage("The file you selected is not valid.")
+                                                .setPositiveButton("OK", null)
+                                                .show();
+                                    }
+                                }
+
+                                // Assign the file name to the TextView
+                                postContent = getFileNameFromUri(selectedUri);
+                                postMediaContext.setText(postContent);
+                                Log.d("postContent", postContent);
+                            }
+                        }
+                    }
+            );
         }
     }
 
+    // Get the name of the file
+    private String getFileNameFromUri(Uri uri) {
+        String result = null;
+        if ("content".equals(uri.getScheme())) {
+            try (Cursor cursor = requireContext().getContentResolver().query(uri, null, null, null, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                    if (nameIndex >= 0) {
+                        result = cursor.getString(nameIndex).toLowerCase();
+                    }
+                }
+            }
+        }
+        if (result == null) {
+            result = uri.getLastPathSegment();
+        }
+
+        result = result.toLowerCase().replace(".png", "").replace(".jpg", "");
+        return result;
+    }
+
+
+    // Inflate the view with Create Post Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post_create, container, false);
@@ -180,24 +254,52 @@ public class CreatePostFragment extends Fragment {
         View postContentView;
         if (postType == 1) {
             postContentView = inflater.inflate(R.layout.fragment_post_create_text, postContentContainer, false);
-
             backgroundColourDisplay = postContentView.findViewById(R.id.backgroundColourDisplay);
             fontColourDisplay = postContentView.findViewById(R.id.fontColourDisplay);
             backgroundColourSelector = postContentView.findViewById(R.id.backgroundColourSelector);
             fontColourSelector = postContentView.findViewById(R.id.fontColourSelector);
-
             backgroundColourSelector.setOnClickListener(v -> openColourPicker(true));
             fontColourSelector.setOnClickListener(v -> openColourPicker(false));
-
             postTextContext = postContentView.findViewById(R.id.textContent);
         } else {
             postContentView = inflater.inflate(R.layout.fragment_post_create_media, postContentContainer, false);
-
             mediaButton = postContentView.findViewById(R.id.mediaButton);
-
             postMediaContext = postContentView.findViewById(R.id.mediaContent);
-        }
 
+            mediaButton.setOnClickListener(v -> {
+                Toast.makeText(requireContext(), "Scanning media folders...", Toast.LENGTH_SHORT).show();
+
+                String[] foldersToScan = new String[]{
+                        "/sdcard/Pictures",
+                        "/sdcard/DCIM/Camera",
+                        "/sdcard/Download",
+                        "/sdcard/Music",
+                        "/sdcard/Recordings"
+                };
+
+                MediaScannerConnection.scanFile(
+                        requireContext(),
+                        foldersToScan,
+                        null,
+                        (path, uri) -> {
+                            Log.d("MediaScanner", "Scanned: " + path + " -> " + uri);
+
+                            // After final scan completes, add small delay then launch picker
+                            if (path.equals(foldersToScan[foldersToScan.length - 1])) {
+                                requireActivity().runOnUiThread(() -> {
+                                    // Delay by 500ms to allow media indexing to complete
+                                    new android.os.Handler().postDelayed(() -> {
+                                        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                                        intent.setType("*/*");
+                                        intent.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "audio/*"});
+                                        mediaPickerLauncher.launch(Intent.createChooser(intent, "Select Media"));
+                                    }, 500);
+                                });
+                            }
+                        }
+                );
+            });
+        }
         postContentContainer.addView(postContentView);
     }
 
@@ -208,13 +310,21 @@ public class CreatePostFragment extends Fragment {
 
         if (postType == 1) {
             postContent = postTextContext.getText().toString();
-        } else {
+        } else if (postType == 2 || postType == 3) {
             postContent = postMediaContext.getText().toString();
+        } else {
+            // Send alert  dialog, file not allowed
+            Log.d("Create Media Post", "Preview Post Type Assigned: "+postType);
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Invalid Selection")
+                    .setMessage("The file you selected is not valid.")
+                    .setPositiveButton("OK", null)
+                    .show();
         }
-
         postContentModel = new PostContentModel(postContent);
     }
 
+    // Display a preview of the user's post
     private void showPostPreview(PostModel previewPost) {
         if (previewPost.getPostContent() == null) {
             Log.e("PreviewError", "Post content is null!");
@@ -227,27 +337,41 @@ public class CreatePostFragment extends Fragment {
 
         ViewGroup fragmentDisplay = previewView.findViewById(R.id.postFragmentDisplay);
         fragmentDisplay.removeAllViews();
-        View postContentView = inflater.inflate(R.layout.adapter_posts_text, fragmentDisplay, false);
 
         // Set the username, caption and post context
         TextView username = previewView.findViewById(R.id.postUsername);
         TextView caption = previewView.findViewById(R.id.postCaption);
-        TextView postText = postContentView.findViewById(R.id.postTextDisplay);
         username.setText(previewPost.getUsername());
         caption.setText(previewPost.getPostCaption());
-        postText.setText(previewPost.getPostContent().getPostTextContent());
 
-        // Setting the user's selected background and font colours
+        // Setting the user's selected background and font colours for TEXT POSTS ONLY
         // Note: When colours added to database, should feed colours as parameter into Post Models, and assign in PostAdapter
-        try {
-            postContentView.setBackgroundColor(Color.parseColor(backgroundHex));
-            postText.setTextColor(Color.parseColor(fontHex));
-        } catch (IllegalArgumentException e) {
-            Log.e("PreviewError", "Invalid colour hex: " + e.getMessage());
+        if (postType==1) {
+            View postContentView = inflater.inflate(R.layout.adapter_posts_text, fragmentDisplay, false);
+            TextView postText = postContentView.findViewById(R.id.postTextDisplay);
+            postText.setText(previewPost.getPostContent().getPostTextContent());
+            try {
+                postContentView.setBackgroundColor(Color.parseColor(backgroundHex));
+                postText.setTextColor(Color.parseColor(fontHex));
+            } catch (IllegalArgumentException e) {
+                Log.e("PreviewError", "Invalid colour hex: " + e.getMessage());
+            }
+
+            fragmentDisplay.addView(postContentView);
+        } else if (postType == 3) {
+            View postContentView = inflater.inflate(R.layout.adapter_posts_image, fragmentDisplay, false);
+
+            // Get file name (so it can source it from drawables)
+            try {
+                ImageView postImageDisplay = postContentView.findViewById(R.id.postImageDisplay);
+                int imageResource = getResources().getIdentifier(postContent, "drawable", getContext().getPackageName());
+                Log.d("PreviewImage", "Going to load "+postContent+ "#" +imageResource);
+                postImageDisplay.setImageResource(imageResource);
+            } catch (Exception e) {
+                Log.e("PreviewError", "Failed to load image from URI: " + postContent, e);
+            }
+            fragmentDisplay.addView(postContentView);
         }
-
-        fragmentDisplay.addView(postContentView);
-
         FrameLayout previewContainer = requireView().findViewById(R.id.postPreviewContainer);
         previewContainer.removeAllViews();
         previewContainer.addView(previewView);
@@ -255,10 +379,17 @@ public class CreatePostFragment extends Fragment {
 
     private void savePost() {
         caption = postCaption.getText().toString().trim();
-        boolean hasTextContent = postType == 1 && postTextContext != null && !postTextContext.getText().toString().trim().isEmpty();
-        boolean hasMediaContent = postType != 1 && postMediaContext != null && !postMediaContext.getText().toString().trim().isEmpty();
+        boolean hasTextContent = postPrompt == 1 && postTextContext != null && !postTextContext.getText().toString().trim().isEmpty();
+        boolean hasMediaContent = postPrompt != 1 && postMediaContext != null && !postMediaContext.getText().toString().trim().isEmpty();
 
-        if (caption.isEmpty() || (!hasTextContent && !hasMediaContent)) {
+        if (postType != 1 && postType != 2 && postType != 3) {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Invalid Post")
+                    .setMessage("Please select a valid post type before publishing.")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return;
+        }else if (caption.isEmpty() || (!hasTextContent && !hasMediaContent)) {
             new AlertDialog.Builder(requireContext())
                     .setTitle("Incomplete Post")
                     .setMessage("Please ensure your post has a caption and content before publishing.")

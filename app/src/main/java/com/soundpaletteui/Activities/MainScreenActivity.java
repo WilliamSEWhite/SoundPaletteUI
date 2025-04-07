@@ -184,8 +184,7 @@ public class MainScreenActivity extends AppCompatActivity {
         dialog.show();
 
         Button textPostButton = dialog.findViewById(R.id.create_text);
-        Button audioPostButton = dialog.findViewById(R.id.create_sound);
-        Button imagePostButton = dialog.findViewById(R.id.create_image);
+        Button mediaPostButton = dialog.findViewById(R.id.createMedia);
 
         textPostButton.setOnClickListener(v -> {
             dialog.dismiss();
@@ -193,15 +192,9 @@ public class MainScreenActivity extends AppCompatActivity {
             Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
             supportInvalidateOptionsMenu();
         });
-        audioPostButton.setOnClickListener(v -> {
+        mediaPostButton.setOnClickListener(v -> {
             dialog.dismiss();
-            CreatePostFragment createPostFragment = CreatePostFragment.newInstance(2);
-            Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
-            supportInvalidateOptionsMenu();
-        });
-        imagePostButton.setOnClickListener(v -> {
-            dialog.dismiss();
-            CreatePostFragment createPostFragment = CreatePostFragment.newInstance(3);
+            CreatePostFragment createPostFragment = CreatePostFragment.newInstance(-1);
             Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
             supportInvalidateOptionsMenu();
         });
