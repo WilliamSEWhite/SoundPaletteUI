@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".Activities.Messages.MessageFragment"
     android:orientation="vertical"
-    android:background="@drawable/background2">
+    android:background="@drawable/background_dark_blue">
 
     <!-- Edit Chatroom and Leave Chatroom Buttons -->
     <LinearLayout
@@ -64,7 +64,7 @@
         android:layout_marginRight="20dp"
         android:layout_marginLeft="20dp"
         android:layout_marginBottom="10dp"
-        android:background="@drawable/background1">
+        android:background="@drawable/background_transparent_round2">
 
         <TextView
             android:id="@+id/chatroomName"
@@ -94,7 +94,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/background1"
+        android:background="@drawable/background_transparent_round2"
         android:orientation="horizontal"
         android:padding="12dp">
 
@@ -107,7 +107,7 @@
             android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/background4"
+            android:background="@drawable/background_transparent_rec1"
             android:hint="Type a message..."
             android:minHeight="28dp"
             android:maxHeight="96dp"

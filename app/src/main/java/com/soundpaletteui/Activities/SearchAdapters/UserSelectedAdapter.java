@@ -9,8 +9,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
 import com.soundpaletteui.R;
 
@@ -34,7 +32,7 @@ public class UserSelectedAdapter extends RecyclerView.Adapter<com.soundpaletteui
     @Override
     public SelectedUserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.adapter_user_selected, parent, false);
+                .inflate(R.layout.adapter_search_selected, parent, false);
         return new SelectedUserViewHolder(view);
     }
 
@@ -50,17 +48,17 @@ public class UserSelectedAdapter extends RecyclerView.Adapter<com.soundpaletteui
     }
 
     class SelectedUserViewHolder extends RecyclerView.ViewHolder {
-        private final TextView usernameText;
+        private final TextView searchResultItem;
         private final ImageView removeIcon;
 
         public SelectedUserViewHolder(@NonNull View itemView) {
             super(itemView);
-            usernameText = itemView.findViewById(R.id.usernameText);
+            searchResultItem = itemView.findViewById(R.id.searchResultItem);
             removeIcon = itemView.findViewById(R.id.removeIcon);
         }
 
         public void bind(final UserProfileModelLite user) {
-            usernameText.setText(user.getUsername());
+            searchResultItem.setText(user.getUsername());
             removeIcon.setOnClickListener(v -> listener.onRemoveUser(user));
         }
     }

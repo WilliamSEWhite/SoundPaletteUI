@@ -2,6 +2,7 @@ package com.soundpaletteui.Infrastructure.Models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -47,6 +48,9 @@ public class PostModel {
         this.isLiked = isLiked;
         this.isSaved = isSaved;
 
+    }
+
+    public <E> PostModel(int userId, int postType, String caption, boolean isPremium, boolean isMature, Date date, Date date1, ArrayList<E> es, String textContent) {
     }
 
     // Getters

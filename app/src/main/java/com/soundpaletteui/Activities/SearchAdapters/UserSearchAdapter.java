@@ -8,7 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
 import com.soundpaletteui.R;
 
@@ -32,7 +31,7 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
     @Override
     public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.adapter_user_search_result, parent, false);
+                .inflate(R.layout.adapter_search_result, parent, false);
         return new UserViewHolder(view);
     }
 
@@ -48,15 +47,15 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder {
-        private final TextView usernameText;
+        private final TextView searchResultItem;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
-            usernameText = itemView.findViewById(R.id.usernameText);
+            searchResultItem = itemView.findViewById(R.id.searchResultItem);
         }
 
         public void bind(final UserProfileModelLite user) {
-            usernameText.setText(user.getUsername());
+            searchResultItem.setText(user.getUsername());
             itemView.setOnClickListener(v -> listener.onUserClick(user));
         }
     }

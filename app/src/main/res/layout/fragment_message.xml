@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context=".Activities.Messages.MessageFragment"
     android:orientation="vertical"
-    android:background="@drawable/background2">
+    android:background="@drawable/background_dark_blue">
 
     <!-- RecyclerView to display messages -->
     <androidx.recyclerview.widget.RecyclerView

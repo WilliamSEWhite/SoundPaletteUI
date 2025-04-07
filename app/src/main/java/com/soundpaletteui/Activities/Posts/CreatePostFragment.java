@@ -1,45 +1,48 @@
 package com.soundpaletteui.Activities.Posts;
 
+import android.app.AlertDialog;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListView;
+import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.button.MaterialButton;
+import com.skydoves.colorpickerview.ColorPickerDialog;
+import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
 import com.soundpaletteui.Activities.Home.HomeFragment;
+import com.soundpaletteui.Activities.Messages.NewChatroomFragment;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
-import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
-import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-import com.soundpaletteui.Infrastructure.Adapters.TagRowAdapter;
-import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
+import com.soundpaletteui.Activities.SearchAdapters.TagSearchAdapter;
+import com.soundpaletteui.Activities.SearchAdapters.TagSelectedAdapter;
+import com.soundpaletteui.Activities.SearchAdapters.UserSearchAdapter;
+import com.soundpaletteui.Activities.SearchAdapters.UserSelectedAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
 import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
-import com.soundpaletteui.Infrastructure.Models.LocationModel;
+import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.NewPostModel;
-import com.soundpaletteui.Infrastructure.Models.PostTypeModel;
+import com.soundpaletteui.Infrastructure.Models.PostContentModel;
+import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
-import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
+import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
-import com.soundpaletteui.Infrastructure.Utilities.UISettings;
-import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
@@ -52,14 +55,34 @@ public class CreatePostFragment extends Fragment {
     private int postType;
     private UserModel user;
     private List<TagModel> tags;
-    private ArrayList<TagModel> selectedTags = new ArrayList<>();
-    private MainContentAdapter mainContentAdapter;
-    private UserTagAdapter adapter;
-    private RecyclerView recyclerView;
+    private int userId;
+    private List<UserProfileModelLite> selectedUsers = new ArrayList<>();
+    private List<UserProfileModelLite> searchResults = new ArrayList<>();
+    private List<TagModel> selectedTags = new ArrayList<>();
+    private List<TagModel> searchTags = new ArrayList<>();
+    private TagSearchAdapter tagSearchAdapter;
+    private TagSelectedAdapter selectedTagsAdapter;
+    private UserSearchAdapter userSearchAdapter;
+    private UserSelectedAdapter selectedUsersAdapter;
+    private PostContentModel postContentModel;
+    String caption, postContent;
+    boolean isPremium, isMature;
+    private View backgroundColourDisplay, fontColourDisplay;
+    private TextView postMediaContext;
+    private EditText postCaption, postTextContext, tagSearchInput, userSearchInput;
+    private RecyclerView postTagSearchResult, selectedPostTags, userSearchResult, selectedUserTags;
+    private Button previewButton, postButton;
+    private ImageButton mediaButton;
+    private MaterialButton backgroundColourSelector, fontColourSelector;
 
-    public CreatePostFragment() {
-        // Required empty public constructor
-    }
+    private CheckBox isMatureCheckbox, followerOnlyCheckbox;
+    private int defaultBackgroundColor = 0xFFFFFFFF;
+    private int defaultFontColor = 0xFF000000;
+    private String backgroundHex = "#FFFFFF";
+    private String fontHex = "#000000";
+    private boolean selectingBackground = true;
+
+    public CreatePostFragment() {}
 
     public static CreatePostFragment newInstance(int postType) {
         CreatePostFragment fragment = new CreatePostFragment();
@@ -78,113 +101,213 @@ public class CreatePostFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        View rootView = inflater.inflate(R.layout.fragment_create_post, container, false);
-        // Apply dark mode gradient background
-        boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
-        UISettings.applyBrightnessGradientBackground(rootView, 0f, isDarkMode);
-
-        initView(rootView);
-        Button btnAddTags = rootView.findViewById(R.id.addTags);
-        btnAddTags.setOnClickListener(v -> addTags());
-        Button btnSavePost = rootView.findViewById(R.id.btnSave);
-        btnSavePost.setOnClickListener(v -> savePost());
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_post_create, container, false);
         user = AppSettings.getInstance().getUser();
-        recyclerView = rootView.findViewById(R.id.userProfileTags);
-        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+        userId = user.getUserId();
+
+        loadPostContent(rootView, postType);
+
+        postCaption = rootView.findViewById(R.id.caption);
+        isMatureCheckbox = rootView.findViewById(R.id.isMature);
+        followerOnlyCheckbox = rootView.findViewById(R.id.isFollowing);
+
+        // SET UP POST TAGS
+        tagSearchInput = rootView.findViewById(R.id.tagSearchInput);
+        postTagSearchResult = rootView.findViewById(R.id.postTagSearchResult);
+        selectedPostTags = rootView.findViewById(R.id.selectedPostTags);
+        new GetTagsAsync().execute();
+        tagSearchAdapter = new TagSearchAdapter(searchTags, tag -> {
+            if (!selectedTags.contains(tag)) {
+                selectedTags.add(tag);
+                selectedTagsAdapter.notifyDataSetChanged();
+            }
+        });
+        selectedTagsAdapter = new TagSelectedAdapter(selectedTags, tag -> {
+            selectedTags.remove(tag);
+            selectedTagsAdapter.notifyDataSetChanged();
+        });
+        postTagSearchResult.setLayoutManager(new LinearLayoutManager(getContext()));
+        postTagSearchResult.setAdapter(tagSearchAdapter);
+        selectedPostTags.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        selectedPostTags.setAdapter(selectedTagsAdapter);
+
+        // SET UP USER TAGS
+        userSearchInput = rootView.findViewById(R.id.userSearchInput);
+        userSearchResult = rootView.findViewById(R.id.userSearchResult);
+        selectedUserTags = rootView.findViewById(R.id.selectedUserTags);
+        populateDummyUsersAsync();
+        userSearchAdapter = new UserSearchAdapter(searchResults, user -> {
+            if (!selectedUsers.contains(user)) {
+                selectedUsers.add(user);
+                selectedUsersAdapter.notifyDataSetChanged();
+            }
+        });
+        selectedUsersAdapter = new UserSelectedAdapter(selectedUsers, user -> {
+            selectedUsers.remove(user);
+            selectedUsersAdapter.notifyDataSetChanged();
+        });
+        userSearchResult.setLayoutManager(new LinearLayoutManager(getContext()));
+        userSearchResult.setAdapter(userSearchAdapter);
+        selectedUserTags.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        selectedUserTags.setAdapter(selectedUsersAdapter);
+
+        // PREVIEW BUTTON
+        previewButton = rootView.findViewById(R.id.previewButton);
+        previewButton.setOnClickListener(v -> {
+            getNewPostDetails(postType);
+            PostModel newPost = new PostModel(0, caption, new ArrayList<>(selectedTags), postContentModel, new Date(), user.getUsername(), postType, 0, 0, false, false
+            );
+
+            showPostPreview(newPost);
+        });
+
+        // POST BUTTON
+        postButton = rootView.findViewById(R.id.postButton);
+        postButton.setOnClickListener(v -> {
+            getNewPostDetails(postType);
+            savePost();
+        });
 
         return rootView;
     }
 
-    private void initView(View rootView){
-        switch (postType){
-            case 1:
-                TextPostContentFragment textPostContent = TextPostContentFragment.newInstance();
-                replaceFragment(textPostContent, "TEXT_POST_CONTENT_FRAGMENT");
-                break;
-            case 2:
+    private void loadPostContent(View rootView, int postType) {
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        FrameLayout postContentContainer = rootView.findViewById(R.id.postContentContainer);
+        postContentContainer.removeAllViews();
 
-                break;
-            case 3:
+        View postContentView;
+        if (postType == 1) {
+            postContentView = inflater.inflate(R.layout.fragment_post_create_text, postContentContainer, false);
 
-                break;
-        }
-        new GetTagsAsync().execute();
-    }
+            backgroundColourDisplay = postContentView.findViewById(R.id.backgroundColourDisplay);
+            fontColourDisplay = postContentView.findViewById(R.id.fontColourDisplay);
+            backgroundColourSelector = postContentView.findViewById(R.id.backgroundColourSelector);
+            fontColourSelector = postContentView.findViewById(R.id.fontColourSelector);
 
-    private void addTags() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        final View addTagsDialog = getLayoutInflater().inflate(R.layout.dialog_tag_select, null);
-        builder.setView(addTagsDialog);
+            backgroundColourSelector.setOnClickListener(v -> openColourPicker(true));
+            fontColourSelector.setOnClickListener(v -> openColourPicker(false));
 
-        ListView tagListView = addTagsDialog.findViewById(R.id.tagsList);
-        tagListView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        TagRowAdapter tagRowAdapter = new TagRowAdapter(getActivity(), (ArrayList<TagModel>) tags);
-        tagListView.setAdapter(tagRowAdapter);
-
-        tagListView.setOnItemClickListener((parent, view, position, id) -> {
-            TagModel tag = (TagModel) tagListView.getItemAtPosition(position);
-            if(selectedTags.contains(tag)){
-                selectedTags.remove(tag);
-            } else {
-                selectedTags.add(tag);
-            }
-        });
-        builder.setPositiveButton("Save", (dialog, which) -> {
-            dialog.dismiss();
-            refreshTagList();
-        });
-        AlertDialog dialog = builder.create();
-        dialog.show();
-        Window window = dialog.getWindow();
-        if (window != null) {
-            window.setBackgroundDrawableResource(R.drawable.rounded_corners);
-        }
-    }
-
-    private void refreshTagList() {
-        if (selectedTags != null && !selectedTags.isEmpty()) {
-            adapter = new UserTagAdapter(selectedTags, getContext());
-            recyclerView.setAdapter(adapter);
-            adapter.notifyDataSetChanged();
+            postTextContext = postContentView.findViewById(R.id.textContent);
         } else {
-            Log.d("CreatePostFragment", "No tags received or empty list");
+            postContentView = inflater.inflate(R.layout.fragment_post_create_media, postContentContainer, false);
+
+            mediaButton = postContentView.findViewById(R.id.mediaButton);
+
+            postMediaContext = postContentView.findViewById(R.id.mediaContent);
         }
+
+        postContentContainer.addView(postContentView);
     }
 
-    private void savePost(){
-        View v = getView();
-        int userId = user.getUserId();
-        String caption = ((EditText)v.findViewById(R.id.caption)).getText().toString();
-        boolean isPremium = false;
-        boolean isMature = false;
-        Date createdDate = new Date();
-        Date publishDate = new Date();
-        String postTextContent = "test";
-        switch (postType){
-            case 1:
-                postTextContent = getTextContent(v);
-                break;
+    private void getNewPostDetails(int postType) {
+        caption = postCaption.getText().toString();
+        isMature = isMatureCheckbox.isChecked();
+        isPremium = followerOnlyCheckbox.isChecked();
+
+        if (postType == 1) {
+            postContent = postTextContext.getText().toString();
+        } else {
+            postContent = postMediaContext.getText().toString();
         }
-        NewPostModel newPost = new NewPostModel(userId, postType, caption, isPremium, isMature, createdDate, publishDate, selectedTags, postTextContent );
+
+        postContentModel = new PostContentModel(postContent);
+    }
+
+    private void showPostPreview(PostModel previewPost) {
+        if (previewPost.getPostContent() == null) {
+            Log.e("PreviewError", "Post content is null!");
+            return;
+        }
+
+        // Setting up the view
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View previewView = inflater.inflate(R.layout.adapter_posts, null, false);
+
+        ViewGroup fragmentDisplay = previewView.findViewById(R.id.postFragmentDisplay);
+        fragmentDisplay.removeAllViews();
+        View postContentView = inflater.inflate(R.layout.adapter_posts_text, fragmentDisplay, false);
+
+        // Set the username, caption and post context
+        TextView username = previewView.findViewById(R.id.postUsername);
+        TextView caption = previewView.findViewById(R.id.postCaption);
+        TextView postText = postContentView.findViewById(R.id.postTextDisplay);
+        username.setText(previewPost.getUsername());
+        caption.setText(previewPost.getPostCaption());
+        postText.setText(previewPost.getPostContent().getPostTextContent());
+
+        // Setting the user's selected background and font colours
+        // Note: When colours added to database, should feed colours as parameter into Post Models, and assign in PostAdapter
+        try {
+            postContentView.setBackgroundColor(Color.parseColor(backgroundHex));
+            postText.setTextColor(Color.parseColor(fontHex));
+        } catch (IllegalArgumentException e) {
+            Log.e("PreviewError", "Invalid colour hex: " + e.getMessage());
+        }
+
+        fragmentDisplay.addView(postContentView);
+
+        FrameLayout previewContainer = requireView().findViewById(R.id.postPreviewContainer);
+        previewContainer.removeAllViews();
+        previewContainer.addView(previewView);
+    }
+
+    private void savePost() {
+        caption = postCaption.getText().toString().trim();
+        boolean hasTextContent = postType == 1 && postTextContext != null && !postTextContext.getText().toString().trim().isEmpty();
+        boolean hasMediaContent = postType != 1 && postMediaContext != null && !postMediaContext.getText().toString().trim().isEmpty();
+
+        if (caption.isEmpty() || (!hasTextContent && !hasMediaContent)) {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Incomplete Post")
+                    .setMessage("Please ensure your post has a caption and content before publishing.")
+                    .setPositiveButton("OK", null)
+                    .show();
+            return;
+        }
+
+        getNewPostDetails(postType);
+        NewPostModel newPost = new NewPostModel(
+                userId, postType, caption, isPremium, isMature, new Date(), new Date(), new ArrayList<>(selectedTags), postContent
+        );
+
         new MakePostAsync().execute(newPost);
     }
 
-    private String getTextContent(View v){
-        TextPostContentFragment frag = (TextPostContentFragment) getChildFragmentManager().findFragmentById(R.id.postContentShell);
-        return frag.getContent();
+
+    private class GetTagsAsync extends AsyncTask<Void, Void, Void> {
+        protected Void doInBackground(Void... d) {
+            try {
+                TagClient client = SPWebApiRepository.getInstance().getTagClient();
+                tags = client.getTags();
+                requireActivity().runOnUiThread(() -> {
+                    searchTags.clear();
+                    searchTags.addAll(tags);
+                    tagSearchAdapter.notifyDataSetChanged();
+                });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }
     }
 
-    private void replaceFragment(Fragment fragment, String tag){
-        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.postContentShell, fragment, tag);
-        transaction.commit();
-    }
-
-    private void finishPost(){
-        replaceMainFragment(new HomeFragment(), "HOME_FRAGMENT");
+    private class MakePostAsync extends AsyncTask<NewPostModel, Void, Void> {
+        protected Void doInBackground(NewPostModel... d) {
+            try {
+                PostClient client = SPWebApiRepository.getInstance().getPostClient();
+                client.makePost(d[0]);
+            } catch (IOException e) {
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(requireContext(), "Error making post", Toast.LENGTH_SHORT).show()
+                );
+            }
+            return null;
+        }
+        protected void onPostExecute(Void v) {
+            replaceMainFragment(new ProfileFragment(), "Go to ProfileFragment");
+        }
     }
 
     private void replaceMainFragment(Fragment new_fragment, String tag) {
@@ -192,34 +315,49 @@ public class CreatePostFragment extends Fragment {
         Navigation.replaceFragment(fragmentManager, new_fragment, tag, R.id.mainScreenFrame);
     }
 
-    private class GetTagsAsync extends AsyncTask<Void,Void, Void> {
-        protected Void doInBackground(Void... d) {
-            try {
-                TagClient client = SPWebApiRepository.getInstance().getTagClient();
-                tags = client.getTags();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return null;
-        }
-        protected void onPostExecute(Void v) {
 
-        }
+    private void openColourPicker(boolean background) {
+        selectingBackground = background;
+        new ColorPickerDialog.Builder(requireContext())
+                .setTitle("Select Colour")
+                .setPreferenceName("MyColorPicker")
+                .setPositiveButton("OK", (ColorEnvelopeListener) (envelope, fromUser) -> {
+                    int selectedColor = envelope.getColor();
+                    String hexCode = "#" + envelope.getHexCode();
+                    if (selectingBackground) {
+                        backgroundHex = hexCode;
+                        defaultBackgroundColor = selectedColor;
+                        backgroundColourDisplay.setBackgroundColor(defaultBackgroundColor);
+                    } else {
+                        fontHex = hexCode;
+                        defaultFontColor = selectedColor;
+                        fontColourDisplay.setBackgroundColor(defaultFontColor);
+                    }
+                })
+                .setNegativeButton("Cancel", (dialogInterface, i) -> dialogInterface.dismiss())
+                .attachAlphaSlideBar(true)
+                .attachBrightnessSlideBar(true)
+                .show();
     }
 
-    private class MakePostAsync extends AsyncTask<NewPostModel,Void, Void> {
-        protected Void doInBackground(NewPostModel... d) {
+
+    private void populateDummyUsersAsync() {
+        new Thread(() -> {
             try {
-                NewPostModel newPost = d[0];
-                PostClient client = SPWebApiRepository.getInstance().getPostClient();
-                client.makePost(newPost);
+                UserClient client = SPWebApiRepository.getInstance().getUserClient();
+                List<UserProfileModelLite> results = new ArrayList<>();
+                results.add(client.getUserProfileByUsername("user1"));
+                results.add(client.getUserProfileByUsername("user2"));
+                results.add(client.getUserProfileByUsername("user3"));
+                results.add(client.getUserProfileByUsername("user4"));
+                requireActivity().runOnUiThread(() -> {
+                    searchResults.clear();
+                    searchResults.addAll(results);
+                    userSearchAdapter.notifyDataSetChanged();
+                });
             } catch (IOException e) {
-                Toast.makeText(requireContext(), "Error making post", Toast.LENGTH_SHORT).show();
+                Log.e("NewPostFragment", "Failed to load dummy users: " + e.getMessage());
             }
-            return null;
-        }
-        protected void onPostExecute(Void v) {
-            finishPost();
-        }
+        }).start();
     }
 }

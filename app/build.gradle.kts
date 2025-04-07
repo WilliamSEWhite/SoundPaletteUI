@@ -63,4 +63,7 @@ dependencies {
 
     implementation ("pl.droidsonroids.gif:android-gif-drawable:1.2.29")
 
+    implementation("com.github.skydoves:colorpickerpreference:2.0.6")
+
+
 }
