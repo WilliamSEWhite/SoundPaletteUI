@@ -22,8 +22,7 @@ import android.widget.Button;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundpaletteui.Activities.Home.HomeFragment;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
-import com.soundpaletteui.Activities.Posts.CreatePostImageFragment;
-import com.soundpaletteui.Activities.Posts.CreatePostTextFragment;
+import com.soundpaletteui.Activities.Posts.CreatePostFragment;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.Activities.Trending.SearchFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
@@ -190,21 +189,21 @@ public class MainScreenActivity extends AppCompatActivity {
 
         textPostButton.setOnClickListener(v -> {
             dialog.dismiss();
-            CreatePostTextFragment createPostTextFragment = CreatePostTextFragment.newInstance(1);
-            Navigation.replaceFragment(getSupportFragmentManager(), createPostTextFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
+            CreatePostFragment createPostFragment = CreatePostFragment.newInstance(1);
+            Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
             supportInvalidateOptionsMenu();
         });
         audioPostButton.setOnClickListener(v -> {
             dialog.dismiss();
-            //CreatePostAudioFragment createPostAudioFragment = CreatePostAudioFragment.newInstance();
-            //Navigation.replaceFragment(getSupportFragmentManager(), createPostAudioFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
-            //supportInvalidateOptionsMenu();
+            CreatePostFragment createPostFragment = CreatePostFragment.newInstance(2);
+            Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
+            supportInvalidateOptionsMenu();
         });
         imagePostButton.setOnClickListener(v -> {
             dialog.dismiss();
-            //CreatePostImageFragment createPostImageFragment = CreatePostImageFragment.newInstance();
-            //Navigation.replaceFragment(getSupportFragmentManager(), createPostImageFragment, "Create Time Post Fragment", R.id.mainScreenFrame);
-            //supportInvalidateOptionsMenu();
+            CreatePostFragment createPostFragment = CreatePostFragment.newInstance(3);
+            Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
+            supportInvalidateOptionsMenu();
         });
     }
 
