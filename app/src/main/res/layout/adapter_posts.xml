@@ -84,7 +84,7 @@
                 android:paddingTop="3dp"
                 android:layout_gravity="center"
 
-                android:text="LIKES"
+                android:text="1029"
                 android:textSize="20dp"/>
 
 <!--            <ImageButton-->
@@ -115,7 +115,7 @@
                 android:layout_height="match_parent"
                 android:paddingTop="3dp"
                 android:layout_gravity="center"
-                android:text="COMMENT"
+                android:text="308"
                 android:textSize="20dp"/>
             <CheckBox
                 android:id="@+id/postSaveButton"

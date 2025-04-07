@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Activities.Posts.CreatePostFragment">
+    android:background="@drawable/background_dark_blue"
+    tools:context=".Activities.Posts.CreatePostTextFragment">
 
 
     <GridLayout
@@ -75,15 +76,15 @@
             </androidx.recyclerview.widget.RecyclerView>
         </LinearLayout>
 
-            <FrameLayout
-                android:id="@+id/postContentShell"
-                android:layout_width="match_parent"
-                android:layout_height="0dip"
-                android:layout_column="0"
-                android:layout_row="2"
-                android:layout_rowWeight="0.2"
+        <FrameLayout
+            android:id="@+id/postContentShell"
+            android:layout_width="match_parent"
+            android:layout_height="0dip"
+            android:layout_column="0"
+            android:layout_row="2"
+            android:layout_rowWeight="0.2"
 
-                />
+            />
         <Button
             android:layout_width="120dp"
             android:layout_gravity="center"

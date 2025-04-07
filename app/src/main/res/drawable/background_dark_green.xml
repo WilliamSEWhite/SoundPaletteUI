@@ -1,0 +1,35 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Gradient Background with Diagonal Effect -->
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="radial"
+                android:centerX="70%"
+                android:centerY="-20%"
+                android:gradientRadius="600dp"
+                android:startColor="#142014"
+                android:endColor="#020E02" />
+        </shape>
+    </item>
+
+    <!-- Border for Frosted Glass Effect -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <stroke
+                android:width="1.5dp"
+                android:color="#80FFFFFF" /> <!-- Semi-transparent white border -->
+        </shape>
+    </item>
+
+    <!-- Optional: Shadow for Depth -->
+    <item android:left="2dp" android:right="2dp" android:top="2dp" android:bottom="2dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent" />
+            <stroke
+                android:width="1dp"
+                android:color="#30FFFFFF" /> <!-- Soft shadow for extra depth -->
+        </shape>
+    </item>
+</layer-list>

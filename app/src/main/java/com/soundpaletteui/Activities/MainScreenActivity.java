@@ -5,13 +5,11 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
-import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,18 +17,16 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar; // Make sure to import Toolbar
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import android.widget.Button;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundpaletteui.Activities.Home.HomeFragment;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
-import com.soundpaletteui.Activities.Posts.CreatePostFragment;
+import com.soundpaletteui.Activities.Posts.CreatePostImageFragment;
+import com.soundpaletteui.Activities.Posts.CreatePostTextFragment;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.Activities.Trending.SearchFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
@@ -194,23 +190,22 @@ public class MainScreenActivity extends AppCompatActivity {
 
         textPostButton.setOnClickListener(v -> {
             dialog.dismiss();
-            createPost(1);
+            CreatePostTextFragment createPostTextFragment = CreatePostTextFragment.newInstance(1);
+            Navigation.replaceFragment(getSupportFragmentManager(), createPostTextFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
+            supportInvalidateOptionsMenu();
         });
         audioPostButton.setOnClickListener(v -> {
             dialog.dismiss();
-            createPost(2);
+            //CreatePostAudioFragment createPostAudioFragment = CreatePostAudioFragment.newInstance();
+            //Navigation.replaceFragment(getSupportFragmentManager(), createPostAudioFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
+            //supportInvalidateOptionsMenu();
         });
         imagePostButton.setOnClickListener(v -> {
             dialog.dismiss();
-            createPost(3);
+            //CreatePostImageFragment createPostImageFragment = CreatePostImageFragment.newInstance();
+            //Navigation.replaceFragment(getSupportFragmentManager(), createPostImageFragment, "Create Time Post Fragment", R.id.mainScreenFrame);
+            //supportInvalidateOptionsMenu();
         });
-    }
-
-    // Function to create a post.
-    private void createPost(int postType){
-        CreatePostFragment createPostFragment = CreatePostFragment.newInstance(postType);
-        Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "CREATE_POST_FRAGMENT", R.id.mainScreenFrame);
-        supportInvalidateOptionsMenu();
     }
 
     // Animates a "breathing" shadow effect on the header text.

@@ -9,24 +9,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
-import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.R;
 
-public class TextPostContentFragment extends Fragment {
+public class CreatePostImageFragment extends Fragment {
 
 
-    public TextPostContentFragment() {
+    public CreatePostImageFragment() {
         // Required empty public constructor
     }
 
-    public static TextPostContentFragment newInstance() {
-        return new TextPostContentFragment();
+    public static CreatePostImageFragment newInstance() {
+        return new CreatePostImageFragment();
     }
 
     public String getContent(){
         View v = getView();
 
-        String content = ((EditText)v.findViewById(R.id.text_content)).getText().toString();
+        String content = ((EditText)v.findViewById(R.id.textContent)).getText().toString();
 
         return content;
     }
@@ -41,6 +40,6 @@ public class TextPostContentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_text_post_content, container, false);
+        return inflater.inflate(R.layout.fragment_post_create_text, container, false);
     }
 }
