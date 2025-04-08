@@ -98,4 +98,9 @@ public class UserClient {
         return users;
     }
 
+
+    public List<UserProfileModelLite> getProfilesForUsername(String searchTerm) {
+        return null;
+    }
+
 }

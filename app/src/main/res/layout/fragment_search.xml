@@ -8,9 +8,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@drawable/white_translucency_gradient_vertical"
-
     tools:context=".Activities.Trending.SearchFragment">
-
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,79 +46,59 @@
             android:src="@drawable/navigation_search_24"/>
     </LinearLayout>
 
-    <LinearLayout
+    <!-- Replace CheckBoxes with RadioGroup -->
+    <RadioGroup
+        android:id="@+id/searchOptionsGroup"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="30dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="50dp">
 
-        <View
-            android:layout_width="50dp"
-            android:layout_height="match_parent"/>
-
-        <CheckBox
-            android:id="@+id/searchUsersCheckbox"
-            android:layout_width="15dp"
-            android:buttonTint="@color/white"
-            android:shadowColor="@color/black"
-            android:shadowRadius="2"
-            android:layout_height="15dp"/>
-        <TextView
+        <RadioButton
+            android:id="@+id/searchUsersRadio"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:text="Users"
-            android:textSize="5pt"
             android:textColor="@color/white"
+            android:buttonTint="@color/white"
+            android:textSize="5pt"
+            android:textStyle="bold"
             android:shadowColor="@color/black"
             android:shadowDx="2"
             android:shadowDy="1"
             android:shadowRadius="1"
-            android:textStyle="bold"
-            android:paddingLeft="5dp"
-            android:paddingRight="30dp"/>
+            android:paddingRight="30dp" />
 
-        <CheckBox
-            android:id="@+id/searchPostsCheckbox"
-            android:layout_width="15dp"
-            android:buttonTint="@color/white"
-            android:shadowColor="@color/black"
-            android:shadowRadius="2"
-            android:layout_height="15dp"/>
-        <TextView
+        <RadioButton
+            android:id="@+id/searchPostsRadio"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Posts"
+            android:layout_height="wrap_content"
+            android:text="Tags"
             android:textColor="@color/white"
+            android:buttonTint="@color/white"
+            android:textSize="5pt"
+            android:textStyle="bold"
             android:shadowColor="@color/black"
             android:shadowDx="2"
             android:shadowDy="1"
             android:shadowRadius="1"
-            android:textStyle="bold"
-            android:textSize="5pt"
-            android:paddingLeft="5dp"
-            android:paddingRight="30dp"/>
+            android:paddingRight="30dp" />
 
-        <CheckBox
-            android:id="@+id/searchCationsCheckbox"
-            android:layout_width="15dp"
-            android:buttonTint="@color/white"
-            android:shadowColor="@color/black"
-            android:shadowRadius="2"
-
-            android:layout_height="15dp"/>
-        <TextView
+        <RadioButton
+            android:id="@+id/searchCaptionsRadio"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:text="Captions"
             android:textColor="@color/white"
+            android:buttonTint="@color/white"
+            android:textSize="5pt"
+            android:textStyle="bold"
             android:shadowColor="@color/black"
             android:shadowDx="2"
             android:shadowDy="1"
-            android:shadowRadius="1"
-            android:textSize="5pt"
-            android:textStyle="bold"
-            android:paddingLeft="5dp"/>
-
-    </LinearLayout>
+            android:shadowRadius="1" />
+    </RadioGroup>
 
     <FrameLayout
         android:id="@+id/postFragment"
