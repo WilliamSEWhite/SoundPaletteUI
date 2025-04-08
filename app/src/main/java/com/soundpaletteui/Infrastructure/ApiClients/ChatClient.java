@@ -7,8 +7,7 @@ import com.soundpaletteui.Infrastructure.Models.ChatroomModel;
 import com.soundpaletteui.Infrastructure.Models.ChatroomModelLite;
 import com.soundpaletteui.Infrastructure.Models.NewChatroomModel;
 import com.soundpaletteui.Infrastructure.Models.NewMessageModel;
-import com.soundpaletteui.Infrastructure.Models.UpdateChatroomModel;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
+import com.soundpaletteui.Infrastructure.Models.ChatroomUpdateModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 
@@ -69,21 +68,8 @@ public class ChatClient {
 
         return response.body();
     }
-    public List<String> getChatroomMembers(int chatroomId) throws IOException {
-        Call<List<String>> call = apiEndpoints.getChatroomMembers(chatroomId);
-        Response<List<String>> response = call.execute();
-        if (!response.isSuccessful()) {
-            throw new IOException("Failed to fetch chatroom members: " + response.code());
-        }
-        return response.body();
-    }
-    public void updateChatroom(int chatroomId, String newName, List<UserProfileModelLite> members) throws IOException {
-        List<String> usernames = new ArrayList<>();
-        for (UserProfileModelLite user : members) {
-            usernames.add(user.getUsername());
-        }
-        UpdateChatroomModel updatedChatroomModel = new UpdateChatroomModel(chatroomId, newName, usernames);
-        Call<Void> call = apiEndpoints.updateChatroom(updatedChatroomModel);
+    public void updateChatroom(ChatroomUpdateModel chatroomUpdate) throws IOException {
+        Call<Void> call = apiEndpoints.updateChatroom(chatroomUpdate);
         Response<Void> response = call.execute();
 
         if (!response.isSuccessful()) {

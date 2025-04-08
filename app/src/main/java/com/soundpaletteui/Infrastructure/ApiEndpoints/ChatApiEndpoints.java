@@ -6,9 +6,7 @@ import com.soundpaletteui.Infrastructure.Models.ChatroomModel;
 import com.soundpaletteui.Infrastructure.Models.ChatroomModelLite;
 import com.soundpaletteui.Infrastructure.Models.NewChatroomModel;
 import com.soundpaletteui.Infrastructure.Models.NewMessageModel;
-import com.soundpaletteui.Infrastructure.Models.UpdateChatroomModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
+import com.soundpaletteui.Infrastructure.Models.ChatroomUpdateModel;
 
 import java.util.List;
 
@@ -34,7 +32,7 @@ public interface ChatApiEndpoints {
     @GET("api/chat/remove-user-from-chat")
     Call<Void> removeUserFromChatroom(@Query("chatroomId") int chatroomId, @Query("userId") int userId);
     @POST("api/chat/update-chatroom")
-    Call<Void> updateChatroom(@Body UpdateChatroomModel request);
+    Call<Void> updateChatroom(@Body ChatroomUpdateModel chatroomUpdate);
     @GET("api/chat/get-chatroom")
     Call<ChatroomInfoModel> getChatroomInfo(@Query("userId") int userId, @Query("chatroomId") int chatroomId);
 

@@ -38,22 +38,6 @@
             </Button>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:layout_weight="2">
-
-            <Button
-                android:id="@+id/leaveChatroomButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="LEAVE"
-                android:textSize="8dp"
-                android:background="@drawable/frosted_glass_button">
-            </Button>
-        </LinearLayout>
     </LinearLayout>
 
     <!-- Poster's Profile -->
