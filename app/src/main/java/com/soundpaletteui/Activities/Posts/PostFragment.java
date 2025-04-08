@@ -14,12 +14,14 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
+import com.soundpaletteui.Infrastructure.Models.PostContentModel;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -130,8 +132,43 @@ public class PostFragment extends Fragment {
             Log.d(TAG, "Fetched dummy posts: " + posts.size());
             allPosts.clear();
             allPosts.addAll(posts);
+
+            // Testing audio posts with dummy data
+            loadDummyAudio(allPosts);
+
             setupRecyclerView();
         }
+    }
+
+    // TEST AUDIO POST
+    private void loadDummyAudio(List<PostModel> allPosts) {
+
+        PostContentModel testAudio = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3");
+        PostModel testPost = new PostModel(
+                1000, "Maybe a new intro???", new ArrayList<>(), testAudio,
+                new Date(), "user3", 2, 0, 0, false, false
+        );
+
+        PostContentModel testAudio2 = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+        PostModel testPost2 = new PostModel(
+                1001, "Ok we vibing over hereeee", new ArrayList<>(), testAudio2,
+                new Date(), "user3", 2, 0, 0, false, false
+        );
+        PostContentModel testAudio3 = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3");
+        PostModel testPost3 = new PostModel(
+                1002, "Finishing my the last track for the new album yalllllll!!!!", new ArrayList<>(), testAudio3,
+                new Date(), "user3", 2, 0, 0, false, false
+        );
+        PostContentModel testAudio4 = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3");
+        PostModel testPost4 = new PostModel(
+                1003, "Sneak peak", new ArrayList<>(), testAudio4,
+                new Date(), "user3", 2, 0, 0, false, false
+        );
+
+        allPosts.add(testPost);
+        allPosts.add(testPost2);
+        allPosts.add(testPost3);
+        allPosts.add(testPost4);
     }
 
     // Sets the RecyclerView by sending through a List of all PostModels

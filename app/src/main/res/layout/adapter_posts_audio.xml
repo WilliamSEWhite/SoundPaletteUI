@@ -1,19 +1,20 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/audioFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:layout_gravity="center"
     android:gravity="center"
-    android:background="@color/colorBackgroundLight">
+    android:background="@drawable/background_dark_blue">
 
     <ImageView
         android:id="@+id/postAudioBackground"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="150dp"
         android:src="@drawable/soundwave"
         android:alpha="0.3"
+        app:tint="@color/white"
         android:visibility="visible" />
 
     <SeekBar
@@ -27,10 +28,10 @@
     <!-- Play/Pause toggle button -->
     <ImageButton
         android:id="@+id/postAudioPlayPause"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
         android:layout_gravity="center"
-        android:background="transparent"
+        android:background="@android:color/transparent"
         android:src="@drawable/baseline_play_circle_filled_24"/>
 
 </LinearLayout>

@@ -157,6 +157,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:padding="5dp"
+                        android:orientation="vertical"
                         android:background="@drawable/background_transparent_rec3"/>
                 </LinearLayout>
             </LinearLayout>
@@ -215,6 +216,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:padding="5dp"
+                        android:orientation="vertical"
                         android:background="@drawable/background_transparent_rec3"/>
                 </LinearLayout>
             </LinearLayout>

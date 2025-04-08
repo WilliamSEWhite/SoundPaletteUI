@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -92,8 +91,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
             playPauseButton.setOnClickListener(v -> {
                 try {
-                    if (sharedMediaPlayer != null && sharedMediaPlayer.isPlaying()) {
-                        sharedMediaPlayer.stop();
+                    // Always release existing player first
+                    if (sharedMediaPlayer != null) {
+                        try {
+                            sharedMediaPlayer.stop();
+                        } catch (Exception ignored) {}
                         sharedMediaPlayer.release();
                         sharedMediaPlayer = null;
                         handler.removeCallbacksAndMessages(null);
@@ -102,48 +104,53 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         }
                     }
 
-                    sharedMediaPlayer = new MediaPlayer();
                     lastPlayButton = playPauseButton;
 
-                    sharedMediaPlayer.setOnPreparedListener(mp -> {
-                        mp.start();
-                        playPauseButton.setImageResource(R.drawable.baseline_pause_circle_filled_24);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (sharedMediaPlayer != null && sharedMediaPlayer.isPlaying()) {
-                                    int progress = (int) (((float) sharedMediaPlayer.getCurrentPosition() / sharedMediaPlayer.getDuration()) * 100);
-                                    audioSeekBar.setProgress(progress);
-                                    handler.postDelayed(this, 100);
-                                }
-                            }
-                        });
-                    });
-
-                    sharedMediaPlayer.setOnCompletionListener(mp -> {
-                        playPauseButton.setImageResource(R.drawable.baseline_play_circle_filled_24);
-                        audioSeekBar.setProgress(0);
-                        handler.removeCallbacksAndMessages(null);
-                    });
-
                     if (audioSource.startsWith("http")) {
+                        sharedMediaPlayer = new MediaPlayer();
                         sharedMediaPlayer.setDataSource(audioSource);
+                        sharedMediaPlayer.setOnPreparedListener(mp -> {
+                            mp.start();
+                            playPauseButton.setImageResource(R.drawable.baseline_pause_circle_filled_24);
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (sharedMediaPlayer != null && sharedMediaPlayer.isPlaying()) {
+                                        int progress = (int) (((float) sharedMediaPlayer.getCurrentPosition() / sharedMediaPlayer.getDuration()) * 100);
+                                        audioSeekBar.setProgress(progress);
+                                        handler.postDelayed(this, 100);
+                                    }
+                                }
+                            });
+                        });
+                        sharedMediaPlayer.setOnCompletionListener(mp -> {
+                            playPauseButton.setImageResource(R.drawable.baseline_play_circle_filled_24);
+                            audioSeekBar.setProgress(0);
+                            handler.removeCallbacksAndMessages(null);
+                        });
                         sharedMediaPlayer.prepareAsync();
                     } else {
                         int resId = context.getResources().getIdentifier(audioSource.replace(".mp3", ""), "raw", context.getPackageName());
                         sharedMediaPlayer = MediaPlayer.create(context, resId);
-                        sharedMediaPlayer.start();
-                        playPauseButton.setImageResource(R.drawable.baseline_pause_circle_filled_24);
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (sharedMediaPlayer != null && sharedMediaPlayer.isPlaying()) {
-                                    int progress = (int) (((float) sharedMediaPlayer.getCurrentPosition() / sharedMediaPlayer.getDuration()) * 100);
-                                    audioSeekBar.setProgress(progress);
-                                    handler.postDelayed(this, 100);
+                        if (sharedMediaPlayer != null) {
+                            sharedMediaPlayer.setOnCompletionListener(mp -> {
+                                playPauseButton.setImageResource(R.drawable.baseline_play_circle_filled_24);
+                                audioSeekBar.setProgress(0);
+                                handler.removeCallbacksAndMessages(null);
+                            });
+                            sharedMediaPlayer.start();
+                            playPauseButton.setImageResource(R.drawable.baseline_pause_circle_filled_24);
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (sharedMediaPlayer != null && sharedMediaPlayer.isPlaying()) {
+                                        int progress = (int) (((float) sharedMediaPlayer.getCurrentPosition() / sharedMediaPlayer.getDuration()) * 100);
+                                        audioSeekBar.setProgress(progress);
+                                        handler.postDelayed(this, 100);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
                 } catch (IOException e) {
                     Log.e("AudioPost", "Playback error", e);
@@ -161,7 +168,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                 @Override public void onStartTrackingTouch(SeekBar seekBar) {}
                 @Override public void onStopTrackingTouch(SeekBar seekBar) {}
             });
-
         } else {
             fragmentView = new View(context);
         }
