@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
@@ -20,7 +19,6 @@ import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
@@ -72,10 +70,7 @@ public class SearchFragment extends Fragment {
 
         buttonSearch.setOnClickListener(v -> {
             String searchText = inputSearch.getText().toString().trim();
-            String selectedOption = getSelectedSearchOption();
-
-            Log.d("SearchFragment", "Search text: " + searchText + ", Option: " + selectedOption);
-            replacePostFragment(selectedOption, searchText);
+            getSelectedSearchOption(searchText);
         });
 
         return rootView;
@@ -94,16 +89,25 @@ public class SearchFragment extends Fragment {
         transaction.commit();
     }
 
-    private String getSelectedSearchOption() {
+    private void replacePostFragmentWithProfiles(String searchTerm) {
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        SearchProfileFragment searchProfileFragment = SearchProfileFragment.newInstance(searchTerm);
+        transaction.replace(R.id.postFragment, searchProfileFragment);
+        transaction.commit();
+    }
+
+    private void getSelectedSearchOption(String searchText) {
         int selectedId = searchOptionsGroup.getCheckedRadioButtonId();
         if (selectedId == R.id.searchUsersRadio) {
-            return "users";
+            Log.d("SearchFragment", "Search Tags for: " + searchText);
+            replacePostFragment("tags", searchText);
         } else if (selectedId == R.id.searchPostsRadio) {
-            return "tags";
+            Log.d("SearchFragment", "Search Tags for: " + searchText);
+            replacePostFragment("tags", searchText);
         } else if (selectedId == R.id.searchCaptionsRadio) {
-            return "captions";
+            Log.d("SearchFragment", "Search Captions for: " + searchText);
+            replacePostFragment("captions", searchText);
         } else {
-            return "search";
         }
     }
 }
