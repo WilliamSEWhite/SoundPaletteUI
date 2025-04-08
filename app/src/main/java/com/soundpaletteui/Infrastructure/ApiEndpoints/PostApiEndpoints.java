@@ -22,6 +22,8 @@ public interface PostApiEndpoints {
 
     @GET("api/post/get-username-posts")
     Call<List<PostModel>> getPostsForUsername(@Query("userId") int userId, @Query("username") String username);
+    @GET("api/post/get-tagged-username-posts")
+    Call<List<PostModel>> getTaggedPostsForUsername(@Query("userId") int userId, @Query("username") String username);
     @GET("api/post/get-following-posts")
     Call<List<PostModel>> getFollowingPosts(@Query("userId") int userId);
 

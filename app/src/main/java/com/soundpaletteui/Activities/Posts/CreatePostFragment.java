@@ -194,8 +194,10 @@ public class CreatePostFragment extends Fragment {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count)             {
                 if(s.length()>3){
-                    new SearchTagsAsync().execute(s.toString());
+                    searchTagsAsync(s.toString());
                 }
+                else
+                    new GetTagsAsync().execute();
             }
             @Override public void afterTextChanged(Editable s) {}
         });
@@ -230,7 +232,6 @@ public class CreatePostFragment extends Fragment {
         });
         userSearchResult = rootView.findViewById(R.id.userSearchResult);
         selectedUserTags = rootView.findViewById(R.id.selectedUserTags);
-        populateDummyUsersAsync();
         userSearchAdapter = new UserSearchAdapter(searchResults, user -> {
             if (!selectedUsers.contains(user)) {
                 selectedUsers.add(user);
@@ -420,7 +421,7 @@ public class CreatePostFragment extends Fragment {
 
         getNewPostDetails(postType);
         NewPostModel newPost = new NewPostModel(
-                userId, postType, caption, isPremium, isMature, new Date(), new Date(), new ArrayList<>(selectedTags), postContent
+                userId, postType, caption, isPremium, isMature, new Date(), new Date(), new ArrayList<>(selectedTags), postContent, selectedUsers
         );
 
         new MakePostAsync().execute(newPost);
@@ -432,24 +433,6 @@ public class CreatePostFragment extends Fragment {
             try {
                 TagClient client = SPWebApiRepository.getInstance().getTagClient();
                 tags = client.getTags();
-                requireActivity().runOnUiThread(() -> {
-                    searchTags.clear();
-                    searchTags.addAll(tags);
-                    tagSearchAdapter.notifyDataSetChanged();
-                });
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return null;
-        }
-    }
-
-    private class SearchTagsAsync extends AsyncTask<String, Void, Void> {
-        protected Void doInBackground(String... s) {
-            try {
-                TagClient client = SPWebApiRepository.getInstance().getTagClient();
-                String searchTerm = s[0];
-                tags = client.searchTags(searchTerm);
                 requireActivity().runOnUiThread(() -> {
                     searchTags.clear();
                     searchTags.addAll(tags);
@@ -510,22 +493,18 @@ public class CreatePostFragment extends Fragment {
     }
 
 
-    private void populateDummyUsersAsync() {
+    private void searchTagsAsync(String searchTerm) {
         new Thread(() -> {
             try {
-                UserClient client = SPWebApiRepository.getInstance().getUserClient();
-                List<String> results = new ArrayList<>();
-                results.add("user1");
-                results.add("user2");
-                results.add("user3");
-                results.add("user4");
+                TagClient client = SPWebApiRepository.getInstance().getTagClient();
+                tags = client.searchTags(searchTerm);
                 requireActivity().runOnUiThread(() -> {
-                    searchResults.clear();
-                    searchResults.addAll(results);
-                    userSearchAdapter.notifyDataSetChanged();
+                    searchTags.clear();
+                    searchTags.addAll(tags);
+                    tagSearchAdapter.notifyDataSetChanged();
                 });
-            } catch (Exception e) {
-                Log.e("NewPostFragment", "Failed to load dummy users: " + e.getMessage());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }).start();
     }

@@ -113,6 +113,9 @@ public class PostFragment extends Fragment {
                     case "trending":
                         posts = postClient.getTrendingPosts();
                         break;
+                    case "postusertags":
+                        posts = postClient.getTaggedPostsForUsername(searchTerm);
+                        break;
                     default:
                         // fallback if needed
                         posts = postClient.getPosts();
@@ -136,42 +139,42 @@ public class PostFragment extends Fragment {
             allPosts.addAll(posts);
 
             // Testing audio posts with dummy data
-            loadDummyAudio(allPosts);
+//            loadDummyAudio(allPosts);
 
             setupRecyclerView();
         }
     }
 
     // TEST AUDIO POST
-    private void loadDummyAudio(List<PostModel> allPosts) {
-
-        PostContentModel testAudio = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3");
-        PostModel testPost = new PostModel(
-                1000, "Maybe a new intro???", new ArrayList<>(), testAudio,
-                new Date(), "user3", 2, 0, 0, false, false
-        );
-
-        PostContentModel testAudio2 = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
-        PostModel testPost2 = new PostModel(
-                1001, "Ok we vibing over hereeee", new ArrayList<>(), testAudio2,
-                new Date(), "user3", 2, 0, 0, false, false
-        );
-        PostContentModel testAudio3 = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3");
-        PostModel testPost3 = new PostModel(
-                1002, "Finishing my the last track for the new album yalllllll!!!!", new ArrayList<>(), testAudio3,
-                new Date(), "user3", 2, 0, 0, false, false
-        );
-        PostContentModel testAudio4 = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3");
-        PostModel testPost4 = new PostModel(
-                1003, "Sneak peak", new ArrayList<>(), testAudio4,
-                new Date(), "user3", 2, 0, 0, false, false
-        );
-
-        allPosts.add(testPost);
-        allPosts.add(testPost2);
-        allPosts.add(testPost3);
-        allPosts.add(testPost4);
-    }
+//    private void loadDummyAudio(List<PostModel> allPosts) {
+//
+//        PostContentModel testAudio = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3");
+//        PostModel testPost = new PostModel(
+//                1000, "Maybe a new intro???", new ArrayList<>(), testAudio,
+//                new Date(), "user3", 2, 0, 0, false, false
+//        );
+//
+//        PostContentModel testAudio2 = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3");
+//        PostModel testPost2 = new PostModel(
+//                1001, "Ok we vibing over hereeee", new ArrayList<>(), testAudio2,
+//                new Date(), "user3", 2, 0, 0, false, false
+//        );
+//        PostContentModel testAudio3 = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3");
+//        PostModel testPost3 = new PostModel(
+//                1002, "Finishing my the last track for the new album yalllllll!!!!", new ArrayList<>(), testAudio3,
+//                new Date(), "user3", 2, 0, 0, false, false
+//        );
+//        PostContentModel testAudio4 = new PostContentModel("https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3");
+//        PostModel testPost4 = new PostModel(
+//                1003, "Sneak peak", new ArrayList<>(), testAudio4,
+//                new Date(), "user3", 2, 0, 0, false, false
+//        );
+//
+//        allPosts.add(testPost);
+//        allPosts.add(testPost2);
+//        allPosts.add(testPost3);
+//        allPosts.add(testPost4);
+//    }
 
     // Pauses the media player when user leaves the fragment
     @Override

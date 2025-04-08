@@ -11,6 +11,7 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
 
 public interface TagApiEndpoints {
     /** gets global tag list */
@@ -24,5 +25,5 @@ public interface TagApiEndpoints {
     @POST("api/tag/update-user-tags/{id}")
     Call<ResponseBody> saveTags(@Path("id") int id, @Body List<TagModel> selectedTags);
     @GET("api/tag/search-tags")
-    Call<List<TagModel>> searchTags(@Path("searchTerm") String searchTerm);
+    Call<List<TagModel>> searchTags(@Query("searchTerm") String searchTerm);
 }

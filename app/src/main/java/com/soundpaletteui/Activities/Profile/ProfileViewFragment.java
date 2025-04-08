@@ -140,7 +140,7 @@ public class ProfileViewFragment extends Fragment {
         framePosts.setOnClickListener(v -> {
             // Setting the Post Fragment with viewProfile's post algorithm
             Log.d("ProfileFragment", "Posts selected for User ID# " + viewUserId);
-            replacePostFragment("username", String.valueOf(viewUserId));
+            replacePostFragment("username", viewUsername);
 
             try {
                 final GifDrawable postsGifDrawable = (GifDrawable) gifPosts.getDrawable();
@@ -172,7 +172,7 @@ public class ProfileViewFragment extends Fragment {
         frameTagged.setOnClickListener(v -> {
             // Setting the PostFragment with User's Tagged posts
             Log.d("ProfileFragment", "Tags selected for User ID# "+viewUserId);
-            replacePostFragment("tags", String.valueOf(viewUserId));
+            replacePostFragment("postusertags", viewUsername);
 
             try {
                 final GifDrawable savedGifDrawable = (GifDrawable) gifTagged.getDrawable();
@@ -221,15 +221,22 @@ public class ProfileViewFragment extends Fragment {
     }
 
     // Replaces the PostFragment based on the algorithmType and userId
+//    private void replacePostFragment(String algoType, String userId) {
+//        //FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+//        //FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+//        PostFragment postFragment = PostFragment.newInstance(algoType, viewUsername);
+//        //transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
+//        //transaction.commit();
+//        FragmentManager fragmentManager = getChildFragmentManager();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        Navigation.replaceFragment(fragmentManager, fragmentTransaction, postFragment, "POST_FRAGMENT", R.id.postFragment);
+//    }
+
     private void replacePostFragment(String algoType, String userId) {
-        //FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        //FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        PostFragment postFragment = PostFragment.newInstance(algoType, viewUsername);
-        //transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
-        //transaction.commit();
-        FragmentManager fragmentManager = getChildFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Navigation.replaceFragment(fragmentManager, fragmentTransaction, postFragment, "POST_FRAGMENT", R.id.postFragment);
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        PostFragment postFragment = PostFragment.newInstance(algoType, userId);
+        transaction.replace(R.id.postFragment, postFragment);
+        transaction.commit();
     }
 
     // Sets the style of a TextView to selected or unselected.

@@ -7,36 +7,40 @@ import java.util.Date;
 import java.util.List;
 
 public class NewPostModel {
-    @SerializedName("userId")
-    public int UserId;
-    @SerializedName("postTypeId")
-    public int PostTypeId;
-    @SerializedName("caption")
-    public String Caption;
-    @SerializedName("isMature")
-    public boolean IsMature;
+    @SerializedName("UserId")
+    public int userId;
+    @SerializedName("PostTypeId")
+    public int postTypeId;
+    @SerializedName("Caption")
+    public String caption;
+    @SerializedName("IsMature")
+    public boolean isMature;
 
-    @SerializedName("isPremium")
-    public boolean IsPremium;
-    @SerializedName("createdDate")
-    public Date CreatedDate;
-    @SerializedName("publishDate")
-    public Date PublishDate;
+    @SerializedName("IsPremium")
+    public boolean isPremium;
+    @SerializedName("CreatedDate")
+    public Date createdDate;
+    @SerializedName("PublishDate")
+    public Date publishDate;
 
-    @SerializedName("postTags")
-    public ArrayList<TagModel> PostTags;
+    @SerializedName("PostTags")
+    public ArrayList<TagModel> postTags;
     @SerializedName("postTextContent")
-    public String PostTextContent;
+    public String postTextContent;
 
-    public NewPostModel(int userId, int postTypeId,String caption, boolean isPremium, boolean isMature, Date createdDate, Date publishDate, ArrayList<TagModel> postTags, String postTextContent) {
-        UserId = userId;
-        PostTypeId = postTypeId;
-        Caption = caption;
-        IsPremium = isPremium;
-        IsMature = isMature;
-        CreatedDate = createdDate;
-        PublishDate = publishDate;
-        PostTags = postTags;
-        PostTextContent = postTextContent;
+    @SerializedName("PostUserTags")
+    public List<String> postUserTags;
+
+    public NewPostModel(int userId, int postTypeId,String caption, boolean isPremium, boolean isMature, Date createdDate, Date publishDate, ArrayList<TagModel> postTags, String postTextContent, List<String> postUserTags) {
+        this.userId = userId;
+        this.postTypeId = postTypeId;
+        this.caption = caption;
+        this.isPremium = isPremium;
+        this.isMature = isMature;
+        this.createdDate = createdDate;
+        this.publishDate = publishDate;
+        this.postTags = postTags;
+        this.postTextContent = postTextContent;
+        this.postUserTags = postUserTags;
     }
 }
