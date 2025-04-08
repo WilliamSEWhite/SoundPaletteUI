@@ -106,6 +106,9 @@ public class PostFragment extends Fragment {
                     case "following":
                         posts = postClient.getFollowingPosts();
                         break;
+                    case "trending":
+                        posts = postClient.getTrendingPosts();
+                        break;
                     default:
                         // fallback if needed
                         posts = postClient.getPosts();

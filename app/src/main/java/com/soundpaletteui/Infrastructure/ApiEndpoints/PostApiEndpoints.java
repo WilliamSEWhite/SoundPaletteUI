@@ -30,5 +30,7 @@ public interface PostApiEndpoints {
 
     @GET("api/post/delete-post")
     Call<Void> deletePost(@Query("postId") int postId, @Query("userId") int userId);
+    @GET("api/post/get-trending-posts")
+    Call<List<PostModel>> getTrendingPosts(@Query("userId") int userId);
 
 }

@@ -23,5 +23,6 @@ public interface TagApiEndpoints {
     /** updates user tags */
     @POST("api/tag/update-user-tags/{id}")
     Call<ResponseBody> saveTags(@Path("id") int id, @Body List<TagModel> selectedTags);
-
+    @GET("api/tag/search-tags")
+    Call<List<TagModel>> searchTags(@Path("searchTerm") String searchTerm);
 }

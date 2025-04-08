@@ -40,4 +40,9 @@ public class TagClient {
         return call.execute();
     }
 
+    public List<TagModel> searchTags(String searchTerm) throws IOException {
+        Call<List<TagModel>> call = tagEndpoints.searchTags(searchTerm);
+        Response<List<TagModel>> response = call.execute();
+        return response.body();
+    }
 }
