@@ -26,7 +26,6 @@ public class PostModel {
     private int postType;
     @SerializedName("CommentCount")
     private int commentCount;
-
     @SerializedName("LikeCount")
     private int likeCount;
     @SerializedName("IsLiked")
@@ -64,6 +63,7 @@ public class PostModel {
     public List<TagModel> getPostTags() {
         return postTags;
     }
+
     public List<String> getUserTags() {
         return userTags;
     }
