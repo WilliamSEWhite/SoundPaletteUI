@@ -1,6 +1,7 @@
 package com.soundpaletteui.Activities;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -21,9 +22,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.widget.Button;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundpaletteui.Activities.Home.HomeFragment;
+import com.soundpaletteui.Activities.LoginRegister.LoginActivity;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
 import com.soundpaletteui.Activities.Posts.CreatePostFragment;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
+import com.soundpaletteui.Activities.Profile.RegisterActivity;
 import com.soundpaletteui.Activities.Trending.SearchFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
@@ -162,6 +165,15 @@ public class MainScreenActivity extends AppCompatActivity {
 //            homeFragment.setTheme(isDarkMode);
             recreate();
             return true;
+        }
+        else if(id == R.id.log_out){
+            AppSettings.setUsernameValue(this, "");
+            AppSettings.setPasswordValue(this, "");
+
+            Intent intent = new Intent(MainScreenActivity.this, LoginActivity.class);
+            startActivity(intent); // Start the next activity
+            finish(); // Finish the current activity
+
         }
         return super.onOptionsItemSelected(item);
     }

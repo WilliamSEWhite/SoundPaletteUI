@@ -14,5 +14,9 @@
         android:title="Toggle Dark Mode"
         android:orderInCategory="101"
         app:showAsAction="never" />
-
+    <item
+        android:id="@+id/log_out"
+        android:title="Log Out"
+        android:orderInCategory="101"
+        app:showAsAction="never" />
 </menu>
