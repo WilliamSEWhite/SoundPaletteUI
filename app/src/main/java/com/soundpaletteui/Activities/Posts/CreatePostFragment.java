@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -188,6 +190,15 @@ public class CreatePostFragment extends Fragment {
 
         // SET UP POST TAGS
         tagSearchInput = rootView.findViewById(R.id.tagSearchInput);
+        tagSearchInput.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count)             {
+                if(s.length()>3){
+                    new SearchTagsAsync().execute(s.toString());
+                }
+            }
+            @Override public void afterTextChanged(Editable s) {}
+        });
         postTagSearchResult = rootView.findViewById(R.id.postTagSearchResult);
         selectedPostTags = rootView.findViewById(R.id.selectedPostTags);
         new GetTagsAsync().execute();
@@ -208,6 +219,15 @@ public class CreatePostFragment extends Fragment {
 
         // SET UP USER TAGS
         userSearchInput = rootView.findViewById(R.id.userSearchInput);
+        userSearchInput.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count)             {
+                if(s.length()>3){
+                    searchUsersAsync(s.toString());
+                }
+            }
+            @Override public void afterTextChanged(Editable s) {}
+        });
         userSearchResult = rootView.findViewById(R.id.userSearchResult);
         selectedUserTags = rootView.findViewById(R.id.selectedUserTags);
         populateDummyUsersAsync();
@@ -424,6 +444,24 @@ public class CreatePostFragment extends Fragment {
         }
     }
 
+    private class SearchTagsAsync extends AsyncTask<String, Void, Void> {
+        protected Void doInBackground(String... s) {
+            try {
+                TagClient client = SPWebApiRepository.getInstance().getTagClient();
+                String searchTerm = s[0];
+                tags = client.searchTags(searchTerm);
+                requireActivity().runOnUiThread(() -> {
+                    searchTags.clear();
+                    searchTags.addAll(tags);
+                    tagSearchAdapter.notifyDataSetChanged();
+                });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }
+    }
+
     private class MakePostAsync extends AsyncTask<NewPostModel, Void, Void> {
         protected Void doInBackground(NewPostModel... d) {
             try {
@@ -491,4 +529,22 @@ public class CreatePostFragment extends Fragment {
             }
         }).start();
     }
+    private void searchUsersAsync(String searchTerm) {
+        new Thread(() -> {
+            try {
+                UserClient client = SPWebApiRepository.getInstance().getUserClient();
+                List<String> results = client.searchUsers(searchTerm);
+
+                requireActivity().runOnUiThread(() -> {
+                    searchResults.clear();
+                    searchResults.addAll(results);
+                    userSearchAdapter.notifyDataSetChanged();
+                });
+
+            } catch (IOException e) {
+                Log.e("NewChatroomFragment", "Failed to load dummy users: " + e.getMessage());
+            }
+        }).start();
+    }
+
 }
