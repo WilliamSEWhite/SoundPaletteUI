@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +37,9 @@ public class SearchFragment extends Fragment {
     private UserModel user;
     private UserClient userClient;
 
+    private RadioGroup searchOptionsGroup;
+    private EditText inputSearch;
+
     public SearchFragment() {
     }
 
@@ -52,21 +57,25 @@ public class SearchFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
+
         // Apply dark mode gradient background
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
         UISettings.applyBrightnessGradientBackground(rootView, 330f, isDarkMode);
 
         initComponents(rootView);
-        EditText inputSearch = rootView.findViewById(R.id.inputSearch);
-        ImageButton buttonSearch = rootView.findViewById(R.id.buttonSearch);
 
-        Log.d("SearchFragment", "Initial Trending Algorithm");
+        inputSearch = rootView.findViewById(R.id.inputSearch);
+        ImageButton buttonSearch = rootView.findViewById(R.id.buttonSearch);
+        searchOptionsGroup = rootView.findViewById(R.id.searchOptionsGroup);
+
         replacePostFragment("trending", null);
 
         buttonSearch.setOnClickListener(v -> {
             String searchText = inputSearch.getText().toString().trim();
-            Log.d("SearchFragment", "Fetching new feed with ID: " + searchText);
-            replacePostFragment("search", searchText);
+            String selectedOption = getSelectedSearchOption();
+
+            Log.d("SearchFragment", "Search text: " + searchText + ", Option: " + selectedOption);
+            replacePostFragment(selectedOption, searchText);
         });
 
         return rootView;
@@ -83,5 +92,18 @@ public class SearchFragment extends Fragment {
         PostFragment postFragment = PostFragment.newInstance(algoType, searchTerm);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
+    }
+
+    private String getSelectedSearchOption() {
+        int selectedId = searchOptionsGroup.getCheckedRadioButtonId();
+        if (selectedId == R.id.searchUsersRadio) {
+            return "users";
+        } else if (selectedId == R.id.searchPostsRadio) {
+            return "tags";
+        } else if (selectedId == R.id.searchCaptionsRadio) {
+            return "captions";
+        } else {
+            return "search";
+        }
     }
 }
