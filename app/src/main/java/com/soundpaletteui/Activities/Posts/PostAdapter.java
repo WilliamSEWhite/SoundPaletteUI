@@ -220,10 +220,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             List<TagModel> postTagsList = post.getPostTags();
             ((Activity) context).runOnUiThread(() -> {
                 if (postTagsList != null) {
-                    for (TagModel tag : postTagsList) {
-                        Log.d("Tag", tag.getTagName());
-                    }
-
                     postTagAdapter = new TagBasicAdapter((ArrayList<TagModel>) postTagsList, context);
                     holder.postTagsRecycle.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
                     holder.postTagsRecycle.setAdapter(postTagAdapter);
@@ -243,20 +239,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     // Retrieves the list of users tagged in the post
     private void getUserTags(PostViewHolder holder, PostModel post) {
         new Thread(() -> {
-            List<String> userTagsList = post.getUserTags();
+            // NOTE: REPLACE WITH ACTUAL LIST
+            //List<String> userTagsList = post.getUserTags();
+            List<String> userTagsList = List.of("user1", "user2", "user3", "user4");
+
             ((Activity) context).runOnUiThread(() -> {
                 if (userTagsList != null) {
                     for (String tag : userTagsList) {
                         Log.d("Tag", tag);
                     }
-
                     userTagAdapter = new TagUserAdapter(userTagsList, context);
+
                     holder.userTagsRecycle.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
                     holder.userTagsRecycle.setAdapter(userTagAdapter);
-                    if (holder.postTagsRecycle.getOnFlingListener() == null) {
+
+                    if (holder.userTagsRecycle.getOnFlingListener() == null) {
                         SnapHelper snapHelper = new LinearSnapHelper();
-                        snapHelper.attachToRecyclerView(holder.postTagsRecycle);
+                        snapHelper.attachToRecyclerView(holder.userTagsRecycle);
                     }
+
                     startAutoScroll(holder);
                 } else {
                     holder.userTagsRecycle.setAdapter(null);
@@ -265,6 +266,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             });
         }).start();
     }
+
 
     // Auto scrolls the horizontal list of tags
     private void startAutoScroll(PostViewHolder holder) {

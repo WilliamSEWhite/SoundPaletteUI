@@ -51,6 +51,7 @@
                     android:padding="5dp"
                     android:paddingStart="10dp"
                     android:hint="Enter a caption"
+                    android:maxLength="30"
                     android:textColor="#FFFFFF"
                     android:textColorHint="#BEC0BE"
                     android:background="@drawable/background_transparent_rec3"/>

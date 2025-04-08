@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.R;
@@ -17,6 +19,7 @@ import java.util.List;
 
 public class TagUserAdapter extends RecyclerView.Adapter<TagUserAdapter.ViewHolder> {
     private List<String> tagList;
+    private FragmentManager fragmentManager;
     private Context context;
 
     public TagUserAdapter(List<String> tagList, Context context) {
@@ -36,8 +39,8 @@ public class TagUserAdapter extends RecyclerView.Adapter<TagUserAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_tags_user,
-                parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.adapter_tags_user, parent, false);
         return new ViewHolder(view);
     }
 
@@ -47,18 +50,9 @@ public class TagUserAdapter extends RecyclerView.Adapter<TagUserAdapter.ViewHold
         holder.tagName.setText("@" + username);
 
         holder.itemView.setOnClickListener(v -> {
-            if (context instanceof androidx.fragment.app.FragmentActivity) {
-                androidx.fragment.app.FragmentActivity activity = (androidx.fragment.app.FragmentActivity) context;
-                androidx.fragment.app.FragmentManager fragmentManager = activity.getSupportFragmentManager();
-
-                ProfileViewFragment profileFragment = ProfileViewFragment.newInstance(username);
-                Navigation.replaceFragment(
-                        fragmentManager,
-                        profileFragment,
-                        "PROFILE_VIEW_FRAGMENT",
-                        R.id.mainScreenFrame
-                );
-            }
+            ProfileViewFragment profileFragment = ProfileViewFragment.newInstance(username);
+            FragmentManager fragmentManager = ((FragmentActivity) context).getSupportFragmentManager();
+            Navigation.replaceFragment(fragmentManager, profileFragment, "PROFILE_VIEW_FRAGMENT_" + username, R.id.mainScreenFrame);
         });
     }
 

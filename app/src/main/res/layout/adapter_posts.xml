@@ -26,13 +26,13 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/white_translucency_gradient_horizontal_bottom"
                     android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/postUsername"
                             android:layout_width="match_parent"
                             android:layout_height="20dp"
-                            android:background="@drawable/white_translucency_gradient_horizontal"
                             android:gravity="left"
                             android:paddingTop="5dp"
                             android:text="\@USERNAME"
@@ -43,11 +43,21 @@
                         <TextView
                             android:id="@+id/postCaption"
                             android:layout_width="match_parent"
-                            android:layout_height="55dp"
-                            android:background="@drawable/white_translucency_gradient_horizontal_bottom"
+                            android:layout_height="25dp"
                             android:text="CAPTION"
                             android:textColor="@color/black"
-                            android:textSize="14dp" />
+                            android:textSize="18dp" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/userTagsRecycle"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp"
+                            android:layout_gravity="center|start"
+                            android:orientation="horizontal"
+                            android:scrollbars="horizontal"
+                            android:overScrollMode="never"
+                            android:padding="2dp" />
+
                 </LinearLayout>
         </LinearLayout>
 
@@ -56,13 +66,13 @@
     <LinearLayout
         android:id="@+id/profileTagList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/background_transparent_rec1"
+        android:layout_height="30dp"
+        android:background="@drawable/white_translucency_gradient_horizontal_bottom"
         android:orientation="horizontal">
 
         <TextView
             android:layout_width="75dp"
-            android:layout_height="35dp"
+            android:layout_height="30dp"
             android:textColor="@color/white"
             android:shadowColor="@color/black"
             android:shadowDx="2"
@@ -74,19 +84,8 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/postTagsRecycle"
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_weight="1"
-            android:orientation="horizontal"
-            android:scrollbars="horizontal"
-            android:overScrollMode="never"
-            android:padding="2dp" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/userTagsRecycle"
-            android:layout_width="0dp"
-            android:layout_height="35dp"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
             android:orientation="horizontal"
             android:scrollbars="horizontal"
             android:overScrollMode="never"

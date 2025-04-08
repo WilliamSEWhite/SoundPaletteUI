@@ -274,15 +274,6 @@ public class ProfileViewFragment extends Fragment {
             profileFollowingDisplay.setText(String.valueOf(v.getFollowingCount()));
             followButton.setChecked(viewProfile.isFollowing());
             followButton.setText(viewProfile.isFollowing() ? "Unfollow" : "Follow");
-
-            List<TagModel> check_tags = profile.getUserTags();
-            if (check_tags.size()>0) {
-                for (TagModel tag : check_tags) {
-                    String tagName = tag.getTagName();  // Or any method in TagModel
-                    Log.d("Tag", tagName);
-                }
-            }
-
             getTags();
         }//end onPostExecute
     }
