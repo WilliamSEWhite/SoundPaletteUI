@@ -15,11 +15,13 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.R;
@@ -109,5 +111,12 @@ public class SearchFragment extends Fragment {
             replacePostFragment("captions", searchText);
         } else {
         }
+    }
+
+    // Pauses the media player when user leaves the fragment
+    @Override
+    public void onPause() {
+        super.onPause();
+        MediaPlayerManager.getInstance().release();
     }
 }

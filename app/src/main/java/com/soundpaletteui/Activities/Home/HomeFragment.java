@@ -13,7 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
+import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
@@ -237,5 +239,12 @@ public class HomeFragment extends Fragment {
             textView.setTypeface(null, Typeface.NORMAL);
             textView.setTextSize(18);
         }
+    }
+
+    // Pauses the media player when user leaves the fragment
+    @Override
+    public void onPause() {
+        super.onPause();
+        MediaPlayerManager.getInstance().release();
     }
 }

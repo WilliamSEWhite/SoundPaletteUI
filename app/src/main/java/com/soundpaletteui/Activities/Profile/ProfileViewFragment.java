@@ -335,7 +335,6 @@ public class ProfileViewFragment extends Fragment {
         super.onPause();
         MediaPlayerManager.getInstance().release();
     }
-
 }
 
 

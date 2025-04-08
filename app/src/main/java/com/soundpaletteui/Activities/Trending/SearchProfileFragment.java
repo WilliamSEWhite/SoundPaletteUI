@@ -17,6 +17,7 @@ import com.soundpaletteui.Activities.Trending.SearchProfileAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
@@ -88,5 +89,12 @@ public class SearchProfileFragment extends Fragment {
         } else {
             recyclerView.getAdapter().notifyDataSetChanged();
         }
+    }
+
+    // Pauses the media player when user leaves the fragment
+    @Override
+    public void onPause() {
+        super.onPause();
+        MediaPlayerManager.getInstance().release();
     }
 }
