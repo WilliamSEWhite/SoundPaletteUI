@@ -3,7 +3,7 @@ package com.soundpaletteui.Infrastructure.Utilities;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.soundpaletteui.Infrastructure.Models.UserModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 
 public class AppSettings {
     private static final AppSettings appSettingsInstance = new AppSettings();

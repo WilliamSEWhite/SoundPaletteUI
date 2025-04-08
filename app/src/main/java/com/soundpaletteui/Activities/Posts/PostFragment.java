@@ -13,16 +13,14 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
-import com.soundpaletteui.Infrastructure.Models.PostContentModel;
-import com.soundpaletteui.Infrastructure.Models.PostModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.SPApiServices.ApiClients.PostClient;
+import com.soundpaletteui.Infrastructure.Models.Post.PostModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
-import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Random;
 

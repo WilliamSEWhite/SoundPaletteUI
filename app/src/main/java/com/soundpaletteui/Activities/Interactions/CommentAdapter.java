@@ -1,6 +1,5 @@
 package com.soundpaletteui.Activities.Interactions;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,7 +13,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
-import com.soundpaletteui.Infrastructure.Models.CommentModel;
+import com.soundpaletteui.Infrastructure.Models.Post.CommentModel;
 import com.soundpaletteui.R;
 
 import java.util.List;

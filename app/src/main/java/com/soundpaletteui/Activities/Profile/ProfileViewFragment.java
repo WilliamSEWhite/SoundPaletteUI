@@ -1,6 +1,5 @@
 package com.soundpaletteui.Activities.Profile;
 
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,32 +16,22 @@ import android.widget.Toast;
 
 import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.Activities.Messages.ChatroomFragment;
-import com.soundpaletteui.Activities.Messages.MessageFragment;
-import com.soundpaletteui.Activities.Posts.PostAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.ChatClient;
-import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
-import com.soundpaletteui.Infrastructure.ApiClients.PostInteractionClient;
-import com.soundpaletteui.Infrastructure.Models.ChatroomModelLite;
-import com.soundpaletteui.Infrastructure.Models.NewPostModel;
-import com.soundpaletteui.Infrastructure.Models.PostModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
+import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
+import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModelLite;
+import com.soundpaletteui.Infrastructure.Models.User.UserProfileModelLite;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
-import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
-import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.R;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;

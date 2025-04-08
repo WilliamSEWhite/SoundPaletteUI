@@ -34,16 +34,16 @@ import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.LocationModel;
-import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Models.User.UserInfoModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
-import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;

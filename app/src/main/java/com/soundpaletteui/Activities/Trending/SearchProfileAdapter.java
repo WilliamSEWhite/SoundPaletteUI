@@ -18,11 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Messages.ChatroomFragment;
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
-import com.soundpaletteui.Infrastructure.ApiClients.ChatClient;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
-import com.soundpaletteui.Infrastructure.Models.ChatroomModelLite;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModelLite;
+import com.soundpaletteui.Infrastructure.Models.User.UserProfileModelLite;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
