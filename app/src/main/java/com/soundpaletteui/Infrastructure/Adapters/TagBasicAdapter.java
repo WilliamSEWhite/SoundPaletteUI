@@ -15,12 +15,12 @@ import com.soundpaletteui.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserTagAdapter extends RecyclerView.Adapter {
+public class TagBasicAdapter extends RecyclerView.Adapter {
 
     private List<TagModel> tagList;
     private Context context;
 
-    public UserTagAdapter(ArrayList<TagModel> tagList, Context context) {
+    public TagBasicAdapter(ArrayList<TagModel> tagList, Context context) {
         this.tagList = tagList;
         this.context = context;
     }
@@ -37,7 +37,7 @@ public class UserTagAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_user_tags,
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_tags_basic,
                 parent, false);
         return new ViewHolder(view);
     }

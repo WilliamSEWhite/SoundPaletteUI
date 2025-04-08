@@ -14,6 +14,8 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
+import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.Activities.Messages.ChatroomFragment;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
@@ -22,6 +24,7 @@ import com.soundpaletteui.Infrastructure.Models.User.UserProfileModelLite;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
+import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
@@ -35,6 +38,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
+
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
@@ -51,6 +59,14 @@ public class ProfileViewFragment extends Fragment {
     private UserClient userClient;
     private UserClient viewUserClient;
     private static String viewUsername;
+    /** Tag stuff */
+    private LinearLayoutManager linearLayoutManager;
+    private TagClient tagClient;
+    private RecyclerView recyclerView;
+    private TagBasicAdapter adapter;
+    private List<TagModel> tagList;
+    private Handler tagScrollHandler;
+    private int scrollPosition;
     private TextView profileUsernameDisplay;
     private TextView profileBioDisplay;
     private TextView profileFollowersDisplay;
@@ -198,29 +214,23 @@ public class ProfileViewFragment extends Fragment {
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
         new GetProfileAsync().execute();
+
+        tagClient = SPWebApiRepository.getInstance().getTagClient();
+        tagList = new ArrayList<>();
+        recyclerView = view.findViewById(R.id.recycler_tag);
+        linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        tagScrollHandler = new Handler();
     }
 
     // Replaces the Main Screen Fragment in Main Activity
     private void replaceMainFragment(Fragment new_fragment) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         Navigation.replaceFragment(fragmentManager, new_fragment, "CHATROOM_FRAGMENT", R.id.mainScreenFrame);
-        /*FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.mainScreenFrame, new_fragment);
-        transaction.commit();*/
     }
 
     // Replaces the PostFragment based on the algorithmType and userId
-//    private void replacePostFragment(String algoType, String userId) {
-//        //FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-//        //FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-//        PostFragment postFragment = PostFragment.newInstance(algoType, viewUsername);
-//        //transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
-//        //transaction.commit();
-//        FragmentManager fragmentManager = getChildFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        Navigation.replaceFragment(fragmentManager, fragmentTransaction, postFragment, "POST_FRAGMENT", R.id.postFragment);
-//    }
-
     private void replacePostFragment(String algoType, String userId) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(algoType, userId);
@@ -265,7 +275,15 @@ public class ProfileViewFragment extends Fragment {
             followButton.setChecked(viewProfile.isFollowing());
             followButton.setText(viewProfile.isFollowing() ? "Unfollow" : "Follow");
 
+            List<TagModel> check_tags = profile.getUserTags();
+            if (check_tags.size()>0) {
+                for (TagModel tag : check_tags) {
+                    String tagName = tag.getTagName();  // Or any method in TagModel
+                    Log.d("Tag", tagName);
+                }
+            }
 
+            getTags();
         }//end onPostExecute
     }
 
@@ -323,6 +341,45 @@ public class ProfileViewFragment extends Fragment {
         protected void onPostExecute(ChatroomModelLite chatroom) {
             openChatroom(chatroom);
         }
+    }
+
+
+    // Retrieves the list of tags from the user profile
+    private void getTags() {
+        new Thread(() -> {
+            List<TagModel> tagList = viewProfile.getUserTags();
+            requireActivity().runOnUiThread(() -> {
+                if (tagList.size() > 0) {
+                    adapter = new TagBasicAdapter((ArrayList<TagModel>) tagList, requireActivity());
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setNestedScrollingEnabled(false);
+
+                    // Prevent duplicate fling listener crash
+                    if (recyclerView.getOnFlingListener() == null) {
+                        SnapHelper snapHelper = new LinearSnapHelper();
+                        snapHelper.attachToRecyclerView(recyclerView);
+                    }
+                }
+            });
+            startAutoScroll();
+        }).start();
+    }
+
+    // Auto scrolls the horizontal list of tags
+    private void startAutoScroll() {
+        scrollPosition = 0;
+        tagScrollHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (scrollPosition < adapter.getItemCount()) {
+                    recyclerView.smoothScrollToPosition(scrollPosition++);
+                } else {
+                    scrollPosition = 0;
+                    recyclerView.smoothScrollToPosition(scrollPosition);
+                }
+                tagScrollHandler.postDelayed(this, 2000);
+            }
+        }, 2000);
     }
 
     // Pauses the media player when user leaves the fragment

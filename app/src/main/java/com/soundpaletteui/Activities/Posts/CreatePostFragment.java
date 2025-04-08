@@ -203,16 +203,22 @@ public class CreatePostFragment extends Fragment {
         tagSearchAdapter = new TagSearchAdapter(searchTags, tag -> {
             if (!selectedTags.contains(tag)) {
                 selectedTags.add(tag);
+                searchTags.remove(tag);
                 selectedTagsAdapter.notifyDataSetChanged();
+                tagSearchAdapter.notifyDataSetChanged();
             }
         });
+
         selectedTagsAdapter = new TagSelectedAdapter(selectedTags, tag -> {
             selectedTags.remove(tag);
+            searchTags.add(tag);
             selectedTagsAdapter.notifyDataSetChanged();
+            tagSearchAdapter.notifyDataSetChanged();
         });
+
         postTagSearchResult.setLayoutManager(new LinearLayoutManager(getContext()));
         postTagSearchResult.setAdapter(tagSearchAdapter);
-        selectedPostTags.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        selectedPostTags.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         selectedPostTags.setAdapter(selectedTagsAdapter);
 
         // SET UP USER TAGS
@@ -231,23 +237,29 @@ public class CreatePostFragment extends Fragment {
         userSearchAdapter = new UserSearchAdapter(searchResults, user -> {
             if (!selectedUsers.contains(user)) {
                 selectedUsers.add(user);
+                searchResults.remove(user);
                 selectedUsersAdapter.notifyDataSetChanged();
+                userSearchAdapter.notifyDataSetChanged();
             }
         });
+
         selectedUsersAdapter = new UserSelectedAdapter(selectedUsers, user -> {
             selectedUsers.remove(user);
+            searchResults.add(user);
             selectedUsersAdapter.notifyDataSetChanged();
+            userSearchAdapter.notifyDataSetChanged();
         });
+
         userSearchResult.setLayoutManager(new LinearLayoutManager(getContext()));
         userSearchResult.setAdapter(userSearchAdapter);
-        selectedUserTags.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        selectedUserTags.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         selectedUserTags.setAdapter(selectedUsersAdapter);
 
         // PREVIEW BUTTON
         previewButton = rootView.findViewById(R.id.previewButton);
         previewButton.setOnClickListener(v -> {
             getNewPostDetails(postType);
-            PostModel newPost = new PostModel(0, caption, new ArrayList<>(selectedTags), postContentModel, new Date(), user.getUsername(), postType, 0, 0, false, false
+            PostModel newPost = new PostModel(0, caption, new ArrayList<>(selectedTags), postContentModel, new Date(), user.getUsername(), postType, 0, 0, false, false, new ArrayList<>(selectedUsers)
             );
 
             showPostPreview(newPost);

@@ -1,7 +1,10 @@
 package com.soundpaletteui.Activities.Posts;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,11 +17,17 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.SnapHelper;
 
 import com.bumptech.glide.Glide;
 import com.soundpaletteui.Activities.Interactions.CommentBottomSheet;
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
+import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
+import com.soundpaletteui.Infrastructure.Adapters.TagUserAdapter;
+import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.SPApiServices.ApiClients.PostInteractionClient;
 import com.soundpaletteui.Infrastructure.Models.Post.PostModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
@@ -27,11 +36,19 @@ import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private List<PostModel> postList;
     private Context context;
+    private PostModel post;
+    private int postId;
+    /** Tag stuff */
+    private TagBasicAdapter postTagAdapter;
+    private TagUserAdapter userTagAdapter;
+    private Handler tagScrollHandler;
+    private int scrollPosition;
     private static final int TEXT_POST = 1;
     private static final int AUDIO_POST = 2;
     private static final int IMAGE_POST = 3;
@@ -52,6 +69,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         PostModel post = postList.get(position);
         int postId = post.getPostId();
+
         String likeCount = String.valueOf(post.getLikeCount());
         String commentCount = String.valueOf(post.getCommentCount());
         String postUsername = post.getUsername();
@@ -76,6 +94,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             String imageName = post.getPostContent().getPostTextContent().replace(".png", "").replace(".jpg", "");
             Glide.with(context)
                     .load(context.getResources().getIdentifier(imageName, "drawable", context.getPackageName()))
+                    .override(800, 800)
+                    .centerCrop()
                     .into(postImageDisplay);
 
         } else if (post.getPostType() == AUDIO_POST) {
@@ -123,6 +143,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.saveButton.setChecked(post.getIsSaved());
         holder.saveButton.setOnClickListener(v -> toggleSaved(post, holder.saveButton.isChecked()));
 
+        tagScrollHandler = new Handler();
+        getPostTags(holder, post);
+        getUserTags(holder, post);
+
         holder.postFragmentDisplay.addView(fragmentView);
     }
 
@@ -136,6 +160,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         ViewGroup postFragmentDisplay;
         ImageButton postersProfile, commentButton;
         CheckBox likeButton, saveButton;
+        RecyclerView postTagsRecycle, userTagsRecycle;
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -148,6 +173,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             saveButton = itemView.findViewById(R.id.postSaveButton);
             postLikeValue = itemView.findViewById(R.id.postLikeValue);
             postCommentValue = itemView.findViewById(R.id.postCommentValue);
+            postTagsRecycle = itemView.findViewById(R.id.postTagsRecycle);
+            userTagsRecycle = itemView.findViewById(R.id.userTagsRecycle);
         }
     }
 
@@ -185,5 +212,87 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
             return null;
         }
+    }
+
+    // Retrieves the list of tags in the post
+    private void getPostTags(PostViewHolder holder, PostModel post) {
+        new Thread(() -> {
+            List<TagModel> postTagsList = post.getPostTags();
+            ((Activity) context).runOnUiThread(() -> {
+                if (postTagsList != null) {
+                    for (TagModel tag : postTagsList) {
+                        Log.d("Tag", tag.getTagName());
+                    }
+
+                    postTagAdapter = new TagBasicAdapter((ArrayList<TagModel>) postTagsList, context);
+                    holder.postTagsRecycle.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+                    holder.postTagsRecycle.setAdapter(postTagAdapter);
+                    if (holder.postTagsRecycle.getOnFlingListener() == null) {
+                        SnapHelper snapHelper = new LinearSnapHelper();
+                        snapHelper.attachToRecyclerView(holder.postTagsRecycle);
+                    }
+                    startAutoScroll(holder);
+                } else {
+                    holder.postTagsRecycle.setAdapter(null);
+                    Log.d("PostAdapter", "postTagsRecycle not found in view for this post");
+                }
+            });
+        }).start();
+    }
+
+    // Retrieves the list of users tagged in the post
+    private void getUserTags(PostViewHolder holder, PostModel post) {
+        new Thread(() -> {
+            List<String> userTagsList = post.getUserTags();
+            ((Activity) context).runOnUiThread(() -> {
+                if (userTagsList != null) {
+                    for (String tag : userTagsList) {
+                        Log.d("Tag", tag);
+                    }
+
+                    userTagAdapter = new TagUserAdapter(userTagsList, context);
+                    holder.userTagsRecycle.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+                    holder.userTagsRecycle.setAdapter(userTagAdapter);
+                    if (holder.postTagsRecycle.getOnFlingListener() == null) {
+                        SnapHelper snapHelper = new LinearSnapHelper();
+                        snapHelper.attachToRecyclerView(holder.postTagsRecycle);
+                    }
+                    startAutoScroll(holder);
+                } else {
+                    holder.userTagsRecycle.setAdapter(null);
+                    Log.d("PostAdapter", "userTagsRecycle not found in view for this post");
+                }
+            });
+        }).start();
+    }
+
+    // Auto scrolls the horizontal list of tags
+    private void startAutoScroll(PostViewHolder holder) {
+        tagScrollHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (holder.getAdapterPosition() == RecyclerView.NO_POSITION) return;
+
+                if (postTagAdapter != null && postTagAdapter.getItemCount() > 0) {
+                    if (scrollPosition < postTagAdapter.getItemCount()) {
+                        holder.postTagsRecycle.smoothScrollToPosition(scrollPosition++);
+                    } else {
+                        scrollPosition = 0;
+                        holder.postTagsRecycle.smoothScrollToPosition(scrollPosition);
+                    }
+                }
+
+                if (userTagAdapter != null && userTagAdapter.getItemCount() > 0) {
+                    if (scrollPosition < userTagAdapter.getItemCount()) {
+                        holder.userTagsRecycle.smoothScrollToPosition(scrollPosition++);
+                    } else {
+                        scrollPosition = 0;
+                        holder.userTagsRecycle.smoothScrollToPosition(scrollPosition);
+                    }
+                }
+
+                tagScrollHandler.postDelayed(this, 2000);
+            }
+        }, 2000);
     }
 }

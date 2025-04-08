@@ -16,7 +16,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
-import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
+import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
@@ -73,7 +73,7 @@ public class ProfileFragment extends Fragment {
     private LinearLayoutManager linearLayoutManager;
     private TagClient tagClient;
     private RecyclerView recyclerView;
-    private UserTagAdapter adapter;
+    private TagBasicAdapter adapter;
     private List<TagModel> tagList;
     private Handler tagScrollHandler;
     private int scrollPosition;
@@ -347,7 +347,7 @@ public class ProfileFragment extends Fragment {
 
             if (selectedTags != null && !selectedTags.isEmpty()) {
                 // Update the RecyclerView with the new tag list
-                adapter = new UserTagAdapter(selectedTags, getContext());
+                adapter = new TagBasicAdapter(selectedTags, getContext());
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
             } else {
@@ -363,7 +363,7 @@ public class ProfileFragment extends Fragment {
                 List<TagModel> tags = tagClient.getUserTags(user.getUserId());
                 requireActivity().runOnUiThread(() -> {
                     tagList = tags;
-                    adapter = new UserTagAdapter((ArrayList<TagModel>) tagList, requireActivity());
+                    adapter = new TagBasicAdapter((ArrayList<TagModel>) tagList, requireActivity());
                     recyclerView.setAdapter(adapter);
                     recyclerView.setNestedScrollingEnabled(false);
                     SnapHelper snapHelper = new LinearSnapHelper();

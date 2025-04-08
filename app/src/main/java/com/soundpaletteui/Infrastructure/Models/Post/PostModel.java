@@ -2,8 +2,8 @@ package com.soundpaletteui.Infrastructure.Models.Post;
 
 import com.google.gson.annotations.SerializedName;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserProfileModelLite;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,6 +14,8 @@ public class PostModel {
     private String postCaption;
     @SerializedName("PostTags")
     private List<TagModel> postTags;
+    @SerializedName("UserTags")
+    private final List<String> userTags;
     @SerializedName("PostContent")
     private PostContentModel postContent;
     @SerializedName("CreatedDate")
@@ -31,15 +33,14 @@ public class PostModel {
     private boolean isLiked;
     @SerializedName("IsSaved")
     private boolean isSaved;
-    // Default constructor
-    public PostModel() { }
 
     // Parameterized constructor
     public PostModel(int postId, String postCaption, List<TagModel> postTags, PostContentModel postContent,
-                     Date createdDate, String createdByUsername, int postType, int commentCount, int likeCount, boolean isLiked, boolean isSaved) {
+                     Date createdDate, String createdByUsername, int postType, int commentCount, int likeCount, boolean isLiked, boolean isSaved, List<String> userTags) {
         this.postId = postId;
         this.postCaption = postCaption;
         this.postTags = postTags;
+        this.userTags = userTags;
         this.postContent = postContent;
         this.createdDate = createdDate;
         this.createdByUsername = createdByUsername;
@@ -49,9 +50,6 @@ public class PostModel {
         this.isLiked = isLiked;
         this.isSaved = isSaved;
 
-    }
-
-    public <E> PostModel(int userId, int postType, String caption, boolean isPremium, boolean isMature, Date date, Date date1, ArrayList<E> es, String textContent) {
     }
 
     // Getters
@@ -65,6 +63,9 @@ public class PostModel {
 
     public List<TagModel> getPostTags() {
         return postTags;
+    }
+    public List<String> getUserTags() {
+        return userTags;
     }
 
     public PostContentModel getPostContent() {
@@ -100,7 +101,5 @@ public class PostModel {
     public void setIsSaved(boolean isSaved) {
         this.isSaved = isSaved;
     }
-
-
 
 }

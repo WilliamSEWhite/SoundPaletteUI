@@ -18,7 +18,7 @@ import android.widget.Toast;
 
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
+import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
 import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
@@ -60,7 +60,7 @@ public class ProfileEditFragment extends Fragment {
     private ArrayList<LocationModel> countries;
     private TagClient tagClient;
     private RecyclerView recyclerView;
-    private UserTagAdapter adapter;
+    private TagBasicAdapter adapter;
     private List<TagModel> tagList;
     private Button btnAddTags;
     private int fragId;     // from which fragment did I come from
@@ -132,7 +132,7 @@ public class ProfileEditFragment extends Fragment {
             ArrayList<TagModel> selectedTags = getArguments().getParcelableArrayList("selectedTags");
 
             if (selectedTags != null && !selectedTags.isEmpty()) {
-                adapter = new UserTagAdapter(selectedTags, getContext());
+                adapter = new TagBasicAdapter(selectedTags, getContext());
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
             }
@@ -156,7 +156,7 @@ public class ProfileEditFragment extends Fragment {
                 List<TagModel> tags = tagClient.getUserTags(user.getUserId());
                 requireActivity().runOnUiThread(() -> {
                     tagList = tags;
-                    adapter = new UserTagAdapter((ArrayList<TagModel>) tagList, requireActivity());
+                    adapter = new TagBasicAdapter((ArrayList<TagModel>) tagList, requireActivity());
                     recyclerView.setAdapter(adapter);
                 });
             } catch (IOException e) {
