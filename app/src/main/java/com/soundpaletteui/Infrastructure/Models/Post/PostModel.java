@@ -31,12 +31,15 @@ public class PostModel {
     private boolean isLiked;
     @SerializedName("IsSaved")
     private boolean isSaved;
+
+    @SerializedName("PostUserTags")
+    private List<String> postUserTags;
     // Default constructor
     public PostModel() { }
 
     // Parameterized constructor
     public PostModel(int postId, String postCaption, List<TagModel> postTags, PostContentModel postContent,
-                     Date createdDate, String createdByUsername, int postType, int commentCount, int likeCount, boolean isLiked, boolean isSaved) {
+                     Date createdDate, String createdByUsername, int postType, int commentCount, int likeCount, boolean isLiked, boolean isSaved, List<String> postUserTags) {
         this.postId = postId;
         this.postCaption = postCaption;
         this.postTags = postTags;
@@ -48,6 +51,7 @@ public class PostModel {
         this.likeCount = likeCount;
         this.isLiked = isLiked;
         this.isSaved = isSaved;
+        this.postUserTags = postUserTags;
 
     }
 

@@ -1,6 +1,10 @@
 package com.soundpaletteui.Infrastructure.Models.User;
 
 import com.google.gson.annotations.SerializedName;
+import com.soundpaletteui.Infrastructure.Models.TagModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserProfileModelLite {
 
@@ -19,6 +23,9 @@ public class UserProfileModelLite {
     @SerializedName("IsFollowing")
     private boolean isFollowing;
 
+
+    @SerializedName("UserTags")
+    public List<TagModel> userTags;
     public UserProfileModelLite(String username) {
         this.username = username;
     }
@@ -27,13 +34,16 @@ public class UserProfileModelLite {
         this.username = username;
     }
 
-    public UserProfileModelLite(String username, String bio, String pic, int followerCount, int followingCount, boolean isFollowing) {
+    public UserProfileModelLite(String username, String bio, String pic, int followerCount, int followingCount, boolean isFollowing, List<TagModel> userTags) {
         this.username = username;
         this.bio = bio;
         this.pic = pic;
         this.followerCount = followerCount;
         this.followingCount = followingCount;
         this.isFollowing = isFollowing;
+        this.userTags = userTags;
+
+
         System.out.println("bio from model: " + bio);
     }
 
