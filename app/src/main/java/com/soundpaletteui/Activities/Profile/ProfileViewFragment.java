@@ -15,6 +15,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.Activities.Messages.ChatroomFragment;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
 import com.soundpaletteui.Activities.Posts.PostAdapter;
@@ -326,6 +327,13 @@ public class ProfileViewFragment extends Fragment {
         protected void onPostExecute(ChatroomModelLite chatroom) {
             openChatroom(chatroom);
         }
+    }
+
+    // Pauses the media player when user leaves the fragment
+    @Override
+    public void onPause() {
+        super.onPause();
+        MediaPlayerManager.getInstance().release();
     }
 
 }

@@ -44,6 +44,7 @@
         <activity android:name=".Activities.Interactions.CommentBottomSheet" />
         <activity
             android:name=".Activities.MainScreenActivity"
+            android:hardwareAccelerated="false"
             android:exported="false" />
         <activity
             android:name=".Activities.LoginRegister.LoginActivity"

@@ -1,10 +1,7 @@
 package com.soundpaletteui.Activities.Posts;
 
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,11 +16,13 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.soundpaletteui.Activities.Interactions.CommentBottomSheet;
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
 import com.soundpaletteui.Infrastructure.ApiClients.PostInteractionClient;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
@@ -33,9 +32,6 @@ import java.util.List;
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private List<PostModel> postList;
     private Context context;
-    private MediaPlayer sharedMediaPlayer = null;
-    private ImageButton lastPlayButton = null;
-    private Handler handler = new Handler();
     private static final int TEXT_POST = 1;
     private static final int AUDIO_POST = 2;
     private static final int IMAGE_POST = 3;
@@ -78,8 +74,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             fragmentView = inflater.inflate(R.layout.adapter_posts_image, holder.postFragmentDisplay, false);
             ImageView postImageDisplay = fragmentView.findViewById(R.id.postImageDisplay);
             String imageName = post.getPostContent().getPostTextContent().replace(".png", "").replace(".jpg", "");
-            int imageResource = context.getResources().getIdentifier(imageName, "drawable", context.getPackageName());
-            postImageDisplay.setImageResource(imageResource);
+            Glide.with(context)
+                    .load(context.getResources().getIdentifier(imageName, "drawable", context.getPackageName()))
+                    .into(postImageDisplay);
 
         } else if (post.getPostType() == AUDIO_POST) {
             fragmentView = inflater.inflate(R.layout.adapter_posts_audio, holder.postFragmentDisplay, false);
@@ -89,85 +86,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             audioSeekBar.setMax(100);
             String audioSource = post.getPostContent().getPostTextContent();
 
-            playPauseButton.setOnClickListener(v -> {
-                try {
-                    // Always release existing player first
-                    if (sharedMediaPlayer != null) {
-                        try {
-                            sharedMediaPlayer.stop();
-                        } catch (Exception ignored) {}
-                        sharedMediaPlayer.release();
-                        sharedMediaPlayer = null;
-                        handler.removeCallbacksAndMessages(null);
-                        if (lastPlayButton != null) {
-                            lastPlayButton.setImageResource(R.drawable.baseline_play_circle_filled_24);
-                        }
-                    }
-
-                    lastPlayButton = playPauseButton;
-
-                    if (audioSource.startsWith("http")) {
-                        sharedMediaPlayer = new MediaPlayer();
-                        sharedMediaPlayer.setDataSource(audioSource);
-                        sharedMediaPlayer.setOnPreparedListener(mp -> {
-                            mp.start();
-                            playPauseButton.setImageResource(R.drawable.baseline_pause_circle_filled_24);
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (sharedMediaPlayer != null && sharedMediaPlayer.isPlaying()) {
-                                        int progress = (int) (((float) sharedMediaPlayer.getCurrentPosition() / sharedMediaPlayer.getDuration()) * 100);
-                                        audioSeekBar.setProgress(progress);
-                                        handler.postDelayed(this, 100);
-                                    }
-                                }
-                            });
-                        });
-                        sharedMediaPlayer.setOnCompletionListener(mp -> {
-                            playPauseButton.setImageResource(R.drawable.baseline_play_circle_filled_24);
-                            audioSeekBar.setProgress(0);
-                            handler.removeCallbacksAndMessages(null);
-                        });
-                        sharedMediaPlayer.prepareAsync();
-                    } else {
-                        int resId = context.getResources().getIdentifier(audioSource.replace(".mp3", ""), "raw", context.getPackageName());
-                        sharedMediaPlayer = MediaPlayer.create(context, resId);
-                        if (sharedMediaPlayer != null) {
-                            sharedMediaPlayer.setOnCompletionListener(mp -> {
-                                playPauseButton.setImageResource(R.drawable.baseline_play_circle_filled_24);
-                                audioSeekBar.setProgress(0);
-                                handler.removeCallbacksAndMessages(null);
-                            });
-                            sharedMediaPlayer.start();
-                            playPauseButton.setImageResource(R.drawable.baseline_pause_circle_filled_24);
-                            handler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (sharedMediaPlayer != null && sharedMediaPlayer.isPlaying()) {
-                                        int progress = (int) (((float) sharedMediaPlayer.getCurrentPosition() / sharedMediaPlayer.getDuration()) * 100);
-                                        audioSeekBar.setProgress(progress);
-                                        handler.postDelayed(this, 100);
-                                    }
-                                }
-                            });
-                        }
-                    }
-                } catch (IOException e) {
-                    Log.e("AudioPost", "Playback error", e);
-                }
-            });
+            playPauseButton.setOnClickListener(v ->
+                    MediaPlayerManager.getInstance().playPause(audioSource, playPauseButton, audioSeekBar)
+            );
 
             audioSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (sharedMediaPlayer != null && fromUser) {
-                        int newPosition = (sharedMediaPlayer.getDuration() * progress) / 100;
-                        sharedMediaPlayer.seekTo(newPosition);
+                    if (fromUser) {
+                        MediaPlayerManager.getInstance().seekToPercent(progress);
                     }
                 }
+
                 @Override public void onStartTrackingTouch(SeekBar seekBar) {}
                 @Override public void onStopTrackingTouch(SeekBar seekBar) {}
             });
+
         } else {
             fragmentView = new View(context);
         }
@@ -190,16 +124,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.saveButton.setOnClickListener(v -> toggleSaved(post, holder.saveButton.isChecked()));
 
         holder.postFragmentDisplay.addView(fragmentView);
-    }
-
-    @Override
-    public void onViewRecycled(@NonNull PostViewHolder holder) {
-        super.onViewRecycled(holder);
-        if (sharedMediaPlayer != null) {
-            sharedMediaPlayer.release();
-            sharedMediaPlayer = null;
-            handler.removeCallbacksAndMessages(null);
-        }
     }
 
     @Override

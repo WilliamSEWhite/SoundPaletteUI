@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
@@ -395,4 +396,12 @@ public class ProfileFragment extends Fragment {
             textView.setTextSize(18);
         }
     }
+
+    // Pauses the media player when user leaves the fragment
+    @Override
+    public void onPause() {
+        super.onPause();
+        MediaPlayerManager.getInstance().release();
+    }
+
 }

@@ -18,6 +18,7 @@ import com.soundpaletteui.Infrastructure.Models.PostContentModel;
 import com.soundpaletteui.Infrastructure.Models.PostModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.R;
+import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,6 +81,7 @@ public class PostFragment extends Fragment {
 //            UISettings.applyBrightnessGradientBackground(view, baseHue);
         }
         recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setRecycledViewPool(new RecyclerView.RecycledViewPool()); // Add this line
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
         new GetPostsTask().execute();
@@ -170,6 +172,14 @@ public class PostFragment extends Fragment {
         allPosts.add(testPost3);
         allPosts.add(testPost4);
     }
+
+    // Pauses the media player when user leaves the fragment
+    @Override
+    public void onPause() {
+        super.onPause();
+        MediaPlayerManager.getInstance().release();
+    }
+
 
     // Sets the RecyclerView by sending through a List of all PostModels
     private void setupRecyclerView() {
