@@ -14,8 +14,8 @@ public class PostModel {
     private String postCaption;
     @SerializedName("PostTags")
     private List<TagModel> postTags;
-    @SerializedName("UserTags")
-    private final List<String> userTags;
+    @SerializedName("PostUserTags")
+    private List<String> postUserTags;
     @SerializedName("PostContent")
     private PostContentModel postContent;
     @SerializedName("CreatedDate")
@@ -35,11 +35,10 @@ public class PostModel {
 
     // Parameterized constructor
     public PostModel(int postId, String postCaption, List<TagModel> postTags, PostContentModel postContent,
-                     Date createdDate, String createdByUsername, int postType, int commentCount, int likeCount, boolean isLiked, boolean isSaved, List<String> userTags) {
+                     Date createdDate, String createdByUsername, int postType, int commentCount, int likeCount, boolean isLiked, boolean isSaved, List<String> postUserTags) {
         this.postId = postId;
         this.postCaption = postCaption;
         this.postTags = postTags;
-        this.userTags = userTags;
         this.postContent = postContent;
         this.createdDate = createdDate;
         this.createdByUsername = createdByUsername;
@@ -48,7 +47,7 @@ public class PostModel {
         this.likeCount = likeCount;
         this.isLiked = isLiked;
         this.isSaved = isSaved;
-
+        this.postUserTags = postUserTags;
     }
 
     // Getters
@@ -64,8 +63,8 @@ public class PostModel {
         return postTags;
     }
 
-    public List<String> getUserTags() {
-        return userTags;
+    public List<String> getPostUserTags() {
+        return postUserTags;
     }
 
     public PostContentModel getPostContent() {
