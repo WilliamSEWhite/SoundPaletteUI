@@ -240,8 +240,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private void getUserTags(PostViewHolder holder, PostModel post) {
         new Thread(() -> {
             // NOTE: REPLACE WITH ACTUAL LIST
-            //List<String> userTagsList = post.getUserTags();
-            List<String> userTagsList = List.of("user1", "user2", "user3", "user4");
+            List<String> userTagsList = post.getPostUserTags();
 
             ((Activity) context).runOnUiThread(() -> {
                 if (userTagsList != null) {
