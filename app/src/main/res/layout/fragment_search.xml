@@ -20,9 +20,11 @@
             android:layout_height="50dp"
             android:layout_gravity="center"
             android:layout_weight="10"
-            android:background="@drawable/rounded_corners"
+            android:background="@drawable/white_translucency_gradient_login"
             android:backgroundTint="@color/white"
             android:alpha="0.6"
+            android:scaleX="0.9"
+            android:scaleY="0.9"
             android:gravity="center"
             android:padding="10dp">
 

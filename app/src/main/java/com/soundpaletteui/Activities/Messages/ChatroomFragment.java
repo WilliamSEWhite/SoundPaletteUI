@@ -18,15 +18,17 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
+import com.soundpaletteui.R;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.Chat.ChatMessageModel;
 import com.soundpaletteui.Infrastructure.Models.Chat.NewMessageModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
-import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
-import com.soundpaletteui.Infrastructure.Utilities.Navigation;
-import com.soundpaletteui.R;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,13 +73,18 @@ public class ChatroomFragment extends Fragment {
         }
     }
 
-    // Inflates the layout and applies a gradient background.
+    // Inflates the layout, applies a brightness gradient background, and initializes UI components.
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chatroom, container, false);
+
+        // Apply brightness gradient background similarly to MessageFragment.
+        boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
+        UISettings.applyBrightnessGradientBackground(rootView, 225f, isDarkMode);
+
         initComponents(rootView);
 
         recyclerView = rootView.findViewById(R.id.recyclerViewMessages);
@@ -111,10 +118,6 @@ public class ChatroomFragment extends Fragment {
             // Replace the fragment with the editChatroomFragment
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             Navigation.replaceFragment(fragmentManager, editChatroomFragment, "EDIT_CHATROOM_FRAGMENT", R.id.mainScreenFrame);
-            /*FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.mainScreenFrame, editChatroomFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();*/
         });
 
         new LoadMessagesTask().execute();
@@ -132,7 +135,7 @@ public class ChatroomFragment extends Fragment {
         }
     }
 
-    // Action to load all messages from API Server
+    // AsyncTask to load all messages from the API Server.
     private class LoadMessagesTask extends AsyncTask<Void, Void, List<ChatMessageModel>> {
         @Override
         protected List<ChatMessageModel> doInBackground(Void... voids) {
@@ -153,7 +156,7 @@ public class ChatroomFragment extends Fragment {
         }
     }
 
-    // Action to send a message through API Server
+    // AsyncTask to send a message via the API Server.
     private class SendMessageTask extends AsyncTask<String, Void, Boolean> {
         @Override
         protected Boolean doInBackground(String... params) {
@@ -174,6 +177,4 @@ public class ChatroomFragment extends Fragment {
             }
         }
     }
-
-
 }

@@ -2,6 +2,8 @@ package com.soundpaletteui.Activities.Posts;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.util.Log;
@@ -146,6 +148,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         tagScrollHandler = new Handler();
         getPostTags(holder, post);
         getUserTags(holder, post);
+        holder.likeButton.setChecked(post.getIsLiked());
+        holder.likeButton.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#FFA300")));
+
+        holder.saveButton.setChecked(post.getIsSaved());
+        holder.saveButton.setButtonTintList(ColorStateList.valueOf(Color.RED));
+
 
         holder.postFragmentDisplay.addView(fragmentView);
     }

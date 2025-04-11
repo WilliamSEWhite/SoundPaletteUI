@@ -260,6 +260,7 @@ public class MainScreenActivity extends AppCompatActivity {
         ColorStateList homeButtonTint = createColorStateList(findViewById(R.id.toolbar), 30f);
         binding.bottomNavigationView.setItemIconTintList(homeButtonTint);
         binding.bottomNavigationView.setItemTextColor(homeButtonTint);
+
     }
 
     // Updates the shadow effect on the selected bottom navigation item.

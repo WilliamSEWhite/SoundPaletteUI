@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:shadowColor="@color/black"
+        android:textStyle="bold"
         android:shadowDx="2"
         android:shadowDy="1"
         android:shadowRadius="1"
