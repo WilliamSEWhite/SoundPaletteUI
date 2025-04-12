@@ -10,14 +10,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
-import com.soundpaletteui.Infrastructure.Models.ChatMessageModel;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.Models.Chat.ChatMessageModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;

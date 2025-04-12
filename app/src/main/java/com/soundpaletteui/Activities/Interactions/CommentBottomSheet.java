@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.PostInteractionClient;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
-import com.soundpaletteui.Infrastructure.Models.CommentModel;
-import com.soundpaletteui.Infrastructure.Models.NewPostCommentModel;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.SPApiServices.ApiClients.PostInteractionClient;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.Models.Post.CommentModel;
+import com.soundpaletteui.Infrastructure.Models.Post.NewPostCommentModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
 

@@ -1,17 +1,16 @@
 package com.soundpaletteui.Activities;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
-import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,19 +18,17 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar; // Make sure to import Toolbar
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 import android.widget.Button;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundpaletteui.Activities.Home.HomeFragment;
+import com.soundpaletteui.Activities.LoginRegister.LoginActivity;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
 import com.soundpaletteui.Activities.Posts.CreatePostFragment;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.Activities.Trending.SearchFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
@@ -168,6 +165,15 @@ public class MainScreenActivity extends AppCompatActivity {
             recreate();
             return true;
         }
+        else if(id == R.id.log_out){
+            AppSettings.setUsernameValue(this, "");
+            AppSettings.setPasswordValue(this, "");
+
+            Intent intent = new Intent(MainScreenActivity.this, LoginActivity.class);
+            startActivity(intent); // Start the next activity
+            finish(); // Finish the current activity
+
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -189,28 +195,20 @@ public class MainScreenActivity extends AppCompatActivity {
         dialog.show();
 
         Button textPostButton = dialog.findViewById(R.id.create_text);
-        Button audioPostButton = dialog.findViewById(R.id.create_sound);
-        Button imagePostButton = dialog.findViewById(R.id.create_image);
+        Button mediaPostButton = dialog.findViewById(R.id.createMedia);
 
         textPostButton.setOnClickListener(v -> {
             dialog.dismiss();
-            createPost(1);
+            CreatePostFragment createPostFragment = CreatePostFragment.newInstance(1);
+            Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
+            supportInvalidateOptionsMenu();
         });
-        audioPostButton.setOnClickListener(v -> {
+        mediaPostButton.setOnClickListener(v -> {
             dialog.dismiss();
-            createPost(2);
+            CreatePostFragment createPostFragment = CreatePostFragment.newInstance(-1);
+            Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
+            supportInvalidateOptionsMenu();
         });
-        imagePostButton.setOnClickListener(v -> {
-            dialog.dismiss();
-            createPost(3);
-        });
-    }
-
-    // Function to create a post.
-    private void createPost(int postType){
-        CreatePostFragment createPostFragment = CreatePostFragment.newInstance(postType);
-        Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "CREATE_POST_FRAGMENT", R.id.mainScreenFrame);
-        supportInvalidateOptionsMenu();
     }
 
     // Animates a "breathing" shadow effect on the header text.
@@ -262,6 +260,7 @@ public class MainScreenActivity extends AppCompatActivity {
         ColorStateList homeButtonTint = createColorStateList(findViewById(R.id.toolbar), 30f);
         binding.bottomNavigationView.setItemIconTintList(homeButtonTint);
         binding.bottomNavigationView.setItemTextColor(homeButtonTint);
+
     }
 
     // Updates the shadow effect on the selected bottom navigation item.

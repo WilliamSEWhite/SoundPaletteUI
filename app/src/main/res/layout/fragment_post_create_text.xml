@@ -1,0 +1,93 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <!-- SELECTING BACKGROUND AND FONT COLOURS -->
+        <LinearLayout
+            android:layout_width="115dp"
+            android:layout_height="match_parent"
+            android:padding="5dp"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <!-- Background Colour Select -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:orientation="horizontal">
+
+                <View
+                    android:id="@+id/backgroundColourDisplay"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@color/white"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/backgroundColourSelector"
+                    android:layout_width="80dp"
+                    android:layout_height="match_parent"
+                    android:text="Background"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="@android:color/transparent"
+                    android:background="@android:color/transparent"
+                    android:layout_gravity="center"
+                    android:gravity="start"
+                    android:padding="5dp"
+                    android:paddingStart="10dp"
+                    android:textSize="10sp" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="130dp"
+                android:layout_height="10dp"/>
+
+            <!-- Text/Font Colour Select -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:orientation="horizontal">
+                <View
+                    android:id="@+id/fontColourDisplay"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:background="@color/white"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/fontColourSelector"
+                    android:layout_width="80dp"
+                    android:layout_height="match_parent"
+                    android:text="Font Colour"
+                    android:textColor="#FFFFFF"
+                    android:backgroundTint="@android:color/transparent"
+                    android:background="@android:color/transparent"
+                    android:layout_gravity="center"
+                    android:gravity="start"
+                    android:padding="5dp"
+                    android:paddingStart="10dp"
+                    android:textSize="10sp" />
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/textContent"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:inputType="textMultiLine"
+            android:singleLine="false"
+            android:gravity="top|start"
+            android:padding="5dp"
+            android:textSize="12dp"
+            android:hint="What did you want to say?"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#BEC0BE"
+            android:background="@drawable/background_transparent_rec3"/>
+
+    </LinearLayout>
+</FrameLayout>

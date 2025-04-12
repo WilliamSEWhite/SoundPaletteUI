@@ -39,11 +39,13 @@ import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
 import com.soundpaletteui.Infrastructure.ApiClients.FileClient;
 import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.LocationModel;
-import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Models.User.UserInfoModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.R;
@@ -150,7 +152,6 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
         profileImage = findViewById(R.id.registerProfilePicture);
-        //profileImage.setColorFilter(Color.WHITE);
         fileClient = SPWebApiRepository.getInstance().getFileClient();
         location = findViewById(R.id.registerLocation);
 
@@ -159,7 +160,7 @@ public class RegisterActivity extends AppCompatActivity {
         frameSave = findViewById(R.id.frame_save);
         gifSave = findViewById(R.id.gif_save);
         textSave = findViewById(R.id.save_text);
-        //profileImage.setOnClickListener(v -> showImageSourceDialog());
+
         profileImage.setOnClickListener(v -> editProfileImage());
         frameSave.setOnClickListener(v -> {
             try {

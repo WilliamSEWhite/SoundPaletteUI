@@ -13,11 +13,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
-import com.soundpaletteui.Infrastructure.Models.PostModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.SPApiServices.ApiClients.PostClient;
+import com.soundpaletteui.Infrastructure.Models.Post.PostModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.R;
-import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,7 @@ public class PostFragment extends Fragment {
 //            UISettings.applyBrightnessGradientBackground(view, baseHue);
         }
         recyclerView = view.findViewById(R.id.recyclerView);
+        recyclerView.setRecycledViewPool(new RecyclerView.RecycledViewPool()); // Add this line
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
         new GetPostsTask().execute();
@@ -106,6 +108,12 @@ public class PostFragment extends Fragment {
                     case "following":
                         posts = postClient.getFollowingPosts();
                         break;
+                    case "trending":
+                        posts = postClient.getTrendingPosts();
+                        break;
+                    case "postusertags":
+                        posts = postClient.getTaggedPostsForUsername(searchTerm);
+                        break;
                     default:
                         // fallback if needed
                         posts = postClient.getPosts();
@@ -127,9 +135,21 @@ public class PostFragment extends Fragment {
             Log.d(TAG, "Fetched dummy posts: " + posts.size());
             allPosts.clear();
             allPosts.addAll(posts);
+
+            // Testing audio posts with dummy data
+//            loadDummyAudio(allPosts);
+
             setupRecyclerView();
         }
     }
+
+    // Pauses the media player when user leaves the fragment
+    @Override
+    public void onPause() {
+        super.onPause();
+        MediaPlayerManager.getInstance().release();
+    }
+
 
     // Sets the RecyclerView by sending through a List of all PostModels
     private void setupRecyclerView() {

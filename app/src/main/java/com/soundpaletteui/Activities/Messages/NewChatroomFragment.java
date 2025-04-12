@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,24 +15,19 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
 import com.soundpaletteui.Activities.SearchAdapters.UserSearchAdapter;
 import com.soundpaletteui.Activities.SearchAdapters.UserSelectedAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.ChatClient;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
-import com.soundpaletteui.Infrastructure.Models.ChatroomModel;
-import com.soundpaletteui.Infrastructure.Models.ChatroomModelLite;
-import com.soundpaletteui.Infrastructure.Models.NewChatroomModel;
-import com.soundpaletteui.Infrastructure.Models.NewMessageModel;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModelLite;
+import com.soundpaletteui.Infrastructure.Models.Chat.NewChatroomModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
 
@@ -51,8 +45,8 @@ public class NewChatroomFragment extends Fragment {
     private ChatClient chatClient;
     private UserModel currentUser;
 
-    private List<UserProfileModelLite> selectedUsers = new ArrayList<>();
-    private List<UserProfileModelLite> searchResults = new ArrayList<>();
+    private List<String> selectedUsers = new ArrayList<>();
+    private List<String> searchResults = new ArrayList<>();
 
     private UserSearchAdapter userSearchAdapter;
     private UserSelectedAdapter selectedUsersAdapter;
@@ -106,14 +100,17 @@ public class NewChatroomFragment extends Fragment {
         selectedUsersView.setAdapter(selectedUsersAdapter);
 
         // Dummy data for user search results
-        populateDummyUsersAsync();
-
         userSearchInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override
             // Prompt for API return at 3 letters, then again at 5+
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            public void onTextChanged(CharSequence s, int start, int before, int count)
+            {
+                if(s.length()>3){
+                    searchUsersAsync(s.toString());
+                }
+            }
             @Override
             public void afterTextChanged(Editable s) {}
         });
@@ -145,9 +142,8 @@ public class NewChatroomFragment extends Fragment {
             try {
                 String chatRoomName = chatroomNameEdit.getText().toString().trim();
                 List<String> usernames = new ArrayList<>();
-                for (UserProfileModelLite user : selectedUsers) {
-                    usernames.add(user.getUsername());
-                }
+                usernames.addAll(selectedUsers);
+                usernames.add(AppSettings.getInstance().getUsername());
 
                 Log.d("NewChatroomFragment", "Creating a new Chatroom titled: " + chatRoomName);
                 NewChatroomModel newChatroom = new NewChatroomModel(chatRoomName, usernames);
@@ -183,15 +179,11 @@ public class NewChatroomFragment extends Fragment {
         transaction.commit();
     }
 
-    private void populateDummyUsersAsync() {
+    private void searchUsersAsync(String searchTerm) {
         new Thread(() -> {
             try {
                 UserClient client = SPWebApiRepository.getInstance().getUserClient();
-                List<UserProfileModelLite> results = new ArrayList<>();
-                results.add(client.getUserProfileByUsername("user1"));
-                results.add(client.getUserProfileByUsername("user2"));
-                results.add(client.getUserProfileByUsername("user3"));
-                results.add(client.getUserProfileByUsername("user4"));
+                List<String> results = client.searchUsers(searchTerm);
 
                 requireActivity().runOnUiThread(() -> {
                     searchResults.clear();

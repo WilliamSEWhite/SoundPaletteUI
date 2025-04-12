@@ -49,12 +49,16 @@ import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.ApiEndpoints.FileApiEndpoints;
 import com.soundpaletteui.Infrastructure.Models.FileModel;
+import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
+import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
+import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.LocationModel;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
-import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Models.User.UserInfoModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.FileUtils;
 import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
@@ -213,7 +217,7 @@ public class ProfileEditFragment extends Fragment {
             ArrayList<TagModel> selectedTags = getArguments().getParcelableArrayList("selectedTags");
 
             if (selectedTags != null && !selectedTags.isEmpty()) {
-                adapter = new UserTagAdapter(selectedTags, getContext());
+                adapter = new TagBasicAdapter(selectedTags, getContext());
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
             }
@@ -239,7 +243,7 @@ public class ProfileEditFragment extends Fragment {
                 List<TagModel> tags = tagClient.getUserTags(user.getUserId());
                 requireActivity().runOnUiThread(() -> {
                     tagList = tags;
-                    adapter = new UserTagAdapter((ArrayList<TagModel>) tagList, requireActivity());
+                    adapter = new TagBasicAdapter((ArrayList<TagModel>) tagList, requireActivity());
                     recyclerView.setAdapter(adapter);
                 });
             } catch (IOException e) {

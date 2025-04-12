@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_dark_green"
+    tools:context=".Activities.Posts.CreatePostFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:layout_margin="20dp"
+        android:background="@drawable/background_transparent_round1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+
+            <!-- CAPTION -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="10dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Caption"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="start"
+                    android:textStyle="bold"
+                    android:paddingStart="12dp"
+                    android:paddingBottom="5dp"/>
+
+                <EditText
+                    android:id="@+id/caption"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:paddingStart="10dp"
+                    android:hint="Enter a caption"
+                    android:maxLength="30"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#BEC0BE"
+                    android:background="@drawable/background_transparent_rec3"/>
+            </LinearLayout>
+
+            <!--CHECK BOX OPTIONS -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:orientation="horizontal"
+                android:layout_gravity="center">
+
+                <CheckBox
+                    android:id="@+id/isMature"
+                    android:layout_width="100dp"
+                    android:layout_height="20dp"
+                    android:text="Is Mature?"
+                    android:textSize="8sp"
+                    android:textColor="@color/white"/>
+
+                <View
+                    android:layout_width="20dp"
+                    android:layout_height="5dp"/>
+
+                <CheckBox
+                    android:id="@+id/isFollowing"
+                    android:layout_width="100dp"
+                    android:layout_height="20dp"
+                    android:text="Followers Only?"
+                    android:textSize="8sp"
+                    android:textColor="@color/white"/>
+            </LinearLayout>
+
+            <!-- POST CONTENT -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="10dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <FrameLayout
+                    android:id="@+id/postContentContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+
+            <!-- TAGS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="10dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Post Tags"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="start"
+                    android:textStyle="bold"
+                    android:paddingStart="12dp"
+                    android:paddingBottom="5dp"/>
+
+                <EditText
+                    android:id="@+id/tagSearchInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@drawable/background_transparent_rec3"
+                    android:autoSizeMaxTextSize="20dp"
+                    android:hint="Enter a Tag..."
+                    android:textColorHint="#BEC0BE"
+                    android:textColor="@color/white"
+                    android:paddingStart="10dp"/>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- Tags Search results -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/postTagSearchResult"
+                        android:layout_height="70dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:padding="5dp"
+                        android:background="@drawable/background_transparent_rec3"/>
+
+                    <!-- Selected Post Tags -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/selectedPostTags"
+                        android:layout_height="70dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:padding="5dp"
+                        android:orientation="vertical"
+                        android:background="@drawable/background_transparent_rec3"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- USER TAGS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingBottom="10dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User Tags"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    android:layout_gravity="start"
+                    android:textStyle="bold"
+                    android:paddingStart="12dp"
+                    android:paddingBottom="5dp"/>
+
+                <EditText
+                    android:id="@+id/userSearchInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:background="@drawable/background_transparent_rec3"
+                    android:autoSizeMaxTextSize="20dp"
+                    android:hint="Enter a Username..."
+                    android:textColorHint="#BEC0BE"
+                    android:textColor="@color/white"
+                    android:paddingStart="10dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- User Search results -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/userSearchResult"
+                        android:layout_height="70dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:padding="5dp"
+                        android:background="@drawable/background_transparent_rec3"/>
+
+                    <!-- Selected Users to tag -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/selectedUserTags"
+                        android:layout_height="70dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:padding="5dp"
+                        android:orientation="vertical"
+                        android:background="@drawable/background_transparent_rec3"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- BUTTONS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:padding="5dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:orientation="horizontal">
+
+                <!-- Background Colour Select -->
+                <Button
+                    android:id="@+id/previewButton"
+                    android:layout_width="90dp"
+                    android:layout_height="100dp"
+                    android:text="PREVIEW"
+                    android:background="@android:color/white"
+                    android:backgroundTint="@android:color/transparent"
+                    android:textSize="10sp"
+                    android:padding="5dp" />
+
+                <View
+                    android:layout_width="20dp"
+                    android:layout_height="50dp"/>
+
+                <!-- Text/Font Colour Select -->
+                <Button
+                    android:id="@+id/postButton"
+                    android:layout_width="90dp"
+                    android:layout_height="100dp"
+                    android:text="POST"
+                    android:background="@android:color/white"
+                    android:backgroundTint="@android:color/transparent"
+                    android:textSize="10sp"
+                    android:padding="5dp"/>
+            </LinearLayout>
+
+            <!-- POST PREVIEW -->
+            <FrameLayout
+                android:id="@+id/postPreviewContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="30dp"
+                />
+
+
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

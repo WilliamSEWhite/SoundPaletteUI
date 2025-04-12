@@ -1,83 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/root_layout"
+    android:id="@+id/background_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/transparent"
     tools:context=".Activities.Home.HomeFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="61dp"
-        android:gravity="center"
-        android:orientation="horizontal"
-        android:padding="16dp">
-
-        <FrameLayout
-            android:id="@+id/frame_explore"
-            android:layout_width="0dp"
-            android:layout_height="120dp"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/round_button_shape"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless">
-
-            <pl.droidsonroids.gif.GifImageView
-                android:id="@+id/gif_explore"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/explore_gif" />
-
-            <TextView
-                android:id="@+id/explore_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Explore"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/frame_follower"
-            android:layout_width="0dp"
-            android:layout_height="120dp"
-            android:layout_margin="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/round_button_shape"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless">
-
-            <pl.droidsonroids.gif.GifImageView
-                android:id="@+id/gif_follower"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/followers_gif" />
-
-            <TextView
-                android:id="@+id/follower_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Following"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"
-                android:textStyle="bold" />
-        </FrameLayout>
-    </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/postFragment"
+    <!-- Emoji Background Layer -->
+    <com.soundpaletteui.Views.EmojiBackgroundView
+        android:id="@+id/emojiBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</LinearLayout>
+    <!-- Foreground UI Content -->
+    <LinearLayout
+        android:id="@+id/root_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@android:color/transparent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="61dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="16dp">
+
+            <FrameLayout
+                android:id="@+id/frame_explore"
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/round_button_shape"
+                android:backgroundTint="#FF9800"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless">
+                <pl.droidsonroids.gif.GifImageView
+                    android:id="@+id/gif_explore"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/explore_gif" />
+
+                <TextView
+                    android:id="@+id/explore_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Explore"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/frame_follower"
+                android:layout_width="0dp"
+                android:layout_height="120dp"
+                android:layout_margin="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/round_button_shape"
+                android:backgroundTint="#F202FF"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless">
+                <pl.droidsonroids.gif.GifImageView
+                    android:id="@+id/gif_follower"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/followers_gif" />
+
+                <TextView
+                    android:id="@+id/follower_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Following"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/postFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </LinearLayout>
+</FrameLayout>

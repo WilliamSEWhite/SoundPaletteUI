@@ -10,15 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.soundpaletteui.Activities.Posts.PostFragment;
-import com.soundpaletteui.Infrastructure.Models.ChatroomModel;
+import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModel;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
-import java.util.ArrayList;
 import java.util.List;
 public class ChatroomAdapter extends RecyclerView.Adapter<ChatroomAdapter.ChatroomViewHolder> {
 
