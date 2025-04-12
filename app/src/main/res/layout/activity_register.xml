@@ -111,7 +111,7 @@
             <ImageView
                 android:id="@+id/registerProfilePicture"
                 android:layout_width="@dimen/profile_pic"
-                android:alpha="0.5"
+                android:alpha="1"
 
                 android:layout_height="@dimen/profile_pic"
                 android:layout_margin="@dimen/edit_text_margin"
@@ -119,8 +119,7 @@
                 android:background="@drawable/posts_profile"
 
                 android:focusable="true"
-                android:clickable="true"
-                app:tint="@color/white" />
+                android:clickable="true" />
         </LinearLayout>
         <Spinner
             android:id="@+id/registerLocation"

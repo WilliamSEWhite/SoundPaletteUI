@@ -1,29 +1,54 @@
 package com.soundpaletteui.Activities.Profile;
 
+import android.Manifest;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.TagRowAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
+import com.soundpaletteui.Infrastructure.ApiClients.FileClient;
 import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
 import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
 import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.ApiEndpoints.FileApiEndpoints;
+import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Models.LocationModel;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
@@ -31,21 +56,29 @@ import com.soundpaletteui.Infrastructure.Models.UserModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
 import com.soundpaletteui.Infrastructure.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.FileUtils;
+import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.R;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class ProfileEditFragment extends Fragment {
 
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
-    private String userId;
+    private int userId;
     private UserModel user;
     private UserInfoModel userInfo;
     private UserProfileModel userProfile;
@@ -66,7 +99,14 @@ public class ProfileEditFragment extends Fragment {
     private UserTagAdapter adapter;
     private List<TagModel> tagList;
     private Button btnAddTags;
+    private ImageButton btnEditImage;
     private int fragId;     // from which fragment did I come from
+    private ImageView imageView;
+    private ActivityResultLauncher<Intent> pickImageLauncher;
+    private static final int PICK_IMAGE_REQUEST = 1001;
+    private FileClient fileClient;
+    private Uri imageUri;
+    private Drawable defaultProfileImage;
 
     public ProfileEditFragment() {
         // Required empty public constructor
@@ -87,6 +127,20 @@ public class ProfileEditFragment extends Fragment {
         // Apply dark mode gradient background
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
         UISettings.applyBrightnessGradientBackground(rootView, 50f, isDarkMode);
+        // launches the image picker
+        pickImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if(result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        imageUri = result.getData().getData();
+                        if(imageView != null) {
+                            imageView.setImageURI(imageUri);
+                        } else {
+                            Log.e("ProfileEditFragment", "imageView is null");
+                        }
+                    }
+                }
+        );
 
         return rootView;
     }
@@ -103,9 +157,15 @@ public class ProfileEditFragment extends Fragment {
         user = AppSettings.getInstance().getUser();
         userInfo = user.getUserInfo();
         userClient = SPWebApiRepository.getInstance().getUserClient();
+        userId = user.getUserId();
 
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
+
+        fileClient = SPWebApiRepository.getInstance().getFileClient();
+        imageView = rootView.findViewById(R.id.profile_picture);
+        defaultProfileImage = ContextCompat.getDrawable(requireContext(), R.drawable.baseline_person_100);
+        btnEditImage = rootView.findViewById(R.id.edit_profile_button);
 
         profile_user = rootView.findViewById(R.id.profile_user);
         profile_email = rootView.findViewById(R.id.profile_email);
@@ -122,14 +182,32 @@ public class ProfileEditFragment extends Fragment {
         btnSave = rootView.findViewById(R.id.btnSave);
         btnCancel = rootView.findViewById(R.id.btnCancel);
 
+        btnEditImage.setOnClickListener(v -> editProfileImage());
         btnAddTags.setOnClickListener(v -> editUserTags(new ProfileEditTagsFragment(), "PROFILE_EDIT_TAGS_FRAGMENT"));
         btnCancel.setOnClickListener(v -> returnToProfile());
         btnSave.setOnClickListener(v -> saveProfileEdit());
 
+        loadProfileImage();
         getUser();
         getTags();
     }
 
+    /** loads the profile image **/
+    private void loadProfileImage() {
+        Call<FileModel> call = fileClient.getProfileImage(userId);
+        ImageUtils.getProfileImage(userId, call, imageView, requireContext());
+    }
+    /** upload profile image */
+    private void uploadProfileImage() {
+        ImageUtils.uploadProfileImage(imageUri, userId, fileClient, requireContext());
+    }
+
+    /** edit the profile image */
+    private void editProfileImage() {
+        ImageUtils.pickImageFromGallery(requireContext(), pickImageLauncher);
+    }
+
+    /** refreshes the list of user tags */
     private void refreshTagList() {
         if (getArguments() != null && getArguments().containsKey("selectedTags")) {
             ArrayList<TagModel> selectedTags = getArguments().getParcelableArrayList("selectedTags");
@@ -145,6 +223,7 @@ public class ProfileEditFragment extends Fragment {
         }
     }
 
+    /** edit the user tags */
     private void editUserTags(Fragment newFragment, String tag) {
         Bundle bundle = new Bundle();
         bundle.putInt("nav", 1);
@@ -153,6 +232,7 @@ public class ProfileEditFragment extends Fragment {
         Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
     }
 
+    /** get the list of user tags */
     private void getTags() {
         new Thread(() -> {
             try {
@@ -169,18 +249,22 @@ public class ProfileEditFragment extends Fragment {
         }).start();
     }
 
+    /** save user profile and return to user profile fragment */
     private void saveProfileEdit() {
+        uploadProfileImage();
         saveUserProfile();
         returnToProfile();
     }
 
+    /** saves user profile */
     private void saveUserProfile(){
         new UpdateUserInfoAsync().execute();
     }
 
+    /** updates the user fields in the fragment */
     private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
-            String picLocation = "/my/profilePic.jpg";
+            String picLocation = "/dev/null/";
             String email = profile_email.getText().toString();
             String phone = profile_phone.getText().toString();
             String bio = profile_bio.getText().toString();
@@ -208,6 +292,7 @@ public class ProfileEditFragment extends Fragment {
         }
     }
 
+    /** returns to profile fragment */
     private void returnToProfile() {
         if(!isAdded()) {
             return;
@@ -217,6 +302,7 @@ public class ProfileEditFragment extends Fragment {
         Navigation.replaceFragment(fragmentManager, profileFragment, "PROFILE_FRAGMENT", R.id.mainScreenFrame);
     }
 
+    /** gets the user info */
     private void getUser() {
         new Thread(() -> {
             try {
@@ -231,10 +317,12 @@ public class ProfileEditFragment extends Fragment {
         }).start();
     }
 
+    /** gets the list of countries */
     private void getCountries() {
         new GetLocationsAsync().execute();
     }
 
+    /** pull country list from the database */
     private void initCountries(){
         int i = userInfo.getLocationId();
         CountrySelectAdapter adapter = new CountrySelectAdapter(requireContext(),
@@ -267,6 +355,7 @@ public class ProfileEditFragment extends Fragment {
         }
     }
 
+    /** populates the fields in the fragment */
     private void populateView() {
         userList.clear();
         userList.add(user);

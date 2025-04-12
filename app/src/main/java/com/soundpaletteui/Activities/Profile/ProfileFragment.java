@@ -12,14 +12,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
+import com.soundpaletteui.Infrastructure.ApiClients.FileClient;
 import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
+import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
+import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
@@ -47,6 +51,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
+import retrofit2.Call;
 
 // Displays and manages a user's profile, including posts and saved content.
 public class ProfileFragment extends Fragment {
@@ -79,7 +84,8 @@ public class ProfileFragment extends Fragment {
     private int scrollPosition;
     private TextView profileFollowersDisplay;
     private TextView profileFollowingDisplay;
-
+    private FileClient fileClient;
+    private ImageView imageView;
     private boolean darkMode;
     private String selectedTab = "posts";
     private SharedPreferences.OnSharedPreferenceChangeListener darkModeListener =
@@ -143,7 +149,9 @@ public class ProfileFragment extends Fragment {
         gifSaved = rootView.findViewById(R.id.gif_saved);
         textSaved = rootView.findViewById(R.id.savedToggle);
 
-        // Assign username
+        imageView = rootView.findViewById(R.id.profilePicture);
+
+                // Assign username
         usernameDisplay = rootView.findViewById(R.id.profileUsername);
         usernameDisplay.setText(user.getUsername());
 
@@ -228,6 +236,7 @@ public class ProfileFragment extends Fragment {
 
         // Default view is the "posts" tab
         framePosts.performClick();
+        loadProfileImage();
         return rootView;
     }
 
@@ -258,6 +267,8 @@ public class ProfileFragment extends Fragment {
         tagClient = SPWebApiRepository.getInstance().getTagClient();
         tagList = new ArrayList<>();
 
+        fileClient = SPWebApiRepository.getInstance().getFileClient();
+
         btnEditTags = view.findViewById(R.id.editTagsButton);
         btnEditSaved = view.findViewById(R.id.editSavedButton);
 
@@ -271,6 +282,12 @@ public class ProfileFragment extends Fragment {
         tagScrollHandler = new Handler();
 
         getTags();
+    }
+
+    /** loads the profile image **/
+    private void loadProfileImage() {
+        Call<FileModel> call = fileClient.getProfileImage(user.getUserId());
+        ImageUtils.getProfileImage(user.getUserId(), call, imageView, requireContext());
     }
 
     /** move to edit profile fragment */

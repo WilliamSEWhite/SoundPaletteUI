@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.soundpaletteui.Infrastructure.ApiClients.ChatClient;
+import com.soundpaletteui.Infrastructure.ApiClients.FileClient;
 import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
 import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
 import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
@@ -48,27 +49,36 @@ public class SPWebApiRepository {
                 .build();
     }
 
-    public static LoginRegisterClient getLoginRegisterClient(){
+    public static LoginRegisterClient getLoginRegisterClient() {
+
         return new LoginRegisterClient(retrofit);
     }
-    public static UserClient getUserClient(){
+    public static UserClient getUserClient() {
+
         return new UserClient(retrofit);
     }
-    public static LocationClient getLocationClient(){
+    public static LocationClient getLocationClient() {
+
         return new LocationClient(retrofit);
     }
-    public static PostClient getPostClient(){
+    public static PostClient getPostClient() {
+
         return new PostClient(retrofit);
     }
+    public static TagClient getTagClient() {
 
-    public static TagClient getTagClient(){
         return new TagClient(retrofit);
     }
+    public static PostInteractionClient getPostInteractionClient() {
 
-    public static PostInteractionClient getPostInteractionClient(){
         return new PostInteractionClient(retrofit);
     }
     public static ChatClient getChatClient(){
+
         return new ChatClient(retrofit);
+    }
+    public static FileClient getFileClient() {
+
+        return new FileClient(retrofit);
     }
 }
