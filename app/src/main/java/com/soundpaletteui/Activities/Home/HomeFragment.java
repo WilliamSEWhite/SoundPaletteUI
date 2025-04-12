@@ -24,6 +24,8 @@ import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
+import com.soundpaletteui.Views.EmojiBackgroundView;
+
 import java.util.ArrayList;
 import java.util.List;
 import androidx.annotation.NonNull;
@@ -93,6 +95,9 @@ public class HomeFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         initComponents(rootView);
         userId = String.valueOf(user.getUserId());
+        com.soundpaletteui.Views.EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
+
+
 
         final View rootLayout = rootView.findViewById(R.id.root_layout);
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
@@ -107,6 +112,8 @@ public class HomeFragment extends Fragment {
         textFollower = rootView.findViewById(R.id.follower_text);
 
         frameExplore.setOnClickListener(v -> {
+            emojiBackground.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_SPIRAL);
+
             selectedTab = "explore";
             Log.d("HomeFragment", "Explore Selected");
             replacePostFragment("popular", null);
@@ -143,6 +150,8 @@ public class HomeFragment extends Fragment {
         });
 
         frameFollower.setOnClickListener(v -> {
+            emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_RADIAL);
+
             selectedTab = "following";
             Log.d("HomeFragment", "Followers Selected for UserID #" + userId);
             replacePostFragment("following", userId);

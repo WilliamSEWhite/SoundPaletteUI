@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/splash_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Black transparent overlay beneath emoji view -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC000000"
+    />
+
+    <!-- Splash Emoji Animation -->
+    <com.soundpaletteui.Infrastructure.Utilities.SplashEmojiView
+        android:id="@+id/splashEmojiBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Foreground: Logo and Title -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@android:color/transparent"
+            android:contentDescription="App Logo" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SoundPalette"
+            android:textSize="24sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</FrameLayout>

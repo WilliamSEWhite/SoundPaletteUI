@@ -30,6 +30,7 @@ import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.R;
+import com.soundpaletteui.Views.EmojiBackgroundView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,13 +43,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
+import androidx.recyclerview.widget.LinearSnapHelper;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
-// Displays and manages a user's profile, including posts and saved content.
 public class ProfileFragment extends Fragment {
 
     private MainContentAdapter mainContentAdapter;
@@ -67,9 +67,7 @@ public class ProfileFragment extends Fragment {
     private Handler gifHandler = new Handler(Looper.getMainLooper());
     private final int FULL_ALPHA = 255;
     private final int TRANSPARENT_ALPHA = 77;
-    /** buttons */
-    Button btnEditTags, btnEditSaved;
-    /** Tag stuff */
+    private Button btnEditTags, btnEditSaved;
     private LinearLayoutManager linearLayoutManager;
     private TagClient tagClient;
     private RecyclerView recyclerView;
@@ -79,7 +77,6 @@ public class ProfileFragment extends Fragment {
     private int scrollPosition;
     private TextView profileFollowersDisplay;
     private TextView profileFollowingDisplay;
-
     private boolean darkMode;
     private String selectedTab = "posts";
     private SharedPreferences.OnSharedPreferenceChangeListener darkModeListener =
@@ -95,7 +92,6 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Register dark mode listener
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
         sp.registerOnSharedPreferenceChangeListener(darkModeListener);
     }
@@ -107,7 +103,6 @@ public class ProfileFragment extends Fragment {
         sp.unregisterOnSharedPreferenceChangeListener(darkModeListener);
     }
 
-    /** refreshes profile data when resuming fragment */
     @Override
     public void onResume() {
         super.onResume();
@@ -115,13 +110,17 @@ public class ProfileFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> getProfileBio(), 500);
     }
 
-    // Inflates the layout and sets up UI for posts and saved content.
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        // Inflate layout wrapped in a FrameLayout with EmojiBackgroundView
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        // Get and configure the emoji background (using a spiral pattern here)
+        EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
+        emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
 
         final View rootLayout = rootView.findViewById(R.id.root_layout);
         darkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
@@ -129,7 +128,6 @@ public class ProfileFragment extends Fragment {
 
         initComponents(rootView);
 
-        // Check if user profile is loaded
         if (user != null) {
             userId = String.valueOf(user.getUserId());
         } else {
@@ -142,28 +140,24 @@ public class ProfileFragment extends Fragment {
         frameSaved = rootView.findViewById(R.id.frame_saved);
         gifSaved = rootView.findViewById(R.id.gif_saved);
         textSaved = rootView.findViewById(R.id.savedToggle);
-
-        // Assign username
         usernameDisplay = rootView.findViewById(R.id.profileUsername);
         usernameDisplay.setText(user.getUsername());
-
-        // Assign text for User's Profile Bio and follower/following counts
         profileBio = rootView.findViewById(R.id.profileBio);
         profileFollowersDisplay = rootView.findViewById(R.id.profileFollowersDisplay);
         profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
 
-        btnEditTags.setBackgroundColor(Color.parseColor("#FFD700")); // Golden Yellow
-        btnEditSaved.setBackgroundColor(Color.parseColor("#FFD700")); // Golden Yellow
+        btnEditTags.setBackgroundColor(Color.parseColor("#FFD700"));
+        btnEditSaved.setBackgroundColor(Color.parseColor("#FFD700"));
 
         getProfileBio();
 
-        // Edit Profile Button Actions
         AppCompatImageButton buttonEdit = rootView.findViewById(R.id.editProfileButton);
         buttonEdit.setOnClickListener(v -> editProfile(new ProfileEditFragment(), "PROFILE_EDIT_FRAGMENT"));
 
-        // Post Button Actions
         framePosts.setOnClickListener(v -> {
-            selectedTab = "posts"; // update selected tab
+            emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
+
+            selectedTab = "posts";
             try {
                 final GifDrawable postsGifDrawable = (GifDrawable) gifPosts.getDrawable();
                 framePosts.getBackground().mutate().setAlpha(FULL_ALPHA);
@@ -193,9 +187,10 @@ public class ProfileFragment extends Fragment {
             UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
         });
 
-        // Saved Button Actions
         frameSaved.setOnClickListener(v -> {
-            selectedTab = "saved"; // update selected tab
+            emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
+
+            selectedTab = "saved";
             try {
                 final GifDrawable savedGifDrawable = (GifDrawable) gifSaved.getDrawable();
                 frameSaved.getBackground().mutate().setAlpha(FULL_ALPHA);
@@ -222,16 +217,13 @@ public class ProfileFragment extends Fragment {
 
             Log.d("ProfileFragment", "Saved clicked for User ID# " + userId);
             replaceFragment("saved", userId);
-            // Re-apply the UI background for saved
-            UISettings.applyBrightnessGradientBackground(rootLayout, 60f, darkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 55f, darkMode);
         });
 
-        // Default view is the "posts" tab
         framePosts.performClick();
         return rootView;
     }
 
-    // Updates the UI background based on the current dark mode setting and selected tab.
     private void updateUI() {
         View rootLayout = getView().findViewById(R.id.root_layout);
         darkMode = DarkModePreferences.isDarkModeEnabled(getContext());
@@ -247,9 +239,7 @@ public class ProfileFragment extends Fragment {
         updateUI();
     }
 
-    /** Initializes views and loads user data. */
     private void initComponents(View view) {
-        // Get arguments instead of Intent
         user = AppSettings.getInstance().getUser();
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
@@ -273,7 +263,6 @@ public class ProfileFragment extends Fragment {
         getTags();
     }
 
-    /** move to edit profile fragment */
     private void editProfile(Fragment newFragment, String tag) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
@@ -283,7 +272,6 @@ public class ProfileFragment extends Fragment {
         getUserBio();
     }
 
-    /** populates the user bio field */
     private void getUserBio() {
         new Thread(() -> {
             UserProfileModel userProfile;
@@ -292,14 +280,12 @@ public class ProfileFragment extends Fragment {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            // update UI on main thread
             new Handler(Looper.getMainLooper()).post(() -> {
-                if(userProfile == null) {
+                if (userProfile == null) {
                     profileBio.setText("Please fill in your bio...");
                     return;
                 }
-                // check if the bio field is empty or null and respond accordingly
-                if(userProfile.getBio() == null || userProfile.getBio().trim().isEmpty()) {
+                if (userProfile.getBio() == null || userProfile.getBio().trim().isEmpty()) {
                     profileBio.setText("I still need to fill out my bio...");
                 } else {
                     profileBio.setText(userProfile.getBio());
@@ -315,7 +301,6 @@ public class ProfileFragment extends Fragment {
         Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
     }
 
-    /** edit user tags */
     private void editUserTags(Fragment newFragment, String tag) {
         Bundle bundle = new Bundle();
         bundle.putInt("nav", 0);
@@ -324,7 +309,6 @@ public class ProfileFragment extends Fragment {
         Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
     }
 
-    /** auto scrolls the horizontal list of tags */
     private void startAutoScroll() {
         tagScrollHandler.postDelayed(new Runnable() {
             @Override
@@ -340,13 +324,10 @@ public class ProfileFragment extends Fragment {
         }, 2000);
     }
 
-    /** refreshes the user tag list in the recycler view */
     private void refreshTagList() {
         if (getArguments() != null && getArguments().containsKey("selectedTags")) {
             ArrayList<TagModel> selectedTags = getArguments().getParcelableArrayList("selectedTags");
-
             if (selectedTags != null && !selectedTags.isEmpty()) {
-                // Update the RecyclerView with the new tag list
                 adapter = new TagBasicAdapter(selectedTags, getContext());
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
@@ -356,7 +337,6 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    /** retrieves the list of tags from the user profile */
     private void getTags() {
         new Thread(() -> {
             try {
@@ -377,7 +357,6 @@ public class ProfileFragment extends Fragment {
         }).start();
     }
 
-    // Replaces the PostFragment based on the algorithmType and userId
     private void replaceFragment(String algoType, String userId) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(algoType, userId);
@@ -385,7 +364,6 @@ public class ProfileFragment extends Fragment {
         transaction.commit();
     }
 
-    // Sets the style of a TextView to selected or unselected.
     private void setButtonTextSelected(TextView textView, boolean isSelected) {
         if (isSelected) {
             textView.setTypeface(null, Typeface.BOLD);
@@ -396,11 +374,9 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    // Pauses the media player when user leaves the fragment
     @Override
     public void onPause() {
         super.onPause();
         MediaPlayerManager.getInstance().release();
     }
-
 }

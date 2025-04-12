@@ -11,7 +11,7 @@ import android.view.animation.LinearInterpolator;
  */
 public class UISettings {
 
-    private static final int ANIMATION_DURATION = 10000;
+    private static final int ANIMATION_DURATION = 8000;
     private static final float MIN_BRIGHTNESS = 0.6f;
     private static final float MAX_BRIGHTNESS = 1.0f;
     private static final float LIGHT_SATURATION = 0.2f;
@@ -75,19 +75,19 @@ public class UISettings {
         );
         animatedGradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
         rootView.setBackground(animatedGradientDrawable);
-
-        ValueAnimator brightnessAnimator = ValueAnimator.ofFloat(MAX_BRIGHTNESS, MIN_BRIGHTNESS);
-        brightnessAnimator.setDuration(ANIMATION_DURATION);
-        brightnessAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        brightnessAnimator.setRepeatMode(ValueAnimator.REVERSE);
-        brightnessAnimator.setInterpolator(new LinearInterpolator());
-        brightnessAnimator.addUpdateListener(animation -> {
-            float brightness = (float) animation.getAnimatedValue();
-            int animatedColor = Color.HSVToColor(alpha, new float[]{baseHue, 1f, brightness});
-            animatedGradientDrawable.setColors(new int[]{startingColor, animatedColor});
-            rootView.setBackground(animatedGradientDrawable);
-        });
-        brightnessAnimator.start();
+//
+//        ValueAnimator brightnessAnimator = ValueAnimator.ofFloat(MAX_BRIGHTNESS, MIN_BRIGHTNESS);
+//        brightnessAnimator.setDuration(ANIMATION_DURATION);
+//        brightnessAnimator.setRepeatCount(ValueAnimator.INFINITE);
+//        brightnessAnimator.setRepeatMode(ValueAnimator.REVERSE);
+//        brightnessAnimator.setInterpolator(new LinearInterpolator());
+//        brightnessAnimator.addUpdateListener(animation -> {
+//            float brightness = (float) animation.getAnimatedValue();
+//            int animatedColor = Color.HSVToColor(alpha, new float[]{baseHue, 1f, brightness});
+//            animatedGradientDrawable.setColors(new int[]{startingColor, animatedColor});
+//            rootView.setBackground(animatedGradientDrawable);
+//        });
+//        brightnessAnimator.start();
     }
 
     /**

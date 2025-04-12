@@ -24,6 +24,7 @@ import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.R;
+import com.soundpaletteui.Views.EmojiBackgroundView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +36,6 @@ public class SearchFragment extends Fragment {
     private List<UserModel> userList;
     private UserModel user;
     private UserClient userClient;
-
     private RadioGroup searchOptionsGroup;
     private EditText inputSearch;
 
@@ -55,11 +55,15 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        // Inflate layout wrapped in a FrameLayout with EmojiBackgroundView
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
 
-        // Apply dark mode gradient background
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
         UISettings.applyBrightnessGradientBackground(rootView, 330f, isDarkMode);
+
+        EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
+        emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
+        emojiBackground.setAlpha(0.25f);
 
         initComponents(rootView);
 
@@ -108,11 +112,9 @@ public class SearchFragment extends Fragment {
         } else if (selectedId == R.id.searchCaptionsRadio) {
             Log.d("SearchFragment", "Search Captions for: " + searchText);
             replacePostFragment("captions", searchText);
-        } else {
         }
     }
 
-    // Pauses the media player when user leaves the fragment
     @Override
     public void onPause() {
         super.onPause();

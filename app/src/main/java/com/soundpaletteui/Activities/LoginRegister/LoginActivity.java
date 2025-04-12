@@ -21,6 +21,7 @@ import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import pl.droidsonroids.gif.GifImageView;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.os.Handler;
 
 import java.util.Objects;
 
@@ -43,6 +44,9 @@ public class LoginActivity extends AppCompatActivity {
     FrameLayout frameLogin;
     GifImageView gifLogin;
     TextView loginText;
+    private com.soundpaletteui.Views.EmojiBackgroundView emojiBackground;
+    private final Handler patternHandler = new Handler();
+    private Runnable patternRunnable;
 
     /**
      * Sets up the activity and initializes UI.
@@ -55,6 +59,9 @@ public class LoginActivity extends AppCompatActivity {
         getCredentials();
         initComponents();
         animateShadow();
+        emojiBackground = findViewById(R.id.emojiBackground);
+        startPatternLoop();
+
     }
 
     private void getCredentials(){
@@ -104,6 +111,34 @@ public class LoginActivity extends AppCompatActivity {
         });
         offsetAnimator.start();
     }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        patternHandler.removeCallbacks(patternRunnable);
+    }
+
+    private void startPatternLoop() {
+        patternRunnable = new Runnable() {
+            @Override
+            public void run() {
+                // Randomly switch between 0 (GRID), 1 (SPIRAL), and 2 (RADIAL)
+                int[] patterns = {
+                        com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_GRID
+//                        , com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_SPIRAL,
+//                        com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_RADIAL
+                };
+                int randomPattern = patterns[(int)(Math.random() * patterns.length)];
+                if (emojiBackground != null) {
+                    emojiBackground.setPatternType(randomPattern);
+                }
+                // Re-run after seconds
+                patternHandler.postDelayed(this, 1100);
+            }
+        };
+
+        patternHandler.post(patternRunnable); // Initial run
+    }
+
 
     /**
      * Initializes UI components and listeners for login/registration.
@@ -112,10 +147,8 @@ public class LoginActivity extends AppCompatActivity {
         usernameBox = findViewById(R.id.username);
         passwordBox = findViewById(R.id.password);
         frameRegister = findViewById(R.id.frame_register);
-        gifRegister = findViewById(R.id.gif_register);
         registerText = findViewById(R.id.register_text);
         frameLogin = findViewById(R.id.frame_login);
-        gifLogin = findViewById(R.id.gif_login);
         loginText = findViewById(R.id.login_text);
         frameRegister.setOnClickListener(v -> register());
         frameLogin.setOnClickListener(v -> {

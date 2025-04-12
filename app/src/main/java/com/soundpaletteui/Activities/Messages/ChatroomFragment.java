@@ -15,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,6 +30,7 @@ import com.soundpaletteui.Infrastructure.Models.Chat.ChatMessageModel;
 import com.soundpaletteui.Infrastructure.Models.Chat.NewMessageModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
+import com.soundpaletteui.Views.EmojiBackgroundView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,11 +48,9 @@ public class ChatroomFragment extends Fragment {
     private Button btnSend, editChatroomButton, leaveChatroomButton;
     private UserModel user;
     private UserClient userClient;
-    private int userId;
     private String username;
     private ChatMessageAdapter adapter;
     private List<ChatMessageModel> messageList = new ArrayList<>();
-
     private final ChatClient messageClient = SPWebApiRepository.getInstance().getChatClient();
 
     public ChatroomFragment() {}
@@ -73,15 +73,19 @@ public class ChatroomFragment extends Fragment {
         }
     }
 
-    // Inflates the layout, applies a brightness gradient background, and initializes UI components.
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        // Inflate layout wrapped in a FrameLayout with EmojiBackgroundView
         View rootView = inflater.inflate(R.layout.fragment_chatroom, container, false);
 
-        // Apply brightness gradient background similarly to MessageFragment.
+        // Get and set emoji background (using a radial pattern)
+        EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
+        emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
+        emojiBackground.setAlpha(0.25f);
+
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
         UISettings.applyBrightnessGradientBackground(rootView, 225f, isDarkMode);
 
@@ -90,15 +94,12 @@ public class ChatroomFragment extends Fragment {
         recyclerView = rootView.findViewById(R.id.recyclerViewMessages);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // Set the Chatroom Name
         chatroomNameDisplay = rootView.findViewById(R.id.chatroomName);
         chatroomNameDisplay.setText(chatRoomName);
 
-        // Set a ChatMessageAdapter for each message in messageList
         adapter = new ChatMessageAdapter(messageList);
         recyclerView.setAdapter(adapter);
 
-        // Action for sending a message to API Server
         editTextMessage = rootView.findViewById(R.id.editTextMessage);
         btnSend = rootView.findViewById(R.id.btnSend);
         btnSend.setOnClickListener(v -> {
@@ -109,33 +110,28 @@ public class ChatroomFragment extends Fragment {
             }
         });
 
-        // Action for "Edit Chatroom"
         editChatroomButton = rootView.findViewById(R.id.editChatroomButton);
         editChatroomButton.setOnClickListener(v -> {
-            // Open the chatroom settings
             EditChatroomFragment editChatroomFragment = EditChatroomFragment.newInstance(chatRoomId);
-
-            // Replace the fragment with the editChatroomFragment
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             Navigation.replaceFragment(fragmentManager, editChatroomFragment, "EDIT_CHATROOM_FRAGMENT", R.id.mainScreenFrame);
         });
 
         new LoadMessagesTask().execute();
+
         return rootView;
     }
 
-    // Initializes views and loads user data.
     private void initComponents(View view) {
         user = AppSettings.getInstance().getUser();
         userClient = SPWebApiRepository.getInstance().getUserClient();
         if (user != null) {
             username = user.getUsername();
         } else {
-            Log.e("MessageFragment", "User is null. Cannot initialize properly.");
+            Log.e("ChatroomFragment", "User is null. Cannot initialize properly.");
         }
     }
 
-    // AsyncTask to load all messages from the API Server.
     private class LoadMessagesTask extends AsyncTask<Void, Void, List<ChatMessageModel>> {
         @Override
         protected List<ChatMessageModel> doInBackground(Void... voids) {
@@ -156,7 +152,6 @@ public class ChatroomFragment extends Fragment {
         }
     }
 
-    // AsyncTask to send a message via the API Server.
     private class SendMessageTask extends AsyncTask<String, Void, Boolean> {
         @Override
         protected Boolean doInBackground(String... params) {

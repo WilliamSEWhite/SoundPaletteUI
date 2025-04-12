@@ -1,21 +1,31 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Emoji Background Layer -->
+    <com.soundpaletteui.Views.EmojiBackgroundView
+        android:id="@+id/emojiBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.Messages.MessageFragment"
     android:orientation="vertical"
-    android:background="@drawable/background_dark_blue">
+    android:background="@android:color/transparent">
 
     <!-- Edit Chatroom and Leave Chatroom Buttons -->
     <TextView
         android:id="@+id/chatroomName"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:background="@drawable/white_translucency_gradient_square"
+        android:background="@drawable/white_translucency_gradient_horizontal_chattab"
         android:gravity="center"
         android:text="\@USERNAME"
-        android:textColor="#3937D8"
+        android:textColor="#012E49"
         android:textSize="20dp"
         android:textStyle="bold" />
 
@@ -103,6 +113,7 @@
             android:textSize="10dp"
             android:textColor="@android:color/white" />
 
+
     </LinearLayout>
 
-</LinearLayout>
+</LinearLayout></FrameLayout>

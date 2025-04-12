@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Emoji Background Layer -->
+    <com.soundpaletteui.Views.EmojiBackgroundView
+        android:id="@+id/emojiBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+<LinearLayout
     android:id="@+id/root_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/white_translucency_gradient_vertical"
+    android:background="@android:color/transparent"
     tools:context=".Activities.Trending.SearchFragment">
 
     <LinearLayout
@@ -45,7 +54,7 @@
             android:background="@android:color/transparent"
             android:padding="15dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/navigation_search_24"/>
+            android:src="@drawable/navigation_search_24" />
     </LinearLayout>
 
     <!-- Replace CheckBoxes with RadioGroup -->
@@ -107,3 +116,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </LinearLayout>
+</FrameLayout>

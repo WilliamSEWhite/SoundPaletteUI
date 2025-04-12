@@ -6,26 +6,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
-import com.soundpaletteui.Infrastructure.Utilities.UISettings;
-import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.R;
+import com.soundpaletteui.Views.EmojiBackgroundView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,30 +37,35 @@ public class MessageFragment extends Fragment {
     private int userId;
     private String username;
     private RecyclerView messagesRecyclerView;
-    private ImageButton createChatroomButton;
+    private View createChatroomButton;
     private ArrayList<ChatroomModel> allChatrooms = new ArrayList<>();
     private final ChatClient messageClient = SPWebApiRepository.getInstance().getChatClient();
-
-    public MessageFragment() {}
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_message, container, false);
+
+        // Get and configure the emoji background
+        EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
+        emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
+        emojiBackground.setAlpha(0.2f);
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
         UISettings.applyBrightnessGradientBackground(rootView, 240f, isDarkMode);
 
         initComponents(rootView);
+
         messagesRecyclerView = rootView.findViewById(R.id.recyclerViewMessages);
         messagesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
         createChatroomButton = rootView.findViewById(R.id.createChatroomButton);
         createChatroomButton.setOnClickListener(v -> {
             NewChatroomFragment newChatroomFragment = NewChatroomFragment.newInstance();
-            FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
+            FragmentActivity activity = (FragmentActivity) v.getContext();
+            FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.mainScreenFrame, newChatroomFragment);
             transaction.addToBackStack(null);
             transaction.commit();
