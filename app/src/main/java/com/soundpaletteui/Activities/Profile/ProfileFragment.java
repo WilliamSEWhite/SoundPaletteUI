@@ -17,15 +17,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.FileClient;
-import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
+import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
+import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
+import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
+
 import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
+
+import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
 import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;

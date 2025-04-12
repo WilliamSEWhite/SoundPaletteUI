@@ -1,4 +1,4 @@
-package com.soundpaletteui.Infrastructure.ApiClients;
+package com.soundpaletteui.SPApiServices.ApiClients;
 
 import android.content.Context;
 import android.net.Uri;

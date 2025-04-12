@@ -20,7 +20,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
-import com.soundpaletteui.Infrastructure.ApiClients.FileClient;
+import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
 import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.R;
 

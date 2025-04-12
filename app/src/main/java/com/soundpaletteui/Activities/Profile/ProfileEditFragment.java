@@ -42,11 +42,13 @@ import com.bumptech.glide.Glide;
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.TagRowAdapter;
-import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.FileClient;
-import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
-import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
+
+import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
+import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
+import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+
 import com.soundpaletteui.Infrastructure.ApiEndpoints.FileApiEndpoints;
 import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
@@ -100,7 +102,7 @@ public class ProfileEditFragment extends Fragment {
     private ArrayList<LocationModel> countries;
     private TagClient tagClient;
     private RecyclerView recyclerView;
-    private UserTagAdapter adapter;
+    private TagBasicAdapter adapter;
     private List<TagModel> tagList;
     private Button btnAddTags;
     private ImageButton btnEditImage;

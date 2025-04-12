@@ -36,9 +36,10 @@ import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.FileClient;
-import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
+import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
 import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.LocationModel;

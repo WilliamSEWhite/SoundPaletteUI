@@ -1,17 +1,9 @@
-package com.soundpaletteui.Infrastructure;
+package com.soundpaletteui.SPApiServices;
 
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.soundpaletteui.Infrastructure.ApiClients.ChatClient;
-import com.soundpaletteui.Infrastructure.ApiClients.FileClient;
-import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
-import com.soundpaletteui.Infrastructure.ApiClients.LoginRegisterClient;
-import com.soundpaletteui.Infrastructure.ApiClients.PostClient;
-import com.soundpaletteui.Infrastructure.ApiClients.PostInteractionClient;
-import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
 import com.soundpaletteui.SPApiServices.ApiClients.LoginRegisterClient;
@@ -19,6 +11,7 @@ import com.soundpaletteui.SPApiServices.ApiClients.PostClient;
 import com.soundpaletteui.SPApiServices.ApiClients.PostInteractionClient;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
