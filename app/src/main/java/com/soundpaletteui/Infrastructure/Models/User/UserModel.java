@@ -33,7 +33,6 @@ public class UserModel {
         this.UserInfo = userInfo;
     }
 
-
     public UserModel(int userId, String username, String password){
         this.UserId = userId;
         this.Username = username;
