@@ -51,7 +51,8 @@
                     android:padding="5dp"
                     android:paddingStart="10dp"
                     android:hint="Enter a caption"
-                    android:textColor="#BEC0BE"
+                    android:maxLength="30"
+                    android:textColor="#FFFFFF"
                     android:textColorHint="#BEC0BE"
                     android:background="@drawable/background_transparent_rec3"/>
             </LinearLayout>
@@ -157,6 +158,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:padding="5dp"
+                        android:orientation="vertical"
                         android:background="@drawable/background_transparent_rec3"/>
                 </LinearLayout>
             </LinearLayout>
@@ -215,6 +217,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:padding="5dp"
+                        android:orientation="vertical"
                         android:background="@drawable/background_transparent_rec3"/>
                 </LinearLayout>
             </LinearLayout>

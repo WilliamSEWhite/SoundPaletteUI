@@ -12,24 +12,35 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
+import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
+import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
+import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
+
+import com.soundpaletteui.Infrastructure.Models.FileModel;
+import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
+import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
+import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
+
+import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
+import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
+import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.R;
+import com.soundpaletteui.Views.EmojiBackgroundView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -42,11 +53,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
+import androidx.recyclerview.widget.LinearSnapHelper;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
+import retrofit2.Call;
 
 // Displays and manages a user's profile, including posts and saved content.
 public class ProfileFragment extends Fragment {
@@ -73,13 +85,14 @@ public class ProfileFragment extends Fragment {
     private LinearLayoutManager linearLayoutManager;
     private TagClient tagClient;
     private RecyclerView recyclerView;
-    private UserTagAdapter adapter;
+    private TagBasicAdapter adapter;
     private List<TagModel> tagList;
     private Handler tagScrollHandler;
     private int scrollPosition;
     private TextView profileFollowersDisplay;
     private TextView profileFollowingDisplay;
-
+    private FileClient fileClient;
+    private ImageView imageView;
     private boolean darkMode;
     private String selectedTab = "posts";
     private SharedPreferences.OnSharedPreferenceChangeListener darkModeListener =
@@ -121,7 +134,12 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        // Inflate layout wrapped in a FrameLayout with EmojiBackgroundView
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+
+        // Get and configure the emoji background (using a spiral pattern here)
+        EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
+        emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
 
         final View rootLayout = rootView.findViewById(R.id.root_layout);
         darkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
@@ -143,7 +161,9 @@ public class ProfileFragment extends Fragment {
         gifSaved = rootView.findViewById(R.id.gif_saved);
         textSaved = rootView.findViewById(R.id.savedToggle);
 
-        // Assign username
+        imageView = rootView.findViewById(R.id.profilePicture);
+
+                // Assign username
         usernameDisplay = rootView.findViewById(R.id.profileUsername);
         usernameDisplay.setText(user.getUsername());
 
@@ -152,8 +172,8 @@ public class ProfileFragment extends Fragment {
         profileFollowersDisplay = rootView.findViewById(R.id.profileFollowersDisplay);
         profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
 
-        btnEditTags.setBackgroundColor(Color.parseColor("#FFD700")); // Golden Yellow
-        btnEditSaved.setBackgroundColor(Color.parseColor("#FFD700")); // Golden Yellow
+        btnEditTags.setBackgroundColor(Color.parseColor("#FFD700"));
+        btnEditSaved.setBackgroundColor(Color.parseColor("#FFD700"));
 
         getProfileBio();
 
@@ -163,7 +183,9 @@ public class ProfileFragment extends Fragment {
 
         // Post Button Actions
         framePosts.setOnClickListener(v -> {
-            selectedTab = "posts"; // update selected tab
+            emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
+
+            selectedTab = "posts";
             try {
                 final GifDrawable postsGifDrawable = (GifDrawable) gifPosts.getDrawable();
                 framePosts.getBackground().mutate().setAlpha(FULL_ALPHA);
@@ -195,7 +217,9 @@ public class ProfileFragment extends Fragment {
 
         // Saved Button Actions
         frameSaved.setOnClickListener(v -> {
-            selectedTab = "saved"; // update selected tab
+            emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
+
+            selectedTab = "saved";
             try {
                 final GifDrawable savedGifDrawable = (GifDrawable) gifSaved.getDrawable();
                 frameSaved.getBackground().mutate().setAlpha(FULL_ALPHA);
@@ -228,6 +252,7 @@ public class ProfileFragment extends Fragment {
 
         // Default view is the "posts" tab
         framePosts.performClick();
+        loadProfileImage();
         return rootView;
     }
 
@@ -258,6 +283,8 @@ public class ProfileFragment extends Fragment {
         tagClient = SPWebApiRepository.getInstance().getTagClient();
         tagList = new ArrayList<>();
 
+        fileClient = SPWebApiRepository.getInstance().getFileClient();
+
         btnEditTags = view.findViewById(R.id.editTagsButton);
         btnEditSaved = view.findViewById(R.id.editSavedButton);
 
@@ -271,6 +298,12 @@ public class ProfileFragment extends Fragment {
         tagScrollHandler = new Handler();
 
         getTags();
+    }
+
+    /** loads the profile image **/
+    private void loadProfileImage() {
+        Call<FileModel> call = fileClient.getProfileImage(user.getUserId());
+        ImageUtils.getProfileImage(user.getUserId(), call, imageView, requireContext());
     }
 
     /** move to edit profile fragment */
@@ -346,8 +379,7 @@ public class ProfileFragment extends Fragment {
             ArrayList<TagModel> selectedTags = getArguments().getParcelableArrayList("selectedTags");
 
             if (selectedTags != null && !selectedTags.isEmpty()) {
-                // Update the RecyclerView with the new tag list
-                adapter = new UserTagAdapter(selectedTags, getContext());
+                adapter = new TagBasicAdapter(selectedTags, getContext());
                 recyclerView.setAdapter(adapter);
                 adapter.notifyDataSetChanged();
             } else {
@@ -363,7 +395,7 @@ public class ProfileFragment extends Fragment {
                 List<TagModel> tags = tagClient.getUserTags(user.getUserId());
                 requireActivity().runOnUiThread(() -> {
                     tagList = tags;
-                    adapter = new UserTagAdapter((ArrayList<TagModel>) tagList, requireActivity());
+                    adapter = new TagBasicAdapter((ArrayList<TagModel>) tagList, requireActivity());
                     recyclerView.setAdapter(adapter);
                     recyclerView.setNestedScrollingEnabled(false);
                     SnapHelper snapHelper = new LinearSnapHelper();
@@ -394,5 +426,11 @@ public class ProfileFragment extends Fragment {
             textView.setTypeface(null, Typeface.NORMAL);
             textView.setTextSize(18);
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        MediaPlayerManager.getInstance().release();
     }
 }

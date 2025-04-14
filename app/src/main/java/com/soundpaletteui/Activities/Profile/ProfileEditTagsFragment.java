@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -15,12 +14,11 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.soundpaletteui.Infrastructure.Adapters.TagSelectAdapter;
-import com.soundpaletteui.Infrastructure.Adapters.UserTagAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.TagClient;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;

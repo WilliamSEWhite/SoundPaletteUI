@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/background_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Emoji Background View -->
+    <com.soundpaletteui.Views.EmojiBackgroundView
+        android:id="@+id/emojiBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -87,25 +97,14 @@
         <FrameLayout
             android:id="@+id/frame_register"
             android:layout_width="120dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_margin="10dp"
-            android:background="@android:color/transparent"
             android:clickable="true"
             android:focusable="true"
+            android:background="@drawable/login_buttons"
+
             android:foreground="?android:attr/selectableItemBackgroundBorderless">
 
-            <pl.droidsonroids.gif.GifImageView
-                android:id="@+id/gif_register"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:alpha="0.5"
-                android:src="@drawable/register_login_button"
-                android:shadowColor="@color/white"
-                android:shadowDx="3"
-                android:shadowDy="3"
-                android:shadowRadius="4"
-                />
 
             <TextView
                 android:id="@+id/register_text"
@@ -113,7 +112,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Register"
-                android:textColor="@android:color/white"
+                android:textColor="#DBC92D"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </FrameLayout>
@@ -121,24 +120,15 @@
         <FrameLayout
             android:id="@+id/frame_login"
             android:layout_width="120dp"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
             android:layout_margin="10dp"
             android:clickable="true"
+
             android:focusable="true"
-            android:background="@android:color/transparent"
+            android:background="@drawable/login_buttons"
 
             android:foreground="?android:attr/selectableItemBackgroundBorderless">
 
-
-            <pl.droidsonroids.gif.GifImageView
-                android:id="@+id/gif_login"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:alpha="0.5"
-                android:src="@drawable/register_login_button"
-
-                />
 
             <TextView
                 android:id="@+id/login_text"
@@ -146,12 +136,12 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Login"
-                android:textColor="@android:color/white"
+                android:textColor="#BDA906"
                 android:textSize="18sp"
-                android:textStyle="bold"
-                />
+                android:textStyle="bold" />
         </FrameLayout>
 
     </LinearLayout>
 
 </LinearLayout>
+</FrameLayout>

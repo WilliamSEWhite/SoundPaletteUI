@@ -7,7 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="16dp"
-        android:background="@drawable/background_transparent_round3"
+        android:background="@drawable/white_translucency_gradient_horizontal_chattab"
         android:orientation="vertical"
         android:gravity="center_vertical">
 
@@ -16,10 +16,14 @@
             android:id="@+id/chatroomName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:shadowColor="@color/black"
+            android:shadowDx="2"
+            android:shadowDy="1"
             android:text="Chatroom Name"
+            android:textColor="#8CB7D3"
             android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:layout_marginEnd="8dp"/>
+            android:textStyle="bold" />
 
         <!-- Last Message -->
         <TextView
@@ -28,7 +32,11 @@
             android:layout_height="wrap_content"
             android:text="Last message here"
             android:textSize="14sp"
-            android:textColor="#3C3C3C"/>
+            android:textColor="@color/white"
+            android:shadowColor="@color/black"
+            android:shadowDx="2"
+            android:shadowDy="1"
+            />
 
         <!-- Last Message Date -->
         <TextView
@@ -36,9 +44,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="01/01/2000"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:textColor="#0D232E"/>
+            android:textSize="8sp"
+            android:textColor="@color/black"
+            android:shadowColor="@color/black"
+            android:shadowDx="2"
+            android:shadowDy="1"
+            android:textStyle="italic"/>
 
     </LinearLayout>
 </LinearLayout>

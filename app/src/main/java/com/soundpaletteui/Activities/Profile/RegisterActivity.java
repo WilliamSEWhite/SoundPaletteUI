@@ -3,6 +3,7 @@ package com.soundpaletteui.Activities.Profile;
 import static java.util.Calendar.getInstance;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -34,14 +36,19 @@ import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
-import com.soundpaletteui.Infrastructure.ApiClients.LocationClient;
-import com.soundpaletteui.Infrastructure.ApiClients.UserClient;
+
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
+import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
+import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.LocationModel;
-import com.soundpaletteui.Infrastructure.Models.UserInfoModel;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
-import com.soundpaletteui.Infrastructure.Models.UserProfileModel;
-import com.soundpaletteui.Infrastructure.SPWebApiRepository;
+import com.soundpaletteui.Infrastructure.Models.User.UserInfoModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import java.io.File;
@@ -83,6 +90,8 @@ public class RegisterActivity extends AppCompatActivity {
     private GifImageView gifSave;
     private TextView textSave;
     private UserProfileModel userProfileModel;
+    private ActivityResultLauncher<Intent> pickImageLauncher;
+    private FileClient fileClient;
     /**
      * Sets up the layout and calls initialization.
      */
@@ -93,6 +102,21 @@ public class RegisterActivity extends AppCompatActivity {
         View rootView = findViewById(R.id.root_layout);
 //        UISettings.applyBrightnessGradientBackground(rootView, 50f);
         initComponents();
+        // launches the image picker
+        pickImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if(result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
+                        imageUri = result.getData().getData();
+                        if(profileImage != null) {
+                            //profileImage.setImageURI(imageUri);
+                            displayImage(imageUri);
+                        } else {
+                            Log.e("ProfileEditFragment", "imageView is null");
+                        }
+                    }
+                }
+        );
     }
 
     /** initializes components in the UI */
@@ -129,15 +153,16 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
         profileImage = findViewById(R.id.registerProfilePicture);
-        profileImage.setColorFilter(Color.WHITE);
+        fileClient = SPWebApiRepository.getInstance().getFileClient();
         location = findViewById(R.id.registerLocation);
-        //btnClear = findViewById(R.id.btnClear);
+
         btnSave = findViewById(R.id.btnSave);
 
         frameSave = findViewById(R.id.frame_save);
         gifSave = findViewById(R.id.gif_save);
         textSave = findViewById(R.id.save_text);
-        profileImage.setOnClickListener(v -> showImageSourceDialog());
+
+        profileImage.setOnClickListener(v -> editProfileImage());
         frameSave.setOnClickListener(v -> {
             try {
                 final GifDrawable saveGif = (GifDrawable) gifSave.getDrawable();
@@ -150,6 +175,7 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(RegisterActivity.this, "Error with Save animation", Toast.LENGTH_SHORT).show();
             }
             saveUserInfo();
+            uploadProfileImage();
         });
 
         // get data from previous activity
@@ -161,96 +187,19 @@ public class RegisterActivity extends AppCompatActivity {
         userProfileModel = new UserProfileModel(user.getUserId(), "I haven't updated my bio yet...", "/dev/null");
     }
 
-    /** shows a dialog with options Camera or Gallery */
-    private void showImageSourceDialog() {
-        String[] options = {"Camera", "Gallery"};
-        new AlertDialog.Builder(this)
-                .setTitle("Select image source")
-                .setItems(options, (dialog, which) -> {
-                    if (which == 0) {
-                        try {
-                            checkCameraPermissions();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    else {
-                        pickImageFromGallery();
-                    }
-                })
-                .show();
+    /** upload profile image */
+    private void uploadProfileImage() {
+        ImageUtils.uploadProfileImage(imageUri, user.getUserId(), fileClient, this);
     }
 
-    /** launch intent to choose image from gallery */
-    private void pickImageFromGallery() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        galleryLauncher.launch(galleryIntent);
+    /** edit the profile image */
+    private void editProfileImage() {
+        ImageUtils.pickImageFromGallery(this, pickImageLauncher);
     }
-
-    /** launch gallery to choose image */
-    private final ActivityResultLauncher<Intent> galleryLauncher =
-            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-                if(result.getResultCode() == RESULT_OK && result.getData() != null) {
-                    imageUri = result.getData().getData();
-                    loadImage();
-                }
-            });
 
     /** loads the image */
     private void loadImage() {
         Glide.with(this).load(imageUri).into(profileImage);
-    }
-
-    /** checks camera permissions */
-    private void checkCameraPermissions() throws IOException {
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) !=
-                PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 101);
-        }
-        else {
-            takePicture();
-        }
-    }
-
-    /** takes a picture with the camera - incomplete */
-    private void takePicture() throws IOException {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            File photo = createImageFile();
-            if(photo != null) {
-                imageUri = FileProvider.getUriForFile(this,
-                        "com.soundpaletteui.fileprovider", photo);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-//                cameraLauncher.launch(takePictureIntent);
-            }
-        }
-    }
-
-    /** creates the image file */
-    private File createImageFile() throws IOException {
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        File storageDir = getExternalFilesDir(null);
-        File image = File.createTempFile("JPEG_" + timeStamp, ".jpg", storageDir);
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
-    /** checks camera permissions */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if(requestCode == 101 && grantResults.length > 0 &&
-                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            try {
-                takePicture();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        else {
-            Toast.makeText(this, "Camera permission denied", Toast.LENGTH_SHORT).show();
-        }
     }
 
     /** initialize Spinner with list of countries */
@@ -269,12 +218,6 @@ public class RegisterActivity extends AppCompatActivity {
         location.setSelection(0);                              //retain previously selected value
     }
 
-    /** saves user profile - calls save async method */
-    /* not needed **
-    private void saveUserProfile(){
-        new UpdateUserInfoAsync().execute();
-    }*/
-
     /** save information to database */
     private void saveUserInfo() {
         // write saving code here
@@ -291,23 +234,20 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    /** Handles the gallery image selection result */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            imageUri = data.getData();
-            displayImage(imageUri);
-        }
-    }
-
     /** displays the image in the register screen */
     private void displayImage(Uri imageUri) {
-        Glide.with(this)
-                .load(imageUri)
-                .placeholder(R.drawable.baseline_person_150)    // placeholder image
-                .error(R.drawable.baseline_person_150)          // use placeholder image if error
-                .into(profileImage);
+        //Log.d("RegisterActivity", "Image Uri: " + imageUri);
+        if (imageUri != null) {
+            Glide.with(this)
+                    .load(imageUri)
+                    .placeholder(R.drawable.baseline_person_150)
+                    .error(R.drawable.baseline_person_150)
+                    .into(profileImage);
+        } else {
+            Glide.with(this)
+                    .load(R.drawable.baseline_person_150)
+                    .into(profileImage);
+        }
     }
 
     /** gets user data */
@@ -375,14 +315,6 @@ public class RegisterActivity extends AppCompatActivity {
                     UserInfoModel newUserInfo = new UserInfoModel(user.getUserId(),
                             selectedLocation.getLocationId(), email, phone, dob, dateCreated);
                     appSettings.setUser(userClient.updateUserInfo(appSettings.getUserId(), newUserInfo));
-                    System.out.println("--------------");
-                    System.out.println("location Id: " + selectedLocation.getLocationId());
-                    System.out.println("user Id: " + user.getUserId());
-                    System.out.println("email: " + email);
-                    System.out.println("phone: " + phone);
-                    System.out.println("dob: " + dob);
-                    System.out.println("dateCreated: " + dateCreated);
-                    System.out.println("--------------");
                     userClient.updateUserProfile(userProfileModel);
                 }
                 else {

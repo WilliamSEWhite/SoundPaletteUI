@@ -1,13 +1,34 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Emoji Background Layer -->
+    <com.soundpaletteui.Views.EmojiBackgroundView
+        android:id="@+id/emojiBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.Messages.MessageFragment"
     android:orientation="vertical"
-    android:background="@drawable/background_dark_blue">
+    android:background="@android:color/transparent">
 
     <!-- Edit Chatroom and Leave Chatroom Buttons -->
+    <TextView
+        android:id="@+id/chatroomName"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@drawable/white_translucency_gradient_horizontal_chattab"
+        android:gravity="center"
+        android:text="\@USERNAME"
+        android:textColor="#012E49"
+        android:textSize="20dp"
+        android:textStyle="bold" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
@@ -38,44 +59,10 @@
             </Button>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:layout_weight="2">
-
-            <Button
-                android:id="@+id/leaveChatroomButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="LEAVE"
-                android:textSize="8dp"
-                android:background="@drawable/frosted_glass_button">
-            </Button>
-        </LinearLayout>
     </LinearLayout>
 
-    <!-- Poster's Profile -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="75dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/background_transparent_round2">
 
-        <TextView
-            android:id="@+id/chatroomName"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="\@USERNAME"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="20dp"
-            android:textStyle="bold" />
-    </LinearLayout>
+
 
     <!-- RecyclerView to display messages -->
     <androidx.recyclerview.widget.RecyclerView
@@ -94,7 +81,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/background_transparent_round2"
+        android:background="@android:color/transparent"
         android:orientation="horizontal"
         android:padding="12dp">
 
@@ -102,28 +89,31 @@
             android:id="@+id/editTextMessage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
             android:layout_marginTop="5dp"
+            android:layout_marginRight="10dp"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/background_transparent_rec1"
+            android:layout_weight="1"
+            android:background="@drawable/white_translucency_gradient_login"
             android:hint="Type a message..."
-            android:minHeight="28dp"
             android:maxHeight="96dp"
+            android:minHeight="28dp"
             android:padding="8dp"
             android:textColor="@android:color/white"
             android:textColorHint="@android:color/darker_gray" />
 
         <Button
             android:id="@+id/btnSend"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="72dp"
+            android:layout_height="31dp"
             android:layout_gravity="center"
             android:background="@drawable/frosted_glass_button"
+
             android:text="Send"
+            android:textSize="10dp"
             android:textColor="@android:color/white" />
+
 
     </LinearLayout>
 
-</LinearLayout>
+</LinearLayout></FrameLayout>

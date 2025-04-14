@@ -31,6 +31,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Email"
                 android:layout_gravity="start"
                 android:paddingStart="5dp"/>
 
@@ -38,9 +39,8 @@
                 android:id="@+id/registerEmail"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="someone@youremail.com"
-                android:minHeight="48dp"
-                android:paddingTop="10dp" />
+                android:paddingTop="10dp"
+                android:hint="someone@youremail.com"/>
         </LinearLayout>
 
         <LinearLayout
@@ -50,20 +50,19 @@
 
             android:orientation="vertical"
             android:background="@drawable/rounded_corners">
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Phone"
-                android:layout_gravity="start" />
+                android:layout_gravity="start"
+                android:paddingStart="5dp"/>
 
             <EditText
                 android:id="@+id/registerPhone"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:hint="###-###-####"
-                android:minHeight="48dp"
-                android:paddingTop="10dp" />
+                android:paddingTop="10dp"
+                android:hint="###-###-####"/>
 
         </LinearLayout>
         <LinearLayout
@@ -109,21 +108,18 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center">
-
             <ImageView
                 android:id="@+id/registerProfilePicture"
                 android:layout_width="@dimen/profile_pic"
-                android:layout_height="@dimen/profile_pic"
+                android:alpha="1"
 
+                android:layout_height="@dimen/profile_pic"
                 android:layout_margin="@dimen/edit_text_margin"
-                android:alpha="0.5"
+                android:src="@drawable/baseline_person_100"
                 android:background="@drawable/posts_profile"
-                android:clickable="true"
 
                 android:focusable="true"
-                android:src="@drawable/baseline_person_100"
-                app:tint="@color/white"
-                tools:ignore="SpeakableTextPresentCheck" />
+                android:clickable="true" />
         </LinearLayout>
         <Spinner
             android:id="@+id/registerLocation"

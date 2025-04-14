@@ -8,7 +8,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.soundpaletteui.Infrastructure.Models.UserProfileModelLite;
 import com.soundpaletteui.R;
 
 import java.util.List;
@@ -16,13 +15,13 @@ import java.util.List;
 public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.UserViewHolder> {
 
     public interface OnUserClickListener {
-        void onUserClick(UserProfileModelLite user);
+        void onUserClick(String user);
     }
 
-    private final List<UserProfileModelLite> users;
+    private final List<String> users;
     private final OnUserClickListener listener;
 
-    public UserSearchAdapter(List<UserProfileModelLite> users, OnUserClickListener listener) {
+    public UserSearchAdapter(List<String> users, OnUserClickListener listener) {
         this.users = users;
         this.listener = listener;
     }
@@ -37,7 +36,7 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
 
     @Override
     public void onBindViewHolder(@NonNull UserViewHolder holder, int position) {
-        UserProfileModelLite user = users.get(position);
+        String user = users.get(position);
         holder.bind(user);
     }
 
@@ -47,15 +46,15 @@ public class UserSearchAdapter extends RecyclerView.Adapter<UserSearchAdapter.Us
     }
 
     class UserViewHolder extends RecyclerView.ViewHolder {
-        private final TextView searchResultItem;
+        private final TextView usernameText;
 
         public UserViewHolder(@NonNull View itemView) {
             super(itemView);
-            searchResultItem = itemView.findViewById(R.id.searchResultItem);
+            usernameText = itemView.findViewById(R.id.searchResultItem);
         }
 
-        public void bind(final UserProfileModelLite user) {
-            searchResultItem.setText(user.getUsername());
+        public void bind(final String user) {
+            usernameText.setText(user);
             itemView.setOnClickListener(v -> listener.onUserClick(user));
         }
     }

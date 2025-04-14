@@ -1,6 +1,7 @@
 package com.soundpaletteui.Activities;
 
 import android.animation.ValueAnimator;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -21,12 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.widget.Button;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundpaletteui.Activities.Home.HomeFragment;
+import com.soundpaletteui.Activities.LoginRegister.LoginActivity;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
 import com.soundpaletteui.Activities.Posts.CreatePostFragment;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.Activities.Trending.SearchFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
-import com.soundpaletteui.Infrastructure.Models.UserModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
@@ -163,6 +165,15 @@ public class MainScreenActivity extends AppCompatActivity {
             recreate();
             return true;
         }
+        else if(id == R.id.log_out){
+            AppSettings.setUsernameValue(this, "");
+            AppSettings.setPasswordValue(this, "");
+
+            Intent intent = new Intent(MainScreenActivity.this, LoginActivity.class);
+            startActivity(intent); // Start the next activity
+            finish(); // Finish the current activity
+
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -184,8 +195,7 @@ public class MainScreenActivity extends AppCompatActivity {
         dialog.show();
 
         Button textPostButton = dialog.findViewById(R.id.create_text);
-        Button audioPostButton = dialog.findViewById(R.id.create_sound);
-        Button imagePostButton = dialog.findViewById(R.id.create_image);
+        Button mediaPostButton = dialog.findViewById(R.id.createMedia);
 
         textPostButton.setOnClickListener(v -> {
             dialog.dismiss();
@@ -193,15 +203,9 @@ public class MainScreenActivity extends AppCompatActivity {
             Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
             supportInvalidateOptionsMenu();
         });
-        audioPostButton.setOnClickListener(v -> {
+        mediaPostButton.setOnClickListener(v -> {
             dialog.dismiss();
-            CreatePostFragment createPostFragment = CreatePostFragment.newInstance(2);
-            Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
-            supportInvalidateOptionsMenu();
-        });
-        imagePostButton.setOnClickListener(v -> {
-            dialog.dismiss();
-            CreatePostFragment createPostFragment = CreatePostFragment.newInstance(3);
+            CreatePostFragment createPostFragment = CreatePostFragment.newInstance(-1);
             Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
             supportInvalidateOptionsMenu();
         });
@@ -256,6 +260,7 @@ public class MainScreenActivity extends AppCompatActivity {
         ColorStateList homeButtonTint = createColorStateList(findViewById(R.id.toolbar), 30f);
         binding.bottomNavigationView.setItemIconTintList(homeButtonTint);
         binding.bottomNavigationView.setItemTextColor(homeButtonTint);
+
     }
 
     // Updates the shadow effect on the selected bottom navigation item.

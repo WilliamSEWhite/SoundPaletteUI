@@ -1,7 +1,7 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@drawable/background_dark_teal">
 
     <TextView
         android:id="@+id/postTextDisplay"
@@ -9,6 +9,6 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:textSize="40sp"
-        android:textColor="#22B8D3"/>
+        android:textColor="#FFFFFF"/>
 </FrameLayout>
 

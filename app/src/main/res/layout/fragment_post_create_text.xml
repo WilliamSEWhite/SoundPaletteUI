@@ -85,7 +85,7 @@
             android:padding="5dp"
             android:textSize="12dp"
             android:hint="What did you want to say?"
-            android:textColor="#BEC0BE"
+            android:textColor="#FFFFFF"
             android:textColorHint="#BEC0BE"
             android:background="@drawable/background_transparent_rec3"/>
 

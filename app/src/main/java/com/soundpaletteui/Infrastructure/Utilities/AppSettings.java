@@ -1,6 +1,9 @@
 package com.soundpaletteui.Infrastructure.Utilities;
 
-import com.soundpaletteui.Infrastructure.Models.UserModel;
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 
 public class AppSettings {
     private static final AppSettings appSettingsInstance = new AppSettings();
@@ -9,6 +12,10 @@ public class AppSettings {
 
     public int getUserId() {
         return user.getUserId();
+    }
+
+    public String getUsername() {
+        return user.getUsername();
     }
 
     public UserModel getUser() {
@@ -24,4 +31,30 @@ public class AppSettings {
     }
 
     public AppSettings() { }
+
+    private static final String USERNAME = "username";
+    private static final String USERNAME_VALUE = "username_value";
+
+    public static String getUsernameValue(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(USERNAME, Context.MODE_PRIVATE);
+        return prefs.getString(USERNAME_VALUE, ""); // Default is false (light mode)
+    }
+
+    public static void setUsernameValue(Context context, String username) {
+        SharedPreferences prefs = context.getSharedPreferences(USERNAME, Context.MODE_PRIVATE);
+        prefs.edit().putString(USERNAME_VALUE, username).apply(); // Save the preference
+    }
+
+    private static final String PASSWORD = "password";
+    private static final String PASSWORD_VALUE = "password_value";
+
+    public static String getPasswordValue(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(PASSWORD, Context.MODE_PRIVATE);
+        return prefs.getString(PASSWORD_VALUE, ""); // Default is false (light mode)
+    }
+
+    public static void setPasswordValue(Context context, String password) {
+        SharedPreferences prefs = context.getSharedPreferences(PASSWORD, Context.MODE_PRIVATE);
+        prefs.edit().putString(PASSWORD_VALUE, password).apply(); // Save the preference
+    }
 }
