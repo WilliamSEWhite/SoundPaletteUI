@@ -6,13 +6,27 @@ public class PostContentModel {
     @SerializedName("PostTextContent")
 
     private String postTextContent;
+    @SerializedName("BackgroundColour")
+    private String backgroundColour;
 
-    public PostContentModel(String postTextContent) {
+    @SerializedName("FontColour")
+    private String fontColour;
+
+    public PostContentModel(String postTextContent, String backgroundColour, String fontColour) {
         this.postTextContent = postTextContent;
+        this.backgroundColour = backgroundColour;
+        this.fontColour = fontColour;
+
     }
 
     public String getPostTextContent(){
         return postTextContent;
+    }
+    public String getBackgroundColour(){
+        return backgroundColour;
+    }
+    public String getFontColour(){
+        return fontColour;
     }
 
 }
