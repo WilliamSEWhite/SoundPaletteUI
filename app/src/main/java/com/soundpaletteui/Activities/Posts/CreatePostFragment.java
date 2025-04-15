@@ -350,7 +350,7 @@ public class CreatePostFragment extends Fragment {
                     .setPositiveButton("OK", null)
                     .show();
         }
-        postContentModel = new PostContentModel(postContent);
+        postContentModel = new PostContentModel(postContent, backgroundHex, fontHex);
     }
 
     // Display a preview of the user's post
