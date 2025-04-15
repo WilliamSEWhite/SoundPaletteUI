@@ -29,7 +29,11 @@ import com.soundpaletteui.Activities.Interactions.CommentBottomSheet;
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
 import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.TagUserAdapter;
+import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.SPApiServices.ApiClients.PostInteractionClient;
 import com.soundpaletteui.Infrastructure.Models.Post.PostModel;
@@ -40,6 +44,10 @@ import com.soundpaletteui.R;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private List<PostModel> postList;
@@ -134,6 +142,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             Navigation.replaceFragment(fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame);
         });
 
+        UserClient client = SPWebApiRepository.getInstance().getUserClient();;
+        UserModel user;
+        client.getUserByName(postUsername, new Callback<UserModel>() {
+            @Override
+            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+                UserModel user = response.body();
+                int userId = user.getUserId();
+                Log.d("PostAdapter", "UserId from body: " + userId);
+                ImageUtils.getProfileImage(userId,
+                        SPWebApiRepository.getInstance().getFileClient().getProfileImage(userId),
+                        holder.postersProfile, context);
+            }
+
+            @Override
+            public void onFailure(Call<UserModel> call, Throwable t) {
+                Log.e("PostAdapter", "Error retrieving UserModel object");
+            }
+        });
         holder.likeButton.setChecked(post.getIsLiked());
         holder.likeButton.setOnClickListener(v -> toggleLike(post, holder.likeButton.isChecked()));
 

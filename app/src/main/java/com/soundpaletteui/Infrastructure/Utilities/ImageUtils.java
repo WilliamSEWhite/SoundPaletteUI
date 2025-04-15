@@ -34,30 +34,31 @@ public class ImageUtils {
 
     /** upload profile image */
     public static void uploadProfileImage(Uri imageUri, int userId, FileClient fileClient, Context context) {
-        // upload to API server
-        new Thread(() -> {
-            Log.d("uploadProfileImage", "uploadProfileImage - userId: " + userId);
-            //fileClient.uploadImage(requireContext(), imageUri, user.getUserId());
-            File file = FileUtils.uri2File(context, imageUri, 1, userId);
-            FileModel fileModel = new FileModel(userId, file.getName(), 1, "https://my.fake.file");
+        if(imageUri != null) {
+            // upload to API server
+            new Thread(() -> {
+                Log.d("uploadProfileImage", "uploadProfileImage - userId: " + userId);
+                //fileClient.uploadImage(requireContext(), imageUri, user.getUserId());
+                File file = FileUtils.uri2File(context, imageUri, 1, userId);
+                FileModel fileModel = new FileModel(userId, file.getName(), 1, "https://my.fake.file");
 
-            fileClient.uploadImage(file, userId, fileModel.getFileTypeId(), fileModel.getFileUrl()).enqueue(new Callback<Integer>() {
-                @Override
-                public void onResponse(Call<Integer> call, Response<Integer> response) {
-                    if(response.isSuccessful()) {
-                        Log.d("uploadProfileImage", "Upload successful. File Id: " + response.body());
+                fileClient.uploadImage(file, userId, fileModel.getFileTypeId(), fileModel.getFileUrl()).enqueue(new Callback<Integer>() {
+                    @Override
+                    public void onResponse(Call<Integer> call, Response<Integer> response) {
+                        if (response.isSuccessful()) {
+                            Log.d("uploadProfileImage", "Upload successful. File Id: " + response.body());
+                        } else {
+                            Log.e("uploadProfileImage", "Server error: " + response.code());
+                        }
                     }
-                    else {
-                        Log.e("uploadProfileImage", "Server error: " + response.code());
-                    }
-                }
 
-                @Override
-                public void onFailure(Call<Integer> call, Throwable t) {
-                    Log.e("uploadProfileImage", "Upload failed", t);
-                }
-            });
-        }).start();
+                    @Override
+                    public void onFailure(Call<Integer> call, Throwable t) {
+                        Log.e("uploadProfileImage", "Upload failed", t);
+                    }
+                });
+            }).start();
+        }
     }
 
     /** get profile image */

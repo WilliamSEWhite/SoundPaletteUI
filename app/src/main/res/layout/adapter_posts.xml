@@ -19,8 +19,7 @@
             android:background="@drawable/white_translucency_gradient"
             android:padding="7dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/navigation_profile_24"
-            app:tint="@color/white" />
+            android:src="@drawable/navigation_profile_24" />
 
                 <!-- Poster's Username and Comments -->
                 <LinearLayout

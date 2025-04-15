@@ -2,6 +2,7 @@ package com.soundpaletteui.SPApiServices.ApiClients;
 
 import android.util.Log;
 
+import com.google.firebase.firestore.auth.User;
 import com.soundpaletteui.SPApiServices.ApiEndpoints.UserEndpoints;
 import com.soundpaletteui.Infrastructure.Models.User.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
@@ -28,6 +30,11 @@ public class UserClient {
         Call<UserModel> call = userEndpoints.getUser(id);
         Response<UserModel> response = call.execute();
         return response.body();
+    }
+
+    public void getUserByName(String userName, Callback<UserModel> callback) {
+        Call<UserModel> call = userEndpoints.getUserByName(userName);
+        call.enqueue(callback);
     }
 
     public UserModel updateUserInfo(int id, UserInfoModel userInfo) throws IOException {

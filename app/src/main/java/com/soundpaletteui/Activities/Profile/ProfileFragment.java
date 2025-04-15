@@ -1,8 +1,11 @@
 package com.soundpaletteui.Activities.Profile;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -46,6 +49,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatImageButton;
@@ -95,6 +99,8 @@ public class ProfileFragment extends Fragment {
     private ImageView imageView;
     private boolean darkMode;
     private String selectedTab = "posts";
+    EmojiBackgroundView emojiBackground;
+
     private SharedPreferences.OnSharedPreferenceChangeListener darkModeListener =
             (sharedPreferences, key) -> {
                 if ("dark_mode_enabled".equals(key)) {
@@ -124,8 +130,12 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        user = AppSettings.getInstance().getUser();
+//        Call<FileModel> call = fileClient.getProfileImage(user.getUserId());
+//        ImageUtils.getProfileImage(user.getUserId(), call, imageView, requireContext());
         updateUI();
         new Handler(Looper.getMainLooper()).postDelayed(() -> getProfileBio(), 500);
+        loadProfileImage();
     }
 
     // Inflates the layout and sets up UI for posts and saved content.
@@ -134,18 +144,56 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // Inflate layout wrapped in a FrameLayout with EmojiBackgroundView
         View rootView = inflater.inflate(R.layout.fragment_profile, container, false);
+        initComponents(rootView);
+        return rootView;
+    }
 
-        // Get and configure the emoji background (using a spiral pattern here)
-        EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
-        emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
+    // Updates the UI background based on the current dark mode setting and selected tab.
+    private void updateUI() {
+        View rootLayout = getView().findViewById(R.id.root_layout);
+        darkMode = DarkModePreferences.isDarkModeEnabled(getContext());
+        if ("posts".equals(selectedTab)) {
+            UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
+        } else {
+            UISettings.applyBrightnessGradientBackground(rootLayout, 60f, darkMode);
+        }
+    }
 
+    public void setTheme(boolean darkM) {
+        darkMode = darkM;
+        updateUI();
+    }
+
+    /** Initializes views and loads user data. */
+    private void initComponents(View rootView) {
         final View rootLayout = rootView.findViewById(R.id.root_layout);
         darkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
         UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
+        emojiBackground = rootView.findViewById(R.id.emojiBackground);
+        emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
+        // Get arguments instead of Intent
+        user = AppSettings.getInstance().getUser();
+        userList = new ArrayList<>();
+        mainContentAdapter = new MainContentAdapter(userList);
+        userClient = SPWebApiRepository.getInstance().getUserClient();
 
-        initComponents(rootView);
+        tagClient = SPWebApiRepository.getInstance().getTagClient();
+        tagList = new ArrayList<>();
+
+        fileClient = SPWebApiRepository.getInstance().getFileClient();
+
+        btnEditTags = rootView.findViewById(R.id.editTagsButton);
+        btnEditSaved = rootView.findViewById(R.id.editSavedButton);
+
+        btnEditTags.setOnClickListener(v -> editUserTags(new ProfileEditTagsFragment(), "PROFILE_EDIT_TAGS_FRAGMENT"));
+        btnEditSaved.setOnClickListener(v -> editSaved(new ProfileEditFragment(), "PROFILE_EDIT_FRAGMENT"));
+
+        recyclerView = rootView.findViewById(R.id.recycler_tag);
+        linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setHasFixedSize(true);
+        tagScrollHandler = new Handler();
 
         // Check if user profile is loaded
         if (user != null) {
@@ -163,7 +211,7 @@ public class ProfileFragment extends Fragment {
 
         imageView = rootView.findViewById(R.id.profilePicture);
 
-                // Assign username
+        // Assign username
         usernameDisplay = rootView.findViewById(R.id.profileUsername);
         usernameDisplay.setText(user.getUsername());
 
@@ -174,8 +222,6 @@ public class ProfileFragment extends Fragment {
 
         btnEditTags.setBackgroundColor(Color.parseColor("#FFD700"));
         btnEditSaved.setBackgroundColor(Color.parseColor("#FFD700"));
-
-        getProfileBio();
 
         // Edit Profile Button Actions
         AppCompatImageButton buttonEdit = rootView.findViewById(R.id.editProfileButton);
@@ -252,58 +298,20 @@ public class ProfileFragment extends Fragment {
 
         // Default view is the "posts" tab
         framePosts.performClick();
+        getProfileBio();
         loadProfileImage();
-        return rootView;
-    }
-
-    // Updates the UI background based on the current dark mode setting and selected tab.
-    private void updateUI() {
-        View rootLayout = getView().findViewById(R.id.root_layout);
-        darkMode = DarkModePreferences.isDarkModeEnabled(getContext());
-        if ("posts".equals(selectedTab)) {
-            UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
-        } else {
-            UISettings.applyBrightnessGradientBackground(rootLayout, 60f, darkMode);
-        }
-    }
-
-    public void setTheme(boolean darkM) {
-        darkMode = darkM;
-        updateUI();
-    }
-
-    /** Initializes views and loads user data. */
-    private void initComponents(View view) {
-        // Get arguments instead of Intent
-        user = AppSettings.getInstance().getUser();
-        userList = new ArrayList<>();
-        mainContentAdapter = new MainContentAdapter(userList);
-        userClient = SPWebApiRepository.getInstance().getUserClient();
-
-        tagClient = SPWebApiRepository.getInstance().getTagClient();
-        tagList = new ArrayList<>();
-
-        fileClient = SPWebApiRepository.getInstance().getFileClient();
-
-        btnEditTags = view.findViewById(R.id.editTagsButton);
-        btnEditSaved = view.findViewById(R.id.editSavedButton);
-
-        btnEditTags.setOnClickListener(v -> editUserTags(new ProfileEditTagsFragment(), "PROFILE_EDIT_TAGS_FRAGMENT"));
-        btnEditSaved.setOnClickListener(v -> editSaved(new ProfileEditFragment(), "PROFILE_EDIT_FRAGMENT"));
-
-        recyclerView = view.findViewById(R.id.recycler_tag);
-        linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setHasFixedSize(true);
-        tagScrollHandler = new Handler();
-
         getTags();
     }
 
     /** loads the profile image **/
     private void loadProfileImage() {
-        Call<FileModel> call = fileClient.getProfileImage(user.getUserId());
-        ImageUtils.getProfileImage(user.getUserId(), call, imageView, requireContext());
+        new Thread(() -> {
+            // update UI on main thread
+            new Handler(Looper.getMainLooper()).post(() -> {
+                Call<FileModel> call = fileClient.getProfileImage(user.getUserId());
+                ImageUtils.getProfileImage(user.getUserId(), call, imageView, requireContext());
+            });
+        }).start();
     }
 
     /** move to edit profile fragment */

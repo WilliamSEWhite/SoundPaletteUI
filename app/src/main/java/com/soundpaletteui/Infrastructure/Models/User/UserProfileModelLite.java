@@ -71,4 +71,5 @@ public class UserProfileModelLite {
     public List<TagModel> getUserTags() {
         return userTags;
     }
+    public int getUserProfileId() { return userProfileId; }
 }

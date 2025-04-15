@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Infrastructure.Adapters.MainContentAdapter;
@@ -234,8 +235,10 @@ public class HomeFragment extends Fragment {
     private void replacePostFragment(String algoType, String userId) {
         PostFragment postFragment = PostFragment.newInstance(algoType, userId);
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
-        transaction.commit();
+        Navigation.replaceFragment(requireActivity().getSupportFragmentManager(),
+                transaction, postFragment, "POST_FRAGMENT", R.id.postFragment);
+        /*transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
+        transaction.commit();*/
     }
 
     // Sets the text style for a TextView based on whether it is selected.

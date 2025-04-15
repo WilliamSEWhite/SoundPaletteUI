@@ -5,7 +5,6 @@ import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
@@ -65,12 +64,10 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    /** gets cached credentials */
     private void getCredentials(){
         String username = AppSettings.getUsernameValue(this);
         String password = AppSettings.getPasswordValue(this);
-        Log.d("LoginActivity", "getCredentials.username: " + username);
-        Log.d("LoginActivity", "getCredentials.password: " + password);
+
         if(!Objects.equals(username, "") && !Objects.equals(password, "")){
             isLoggedIn = true;
             new LoginUserAsync().execute(username, password);
@@ -198,7 +195,6 @@ public class LoginActivity extends AppCompatActivity {
             Toast.makeText(this, "Username and Password cannot be empty", Toast.LENGTH_SHORT).show();
             return;
         }
-        appSettings.setUser(new UserModel(username, password));
 
         // If validation passes, call the async task for user login
         new LoginUserAsync().execute(username, password);
@@ -206,36 +202,34 @@ public class LoginActivity extends AppCompatActivity {
 
     void loginUser(){
         //System.out.println("login username: " + username);
-        //user = appSettings.getUser();
-        //Log.d("LoginUser", "appsettings.username: " + appSettings.getUser().getUsername());
-        //Log.d("LoginUser", "user.username: " + user.getUsername());
+        UserModel user = appSettings.getUser();
+        if(!isLoggedIn){
+            AppSettings.setUsernameValue(this, user.getUsername());
+            AppSettings.setPasswordValue(this, user.getPassword());
+        }
         if(user != null) {
-            if (!isLoggedIn) {
-                AppSettings.setUsernameValue(this, user.getUsername());
-                AppSettings.setPasswordValue(this, user.getPassword());
+            if(user.getUserInfo() != null){
+                Toast.makeText(this, "User logged in with Id " + user.getUserId(),
+                        Toast.LENGTH_SHORT).show();
+                nextActivity(2);
             }
-            if (user != null) {
-                if (user.getUserInfo() != null) {
-                    Toast.makeText(this, "User logged in with Id " + user.getUserId(),
-                            Toast.LENGTH_SHORT).show();
-                    nextActivity(2);
-                } else {
-                    Toast.makeText(this, "Please finish registration " + user.getUserId(),
-                            Toast.LENGTH_SHORT).show();
-                    nextActivity(1);
-                }
-            } else {
-                Toast.makeText(this, "Failed to log in user", Toast.LENGTH_SHORT).show();
+            else{
+                Toast.makeText(this, "Please finish registration " + user.getUserId(),
+                        Toast.LENGTH_SHORT).show();
+                nextActivity(1);
             }
         }
+        else {
+            Toast.makeText(this, "Failed to log in user", Toast.LENGTH_SHORT).show();
+        }
+
     }
     void registerUser(){
         UserModel user = appSettings.getUser();
-        if(user != null) {
         AppSettings.setUsernameValue(this, user.getUsername());
         AppSettings.setPasswordValue(this, user.getPassword());
         System.out.println("register username: " + user.getUsername());
-
+        if(user != null) {
             Toast.makeText(this, "User registered with Id " + user.getUserId(),
                     Toast.LENGTH_SHORT).show();
             nextActivity(1);
@@ -263,68 +257,56 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // AsyncTask for registering a new user
-    private class RegisterUserAsync extends AsyncTask<String, Void, UserModel> {
+    private class RegisterUserAsync extends AsyncTask<String, Void, Void> {
 
         @Override
         // Background task to register the user
-        protected UserModel doInBackground(String... params) {
+        protected Void doInBackground(String... params) {
             String username = params[0];
             String password = params[1];
             try {
                 LoginRegisterClient client = SPWebApiRepository.getInstance().getLoginRegisterClient();
-                return client.registerUser(username, password);
+
                 // Call the registerUser method of the API client to register the user
-                //appSettings.setUser(client.registerUser(username, password));
+                appSettings.setUser(client.registerUser(username, password));
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
-            //return null;
+            return null;
         }
 
         @Override
         // Handle the result of the registration process
-        protected void onPostExecute(UserModel user) {
-            if(user != null) {
-                appSettings.setUser(user);
-                registerUser();
-            }
-            else {
-                Toast.makeText(LoginActivity.this, "Register failed", Toast.LENGTH_SHORT).show();
-            }
+        protected void onPostExecute(Void v) {
+            registerUser();
         }
     }
 
     // AsyncTask for logging in an existing user
-    private class LoginUserAsync extends AsyncTask<String, Void, UserModel> {
+    private class LoginUserAsync extends AsyncTask<String, Void, Void> {
 
         @Override
         // Background task to log in the user
-        protected UserModel doInBackground(String... params) {
+        protected Void doInBackground(String... params) {
             String username = params[0];
             String password = params[1];
             try {
                 LoginRegisterClient client = SPWebApiRepository.getInstance().getLoginRegisterClient();
-                return client.loginUser(username, password);
+
                 // Call the loginUser method of the API client to log in the user
-                //appSettings.setUser(client.loginUser(username, password));
+                appSettings.setUser(client.loginUser(username, password));
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
-            //return null;
+            return null;
         }
+
         @Override
         // Handle the result of the login process
-        protected void onPostExecute(UserModel user) {
-                //loginUser();
-            if(user != null) {
-                appSettings.setUser(user);
+        protected void onPostExecute(Void o) {
                 loginUser();
-            }
-            else {
-                Toast.makeText(LoginActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
-            }
         }
     }
 
