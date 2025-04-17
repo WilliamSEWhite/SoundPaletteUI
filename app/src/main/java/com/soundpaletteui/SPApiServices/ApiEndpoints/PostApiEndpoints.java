@@ -34,4 +34,7 @@ public interface PostApiEndpoints {
     @GET("api/post/get-trending-posts")
     Call<List<PostModel>> getTrendingPosts(@Query("userId") int userId);
 
+    @POST("api/post/update-post")
+    Call<Void> updatePost(@Body PostModel updatedPost);
+
 }

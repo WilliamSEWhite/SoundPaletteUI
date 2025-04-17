@@ -172,6 +172,7 @@ public class ProfileFragment extends Fragment {
         UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
         emojiBackground = rootView.findViewById(R.id.emojiBackground);
         emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
+
         // Get arguments instead of Intent
         user = AppSettings.getInstance().getUser();
         userList = new ArrayList<>();

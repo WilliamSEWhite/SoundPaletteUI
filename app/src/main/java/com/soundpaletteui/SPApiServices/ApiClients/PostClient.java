@@ -172,4 +172,11 @@ public class PostClient {
 
         return response.body();
     }
+
+    public Void updatePost(PostModel updatedPost) throws IOException {
+        Call<Void> call = postApiEndpoints.updatePost(updatedPost);
+        Response<Void> response = call.execute();
+        return response.body();
+    }
+
 }

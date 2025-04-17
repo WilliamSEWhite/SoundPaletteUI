@@ -84,8 +84,8 @@ public class CreatePostFragment extends Fragment {
     private CheckBox isMatureCheckbox, followerOnlyCheckbox;
     private int defaultBackgroundColor = 0xFFFFFFFF;
     private int defaultFontColor = 0xFF000000;
-    private String backgroundHex = "#FFFFFF";
-    private String fontHex = "#000000";
+    private String backgroundColour = "#FFFFFF";
+    private String fontColour = "#000000";
     private boolean selectingBackground = true;
 
     private ActivityResultLauncher<Intent> mediaPickerLauncher;
@@ -350,7 +350,7 @@ public class CreatePostFragment extends Fragment {
                     .setPositiveButton("OK", null)
                     .show();
         }
-        postContentModel = new PostContentModel(postContent, backgroundHex, fontHex);
+        postContentModel = new PostContentModel(postContent, backgroundColour, fontColour);
     }
 
     // Display a preview of the user's post
@@ -380,12 +380,12 @@ public class CreatePostFragment extends Fragment {
             TextView postText = postContentView.findViewById(R.id.postTextDisplay);
             postText.setText(previewPost.getPostContent().getPostTextContent());
             try {
-                postContentView.setBackgroundColor(Color.parseColor(backgroundHex));
-                postText.setTextColor(Color.parseColor(fontHex));
+                postContentView.setBackgroundColor(Color.parseColor(backgroundColour));
+                postText.setTextColor(Color.parseColor(fontColour));
             } catch (IllegalArgumentException e) {
                 Log.e("PreviewError", "Invalid colour hex: " + e.getMessage());
             }
-
+            postContentModel = new PostContentModel(postContent, backgroundColour, fontColour);
             fragmentDisplay.addView(postContentView);
         } else if (postType == 3) {
             View postContentView = inflater.inflate(R.layout.adapter_posts_image, fragmentDisplay, false);
@@ -399,6 +399,7 @@ public class CreatePostFragment extends Fragment {
             } catch (Exception e) {
                 Log.e("PreviewError", "Failed to load image from URI: " + postContent, e);
             }
+            postContentModel = new PostContentModel(postContent, null, null);
             fragmentDisplay.addView(postContentView);
         }
         FrameLayout previewContainer = requireView().findViewById(R.id.postPreviewContainer);
@@ -429,7 +430,7 @@ public class CreatePostFragment extends Fragment {
 
         getNewPostDetails(postType);
         NewPostModel newPost = new NewPostModel(
-                userId, postType, caption, isPremium, isMature, new Date(), new Date(), new ArrayList<>(selectedTags), postContent, selectedUsers
+                userId, postType, caption, isPremium, isMature, new Date(), new Date(), new ArrayList<>(selectedTags), postContentModel, selectedUsers
         );
 
         new MakePostAsync().execute(newPost);
@@ -455,10 +456,13 @@ public class CreatePostFragment extends Fragment {
 
     private class MakePostAsync extends AsyncTask<NewPostModel, Void, Void> {
         protected Void doInBackground(NewPostModel... d) {
+            Log.d("MAKE POST ASYNC", "user wants to make a new post");
             try {
+                Log.d("MAKE POST ASYNC", "trying to make the new post");
                 PostClient client = SPWebApiRepository.getInstance().getPostClient();
                 client.makePost(d[0]);
             } catch (IOException e) {
+                Log.d("MAKE POST ASYNC", "oh noooo!!! there was an error new post");
                 requireActivity().runOnUiThread(() ->
                         Toast.makeText(requireContext(), "Error making post", Toast.LENGTH_SHORT).show()
                 );
@@ -485,11 +489,11 @@ public class CreatePostFragment extends Fragment {
                     int selectedColor = envelope.getColor();
                     String hexCode = "#" + envelope.getHexCode();
                     if (selectingBackground) {
-                        backgroundHex = hexCode;
+                        backgroundColour = hexCode;
                         defaultBackgroundColor = selectedColor;
                         backgroundColourDisplay.setBackgroundColor(defaultBackgroundColor);
                     } else {
-                        fontHex = hexCode;
+                        fontColour = hexCode;
                         defaultFontColor = selectedColor;
                         fontColourDisplay.setBackgroundColor(defaultFontColor);
                     }

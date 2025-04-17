@@ -26,13 +26,13 @@ public class NewPostModel {
 
     @SerializedName("PostTags")
     public ArrayList<TagModel> postTags;
-    @SerializedName("postTextContent")
-    public String postTextContent;
+    @SerializedName("postContentModel")
+    public PostContentModel postContentModel;
 
     @SerializedName("PostUserTags")
     public List<String> postUserTags;
 
-    public NewPostModel(int userId, int postTypeId,String caption, boolean isPremium, boolean isMature, Date createdDate, Date publishDate, ArrayList<TagModel> postTags, String postTextContent, List<String> postUserTags) {
+    public NewPostModel(int userId, int postTypeId,String caption, boolean isPremium, boolean isMature, Date createdDate, Date publishDate, ArrayList<TagModel> postTags, PostContentModel postContentModel, List<String> postUserTags) {
         this.userId = userId;
         this.postTypeId = postTypeId;
         this.caption = caption;
@@ -41,7 +41,7 @@ public class NewPostModel {
         this.createdDate = createdDate;
         this.publishDate = publishDate;
         this.postTags = postTags;
-        this.postTextContent = postTextContent;
+        this.postContentModel = postContentModel;
         this.postUserTags = postUserTags;
     }
 }
