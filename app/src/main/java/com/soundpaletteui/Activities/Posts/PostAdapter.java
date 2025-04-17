@@ -180,25 +180,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.saveButton.setChecked(post.getIsSaved());
         holder.saveButton.setButtonTintList(ColorStateList.valueOf(Color.RED));
 
-        holder.postEditButton.setOnClickListener(v -> {
-            PopupMenu popup = new PopupMenu(context, holder.postEditButton);
-            popup.inflate(R.menu.menu_edit_post);
-            popup.setOnMenuItemClickListener(item -> {
-                switch (item.getItemId()) {
-                    case R.id.menu_edit:
-                        EditPostFragment editPostFragment = EditPostFragment.newInstance(postId);
-                        FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
-                        Navigation.replaceFragment(fragmentManager, editPostFragment, "EDIT_POST_FRAGMENT", R.id.mainScreenFrame);
-                        return true;
-                    case R.id.menu_delete:
-                        new DeletePostAsync();
-                        return true;
-                    default:
-                        return false;
-                }
-            });
-            popup.show();
-        });
+//        holder.postEditButton.setOnClickListener(v -> {
+//            PopupMenu popup = new PopupMenu(context, holder.postEditButton);
+//            popup.inflate(R.menu.menu_edit_post);
+//            popup.setOnMenuItemClickListener(item -> {
+//                switch (item.getItemId()) {
+//                    case R.id.menu_edit:
+//                        EditPostFragment editPostFragment = EditPostFragment.newInstance(postId);
+//                        FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
+//                        Navigation.replaceFragment(fragmentManager, editPostFragment, "EDIT_POST_FRAGMENT", R.id.mainScreenFrame);
+//                        return true;
+//                    case R.id.menu_delete:
+//                        new DeletePostAsync();
+//                        return true;
+//                    default:
+//                        return false;
+//                }
+//            });
+//            popup.show();
+//        });
 
         holder.postFragmentDisplay.addView(fragmentView);
     }
