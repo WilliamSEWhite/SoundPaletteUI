@@ -258,7 +258,7 @@ public class ProfileFragment extends Fragment {
             setButtonTextSelected(textSaved, false);
 
             Log.d("ProfileFragment", "Posts selected for User ID# " + userId);
-            replaceFragment("user", String.valueOf(userId));
+            replaceFragment("user", String.valueOf(userId), true);
             UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
         });
 
@@ -292,7 +292,7 @@ public class ProfileFragment extends Fragment {
             setButtonTextSelected(textPosts, false);
 
             Log.d("ProfileFragment", "Saved clicked for User ID# " + userId);
-            replaceFragment("saved", userId);
+            replaceFragment("saved", userId, false);
             // Re-apply the UI background for saved
             UISettings.applyBrightnessGradientBackground(rootLayout, 60f, darkMode);
         });
@@ -419,9 +419,10 @@ public class ProfileFragment extends Fragment {
     }
 
     // Replaces the PostFragment based on the algorithmType and userId
-    private void replaceFragment(String algoType, String userId) {
+    private void replaceFragment(String algoType, String userId, boolean showEditButton) {
+        Log.d("SHOW EDIT BUTTON", String.valueOf(showEditButton));
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        PostFragment postFragment = PostFragment.newInstance(algoType, userId);
+        PostFragment postFragment = PostFragment.newInstance(algoType, userId, showEditButton);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
     }

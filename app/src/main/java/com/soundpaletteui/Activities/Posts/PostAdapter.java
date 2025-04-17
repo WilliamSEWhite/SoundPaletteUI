@@ -64,13 +64,21 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private TagUserAdapter userTagAdapter;
     private Handler tagScrollHandler;
     private int scrollPosition;
+    private boolean showEditButton;
     private static final int TEXT_POST = 1;
     private static final int AUDIO_POST = 2;
     private static final int IMAGE_POST = 3;
 
     public PostAdapter(List<PostModel> postList) {
         this.postList = postList;
+        this.showEditButton = false;
     }
+
+    public PostAdapter(List<PostModel> postList, boolean showEditButton) {
+        this.postList = postList;
+        this.showEditButton = showEditButton;
+    }
+
 
     @NonNull
     @Override
@@ -210,7 +218,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         FragmentActivity activity = (FragmentActivity) context;
         Fragment currentFragment = activity.getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
 
-        if (currentFragment instanceof com.soundpaletteui.Activities.Profile.ProfileFragment) {
+        if (showEditButton) {
             holder.postEditButton.setVisibility(View.VISIBLE);
 
             holder.postEditButton.setOnClickListener(v -> {
@@ -317,6 +325,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             UserModel user = AppSettings.getInstance().getUser();
             userId = user.getUserId();
             try {
+                Log.d("DELETE POST NOW", userId+" wants to the delete Post#"+postId);
                 client.deletePost(postId, userId);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -327,6 +336,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         @Override
         protected void onPostExecute(Void result) {
             // Refresh the fragment after deletion
+            Log.d("REFRESH AFTER DELETE", "yes let's refresh");
             FragmentActivity activity = (FragmentActivity) context;
             Fragment currentFragment = activity.getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
             if (currentFragment instanceof com.soundpaletteui.Activities.Profile.ProfileFragment) {

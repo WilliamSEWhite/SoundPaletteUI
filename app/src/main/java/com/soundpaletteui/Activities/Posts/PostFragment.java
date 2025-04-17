@@ -28,7 +28,10 @@ public class PostFragment extends Fragment {
     private static final String ARG_ALGO_TYPE = "AlgorithmType";
     private static final String ARG_SEARCH_TERM = "SearchTerm";
     private static final String ARG_BASE_HUE = "base_hue";
+    private static final String ARG_SHOW_EDIT = "showEditButton";
     private static final String TAG = "PostFragment";
+
+    private boolean showEditButton;
     private float baseHue = -1f;
     private ArrayList<PostModel> allPosts = new ArrayList<>();
     private RecyclerView recyclerView;
@@ -38,22 +41,31 @@ public class PostFragment extends Fragment {
 
     // New Instance of a PostFragment with algorithmType only
     public static PostFragment newInstance(String algorithmType) {
-        return newInstance(algorithmType, null, -1f);
+        return newInstance(algorithmType, null, false, -1f);
     }
 
     // New Instance of a PostFragment with algorithmType and searchTerm (may also be a userId)
     public static PostFragment newInstance(String algorithmType, String searchTerm) {
-        return newInstance(algorithmType, searchTerm, -1f);
+        return newInstance(algorithmType, searchTerm, false,-1f);
     }
 
-    // New Instance of a PostFragment with algorithmType, searchTerm and baseHue
-    public static PostFragment newInstance(String algorithmType, String searchTerm, float baseHue) {
+
+    // New Instance of a PostFragment with algorithmType, searchTerm, and  showEditButton
+    public static PostFragment newInstance(String algorithmType, String searchTerm, boolean showEditButton) {
+        return newInstance(algorithmType, searchTerm, showEditButton,-1f);
+    }
+
+    // New Instance of a PostFragment with algorithmType, searchTerm, showEditButton and baseHue
+    public static PostFragment newInstance(String algorithmType, String searchTerm, boolean showEditButton, float baseHue) {
         PostFragment fragment = new PostFragment();
         Bundle args = new Bundle();
         args.putString(ARG_ALGO_TYPE, algorithmType);
         args.putString(ARG_SEARCH_TERM, searchTerm);
+        args.putBoolean(ARG_SHOW_EDIT, showEditButton);
         args.putFloat(ARG_BASE_HUE, baseHue);
         fragment.setArguments(args);
+
+        Log.d("SHOW EDIT BUTTON ON POST FRAGMENT", String.valueOf(showEditButton));
         return fragment;
     }
 
@@ -64,6 +76,7 @@ public class PostFragment extends Fragment {
             this.algoType = getArguments().getString(ARG_ALGO_TYPE);
             this.searchTerm = getArguments().getString(ARG_SEARCH_TERM);
             this.baseHue = getArguments().getFloat(ARG_BASE_HUE, -1f);
+            this.showEditButton = getArguments().getBoolean(ARG_SHOW_EDIT, false);
         }
     }
 
@@ -157,7 +170,8 @@ public class PostFragment extends Fragment {
     // Sets the RecyclerView by sending through a List of all PostModels
     private void setupRecyclerView() {
         if (recyclerView.getAdapter() == null) {
-            recyclerView.setAdapter(new PostAdapter(allPosts));
+            recyclerView.setAdapter(new PostAdapter(allPosts, showEditButton));
+
         } else {
             recyclerView.getAdapter().notifyDataSetChanged();
         }
