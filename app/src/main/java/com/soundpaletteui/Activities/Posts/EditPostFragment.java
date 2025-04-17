@@ -30,6 +30,7 @@ import com.soundpaletteui.Infrastructure.Models.Post.PostContentModel;
 import com.soundpaletteui.Infrastructure.Models.Post.PostModel;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
+import com.soundpaletteui.Infrastructure.Models.User.UserSearchModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
@@ -358,40 +359,6 @@ public class EditPostFragment extends Fragment {
                 .attachAlphaSlideBar(true)
                 .attachBrightnessSlideBar(true)
                 .show();
-    }
-
-    private void searchTagsAsync(String searchTerm) {
-        new Thread(() -> {
-            try {
-                TagClient client = SPWebApiRepository.getInstance().getTagClient();
-                List<TagModel> results = client.searchTags(searchTerm);
-                requireActivity().runOnUiThread(() -> {
-                    searchTags.clear();
-                    searchTags.addAll(results);
-                    searchTags.removeAll(selectedTags);
-                    tagSearchAdapter.notifyDataSetChanged();
-                });
-            } catch (IOException e) {
-                Log.e("EditPostFragment", "Error fetching tags", e);
-            }
-        }).start();
-    }
-
-    private void searchUsersAsync(String searchTerm) {
-        new Thread(() -> {
-            try {
-                UserClient client = SPWebApiRepository.getInstance().getUserClient();
-                List<String> results = client.searchUsers(searchTerm);
-                requireActivity().runOnUiThread(() -> {
-                    searchResults.clear();
-                    searchResults.addAll(results);
-                    searchResults.removeAll(selectedUsers);
-                    userSearchAdapter.notifyDataSetChanged();
-                });
-            } catch (IOException e) {
-                Log.e("EditPostFragment", "Error fetching users", e);
-            }
-        }).start();
     }
 
     private class GetTagsAsync extends AsyncTask<Void, Void, Void> {
