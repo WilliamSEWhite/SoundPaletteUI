@@ -17,6 +17,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -179,6 +180,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.saveButton.setChecked(post.getIsSaved());
         holder.saveButton.setButtonTintList(ColorStateList.valueOf(Color.RED));
 
+        holder.postEditButton.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(context, holder.postEditButton);
+            popup.inflate(R.menu.menu_edit_post);
+            popup.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()) {
+                    case R.id.menu_edit:
+                        EditPostFragment editPostFragment = EditPostFragment.newInstance(postId);
+                        FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
+                        Navigation.replaceFragment(fragmentManager, editPostFragment, "EDIT_POST_FRAGMENT", R.id.mainScreenFrame);
+                        return true;
+                    case R.id.menu_delete:
+                        new DeletePostAsync();
+                        return true;
+                    default:
+                        return false;
+                }
+            });
+            popup.show();
+        });
 
         holder.postFragmentDisplay.addView(fragmentView);
     }
@@ -191,7 +211,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView postUsername, postCaption, postLikeValue, postCommentValue;
         ViewGroup postFragmentDisplay;
-        ImageButton postersProfile, commentButton;
+        ImageButton postersProfile, commentButton, postEditButton;
         CheckBox likeButton, saveButton;
         RecyclerView postTagsRecycle, userTagsRecycle;
 
@@ -208,6 +228,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             postCommentValue = itemView.findViewById(R.id.postCommentValue);
             postTagsRecycle = itemView.findViewById(R.id.postTagsRecycle);
             userTagsRecycle = itemView.findViewById(R.id.userTagsRecycle);
+            postEditButton = itemView.findViewById(R.id.postEditButton);
         }
     }
 
@@ -247,6 +268,20 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     }
 
+    // Updates the database to toogle the Post as isDeleted()
+    private class DeletePostAsync extends AsyncTask<PostModel, Void, Void> {
+        protected Void doInBackground(PostModel... post) {
+            PostInteractionClient client = SPWebApiRepository.getInstance().getPostInteractionClient();
+            //try {
+            Log.d("PostAdapter", "user wants to delete post");
+            //    post.delete();
+            //} catch (IOException e) {
+            //    throw new RuntimeException(e);
+            //}
+            return null;
+        }
+    }
+
     // Retrieves the list of tags in the post
     private void getPostTags(PostViewHolder holder, PostModel post) {
         new Thread(() -> {
@@ -277,9 +312,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
             ((Activity) context).runOnUiThread(() -> {
                 if (userTagsList != null) {
-                    for (String tag : userTagsList) {
-                        Log.d("Tag", tag);
-                    }
                     userTagAdapter = new TagUserAdapter(userTagsList, context);
 
                     holder.userTagsRecycle.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
