@@ -168,7 +168,7 @@ public class EditChatroomFragment extends Fragment {
         new Thread(() -> {
             try {
                 UserClient client = SPWebApiRepository.getInstance().getUserClient();
-                List<String> results = client.searchUsers(searchTerm);
+                List<String> results = client.searchUsersLite(searchTerm);
 
                 requireActivity().runOnUiThread(() -> {
                     searchResults.clear();

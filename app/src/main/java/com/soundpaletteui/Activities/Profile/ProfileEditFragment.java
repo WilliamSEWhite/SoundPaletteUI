@@ -270,7 +270,13 @@ public class ProfileEditFragment extends Fragment {
     /** updates the user fields in the fragment */
     private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
-            String picLocation = "/dev/null/";
+            String picLocation;
+            if(imageUri == null) {
+                picLocation = "/dev/null/";
+            }
+            else {
+                picLocation = imageView.toString();
+            }
             String email = profile_email.getText().toString();
             String phone = profile_phone.getText().toString();
             String bio = profile_bio.getText().toString();
