@@ -37,7 +37,6 @@ public class LoginActivity extends AppCompatActivity {
     private EditText passwordBox;
     private Button registerBtn;
     private Button loginBtn;
-    private boolean isLoggedIn = false;
     FrameLayout frameRegister;
     GifImageView gifRegister;
     TextView registerText;
@@ -56,7 +55,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         UISettings.applyWhiteTopHueGradientBackground(findViewById(R.id.root_layout), 330f);
-        getCredentials();
         initComponents();
         animateShadow();
         emojiBackground = findViewById(R.id.emojiBackground);
@@ -64,15 +62,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void getCredentials(){
-        String username = AppSettings.getUsernameValue(this);
-        String password = AppSettings.getPasswordValue(this);
 
-        if(!Objects.equals(username, "") && !Objects.equals(password, "")){
-            isLoggedIn = true;
-            new LoginUserAsync().execute(username, password);
-        }
-    }
 
     /**
      * Animates the shadow of the main title text over time.
@@ -203,10 +193,8 @@ public class LoginActivity extends AppCompatActivity {
     void loginUser(){
         //System.out.println("login username: " + username);
         UserModel user = appSettings.getUser();
-        if(!isLoggedIn){
-            AppSettings.setUsernameValue(this, user.getUsername());
-            AppSettings.setPasswordValue(this, user.getPassword());
-        }
+        AppSettings.setUsernameValue(this, user.getUsername());
+        AppSettings.setPasswordValue(this, user.getPassword());
         if(user != null) {
             if(user.getUserInfo() != null){
                 Toast.makeText(this, "User logged in with Id " + user.getUserId(),
