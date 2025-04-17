@@ -470,7 +470,7 @@ public class CreatePostFragment extends Fragment {
             return null;
         }
         protected void onPostExecute(Void v) {
-//            replaceMainFragment(new ProfileFragment(), "Go to ProfileFragment");
+            replaceMainFragment(new ProfileFragment(), "Go to ProfileFragment");
         }
     }
 

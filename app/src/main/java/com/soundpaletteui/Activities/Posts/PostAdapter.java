@@ -29,6 +29,8 @@ import androidx.recyclerview.widget.SnapHelper;
 
 import com.bumptech.glide.Glide;
 import com.soundpaletteui.Activities.Interactions.CommentBottomSheet;
+import com.soundpaletteui.Activities.MainScreenActivity;
+import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
 import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
 import com.soundpaletteui.Infrastructure.Adapters.TagUserAdapter;
@@ -217,7 +219,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         Navigation.replaceFragment(fragmentManager, editPostFragment, "EDIT_POST_FRAGMENT", R.id.mainScreenFrame);
                         return true;
                     } else if (item.getItemId() == R.id.menu_delete) {
-                        new DeletePostAsync(post).execute();
+                        new DeletePostAsync(post, context).execute();
+                        ProfileFragment profileFragment = new ProfileFragment();
+                        FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
+                        Navigation.replaceFragment(fragmentManager, profileFragment, "EDIT_POST_FRAGMENT", R.id.mainScreenFrame);
                         return true;
                     }
                     return false;
@@ -263,9 +268,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     // Connect to API Server and set the Post as isDeleted == TRUE
     private class DeletePostAsync extends AsyncTask<Void, Void, Void> {
         private final PostModel post;
+        private final Context context;
 
-        public DeletePostAsync(PostModel post) {
+        public DeletePostAsync(PostModel post, Context context) {
             this.post = post;
+            this.context = context;
         }
 
         @Override
@@ -281,18 +288,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             }
             return null;
         }
-
-        // Refresh the fragment after deletion
-        @Override
-        protected void onPostExecute(Void result) {
-            FragmentActivity activity = (FragmentActivity) context;
-            Fragment currentFragment = activity.getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
-            if (currentFragment instanceof com.soundpaletteui.Activities.Profile.ProfileFragment) {
-                FragmentManager fragmentManager = activity.getSupportFragmentManager();
-                Navigation.replaceFragment(fragmentManager, new com.soundpaletteui.Activities.Profile.ProfileFragment(), "PROFILE_FRAGMENT", R.id.mainScreenFrame);
-            }
-        }
     }
+
 
     // Like function with API Server
     private void toggleLike(PostModel post, boolean isLiked) {
