@@ -26,11 +26,10 @@ public class NewPostModel {
 
     @SerializedName("PostTags")
     public ArrayList<TagModel> postTags;
-    @SerializedName("postContentModel")
-    public PostContentModel postContentModel;
-
     @SerializedName("PostUserTags")
     public List<String> postUserTags;
+    @SerializedName("PostContent")
+    public PostContentModel postContentModel;
 
     public NewPostModel(int userId, int postTypeId,String caption, boolean isPremium, boolean isMature, Date createdDate, Date publishDate, ArrayList<TagModel> postTags, PostContentModel postContentModel, List<String> postUserTags) {
         this.userId = userId;
