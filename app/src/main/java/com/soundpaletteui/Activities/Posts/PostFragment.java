@@ -1,5 +1,8 @@
 package com.soundpaletteui.Activities.Posts;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.AsyncTask;
@@ -8,16 +11,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.soundpaletteui.SPApiServices.ApiClients.PostClient;
 import com.soundpaletteui.Infrastructure.Models.Post.PostModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +47,8 @@ public class PostFragment extends Fragment {
     private final PostClient postClient = SPWebApiRepository.getInstance().getPostClient();
     private String algoType;
     private String searchTerm;
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private TextView noPosts;
 
     // New Instance of a PostFragment with algorithmType only
     public static PostFragment newInstance(String algorithmType) {
@@ -92,10 +103,29 @@ public class PostFragment extends Fragment {
 //            UISettings.applyBrightnessGradientBackground(view, baseHue);
         }
         recyclerView = view.findViewById(R.id.recyclerView);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
+        noPosts = view.findViewById(R.id.list_empty);
+
         recyclerView.setRecycledViewPool(new RecyclerView.RecycledViewPool()); // Add this line
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
-        new GetPostsTask().execute();
+        SwipeRefreshLayout.OnRefreshListener swipeRefreshListner = new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new GetPostsTask().execute();
+            }
+        };
+
+        // SetOnRefreshListener on SwipeRefreshLayout
+        swipeRefreshLayout.setOnRefreshListener(swipeRefreshListner);
+        swipeRefreshLayout.post(new Runnable() {
+            @Override public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+                // directly call onRefresh() method
+                swipeRefreshListner.onRefresh();
+            }
+        });
+
         return view;
     }
 
@@ -169,12 +199,22 @@ public class PostFragment extends Fragment {
 
     // Sets the RecyclerView by sending through a List of all PostModels
     private void setupRecyclerView() {
+        if(allPosts.isEmpty()){
+            swipeRefreshLayout.setVisibility(GONE);
+            noPosts.setVisibility(VISIBLE);
+        }
+        else{
+            swipeRefreshLayout.setVisibility(VISIBLE);
+            noPosts.setVisibility(GONE);
+        }
         if (recyclerView.getAdapter() == null) {
             recyclerView.setAdapter(new PostAdapter(allPosts, showEditButton));
 
         } else {
             recyclerView.getAdapter().notifyDataSetChanged();
         }
+        swipeRefreshLayout.setRefreshing(false);
+
     }
 
     private void setRandomGradientBackground(View rootView) {
