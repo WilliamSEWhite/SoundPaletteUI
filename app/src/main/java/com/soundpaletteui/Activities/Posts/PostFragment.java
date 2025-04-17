@@ -109,10 +109,13 @@ public class PostFragment extends Fragment {
                         posts = postClient.getFollowingPosts();
                         break;
                     case "trending":
-                        posts = postClient.getTrendingPosts();
+                        posts = postClient.getTrendingPosts(searchTerm);
                         break;
                     case "postusertags":
                         posts = postClient.getTaggedPostsForUsername(searchTerm);
+                        break;
+                    case "search":
+                        posts = postClient.searchPosts(searchTerm);
                         break;
                     default:
                         // fallback if needed
