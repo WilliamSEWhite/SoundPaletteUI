@@ -240,20 +240,20 @@ public class ProfileViewFragment extends Fragment {
         Log.d("ProfileViewFragment", "viewUserName: " + viewUsername);
         client = SPWebApiRepository.getInstance().getUserClient();
         //user = client.getUserByName(viewUsername);
-        client.getUserByName(viewUsername, new Callback<UserModel>() {
-            @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                user = response.body();
-                userId = user.getUserId();
-                Log.d("ProfileViewFragment", "UserId from body: " + userId);
-                loadProfileImage();
-            }
-
-            @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
-                Log.e("ProfileViewFragment", "Error retrieving UserModel object");
-            }
-        });
+//        client.getUserByName(viewUsername, new Callback<UserModel>() {
+//            @Override
+//            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+//                user = response.body();
+//                userId = user.getUserId();
+//                Log.d("ProfileViewFragment", "UserId from body: " + userId);
+//                loadProfileImage();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<UserModel> call, Throwable t) {
+//                Log.e("ProfileViewFragment", "Error retrieving UserModel object");
+//            }
+//        });
 
         fileClient = SPWebApiRepository.getInstance().getFileClient();
         imageView = view.findViewById(R.id.profilePicture);

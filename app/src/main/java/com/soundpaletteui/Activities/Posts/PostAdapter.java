@@ -142,24 +142,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             Navigation.replaceFragment(fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame);
         });
 
-        UserClient client = SPWebApiRepository.getInstance().getUserClient();;
-        UserModel user;
-        client.getUserByName(postUsername, new Callback<UserModel>() {
-            @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                UserModel user = response.body();
-                int userId = user.getUserId();
-                Log.d("PostAdapter", "UserId from body: " + userId);
-                ImageUtils.getProfileImage(userId,
-                        SPWebApiRepository.getInstance().getFileClient().getProfileImage(userId),
-                        holder.postersProfile, context);
-            }
-
-            @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
-                Log.e("PostAdapter", "Error retrieving UserModel object");
-            }
-        });
+//        UserClient client = SPWebApiRepository.getInstance().getUserClient();;
+//        client.getUserByName(postUsername, new Callback<UserModel>() {
+//            @Override
+//            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
+//                UserModel user = response.body();
+//                int userId = user.getUserId();
+//                Log.d("PostAdapter", "UserId from body: " + userId);
+//                ImageUtils.getProfileImage(userId,
+//                        SPWebApiRepository.getInstance().getFileClient().getProfileImage(userId),
+//                        holder.postersProfile, context);
+//            }
+//
+//            @Override
+//            public void onFailure(Call<UserModel> call, Throwable t) {
+//                Log.e("PostAdapter", "Error retrieving UserModel object");
+//            }
+//        });
         holder.likeButton.setChecked(post.getIsLiked());
         holder.likeButton.setOnClickListener(v -> toggleLike(post, holder.likeButton.isChecked()));
 

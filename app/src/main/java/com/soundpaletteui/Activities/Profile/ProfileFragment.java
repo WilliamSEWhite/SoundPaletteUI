@@ -305,13 +305,13 @@ public class ProfileFragment extends Fragment {
 
     /** loads the profile image **/
     private void loadProfileImage() {
-        new Thread(() -> {
-            // update UI on main thread
-            new Handler(Looper.getMainLooper()).post(() -> {
-                Call<FileModel> call = fileClient.getProfileImage(user.getUserId());
-                ImageUtils.getProfileImage(user.getUserId(), call, imageView, requireContext());
-            });
-        }).start();
+//        new Thread(() -> {
+//            // update UI on main thread
+//            new Handler(Looper.getMainLooper()).post(() -> {
+//                Call<FileModel> call = fileClient.getProfileImage(user.getUserId());
+//                ImageUtils.getProfileImage(user.getUserId(), call, imageView, requireContext());
+//            });
+//        }).start();
     }
 
     /** move to edit profile fragment */
