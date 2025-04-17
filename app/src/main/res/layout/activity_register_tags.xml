@@ -25,11 +25,12 @@
             android:layout_gravity="center"
             android:text="@string/txt_regTagTitle"
             android:textSize="@dimen/sub_title_text"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/tagList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="25dp"/>
+            android:padding="25dp" />
     </LinearLayout>
 
     <LinearLayout

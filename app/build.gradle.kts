@@ -48,6 +48,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.15.1")
     implementation("com.google.firebase:firebase-firestore:25.1.2")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
+    implementation("androidx.compose.animation:animation-graphics-android:1.7.8")
     annotationProcessor("com.github.bumptech.glide:compiler:4.15.1")
     implementation("androidx.activity:activity:1.8.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
