@@ -57,9 +57,6 @@ import retrofit2.Response;
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private List<PostModel> postList;
     private Context context;
-    private PostModel post;
-    private int postId, userId;
-    /** Tag stuff */
     private TagBasicAdapter postTagAdapter;
     private TagUserAdapter userTagAdapter;
     private Handler tagScrollHandler;
@@ -79,7 +76,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         this.showEditButton = showEditButton;
     }
 
-
     @NonNull
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -91,27 +87,23 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     @Override
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         PostModel post = postList.get(position);
-        postId = post.getPostId();
+        int postId = post.getPostId();
 
-        String likeCount = String.valueOf(post.getLikeCount());
-        String commentCount = String.valueOf(post.getCommentCount());
-        String postUsername = post.getUsername();
-
-        holder.postUsername.setText(postUsername);
+        holder.postUsername.setText(post.getUsername());
         holder.postCaption.setText(post.getPostCaption());
         holder.postFragmentDisplay.removeAllViews();
-        holder.postLikeValue.setText(likeCount);
-        holder.postCommentValue.setText(commentCount);
+        holder.postLikeValue.setText(String.valueOf(post.getLikeCount()));
+        holder.postCommentValue.setText(String.valueOf(post.getCommentCount()));
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View fragmentView;
 
-        // Set the Post to Display TEXT
+        // Sets Post to display text posts
         if (post.getPostType() == TEXT_POST) {
             fragmentView = inflater.inflate(R.layout.adapter_posts_text, holder.postFragmentDisplay, false);
             TextView postTextDisplay = fragmentView.findViewById(R.id.postTextDisplay);
 
-            //Parse hex strings to int colour values
+            // Assigns the image colours
             String fontColour = post.getPostContent().getFontColour();
             String backgroundColour = post.getPostContent().getBackgroundColour();
 
@@ -121,25 +113,26 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             if (backgroundColour != null && !backgroundColour.isEmpty()) {
                 postTextDisplay.setBackgroundColor(Color.parseColor(backgroundColour));
             }
-
-            // Set the text content
             postTextDisplay.setText(post.getPostContent().getPostTextContent());
 
-        // Set the Post to Display IMAGE
+        // Sets Post to display image type posts
         } else if (post.getPostType() == IMAGE_POST) {
             fragmentView = inflater.inflate(R.layout.adapter_posts_image, holder.postFragmentDisplay, false);
             ImageView postImageDisplay = fragmentView.findViewById(R.id.postImageDisplay);
             String imageName = post.getPostContent().getPostTextContent().replace(".png", "").replace(".jpg", "");
+
+            // Assigns the image here
             Glide.with(context)
                     .load(context.getResources().getIdentifier(imageName, "drawable", context.getPackageName()))
                     .override(800, 800)
                     .centerCrop()
                     .into(postImageDisplay);
 
-        // Set the Post to Display AUDIO
+        // Sets Post to display audio type posts
         } else if (post.getPostType() == AUDIO_POST) {
             fragmentView = inflater.inflate(R.layout.adapter_posts_audio, holder.postFragmentDisplay, false);
 
+            // Assigns the audio file here
             ImageButton playPauseButton = fragmentView.findViewById(R.id.postAudioPlayPause);
             SeekBar audioSeekBar = fragmentView.findViewById(R.id.audioSeekBar);
             audioSeekBar.setMax(100);
@@ -165,84 +158,70 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             fragmentView = new View(context);
         }
 
+        // Sets the Post and User tags in the post
+        getPostTags(holder, post);
+        getUserTags(holder, post);
+
+        // Goes to the user's profile who the post belongs to
         holder.postersProfile.setOnClickListener(v -> {
-            ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(postUsername);
+            ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(post.getUsername());
             FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
             Navigation.replaceFragment(fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame);
         });
 
-        /*
-        UserClient client = SPWebApiRepository.getInstance().getUserClient();;
-        UserModel user;
-
-        client.getUserByName(postUsername, new Callback<UserModel>() {
+        // Assigns the user's profile picture from S3
+        UserClient client = SPWebApiRepository.getInstance().getUserClient();
+        client.getUserByName(post.getUsername(), new Callback<UserModel>() {
             @Override
             public void onResponse(Call<UserModel> call, Response<UserModel> response) {
                 UserModel user = response.body();
-                int postUserId = user.getUserId();
-                Log.d("PostAdapter", "UserId from body: " + postUserId);
-                ImageUtils.getProfileImage(postUserId,
-                        SPWebApiRepository.getInstance().getFileClient().getProfileImage(postUserId),
-                        holder.postersProfile, context);
+                if (user != null) {
+                    ImageUtils.getProfileImage(user.getUserId(),
+                            SPWebApiRepository.getInstance().getFileClient().getProfileImage(user.getUserId()),
+                            holder.postersProfile, context);
+                }
             }
-
             @Override
             public void onFailure(Call<UserModel> call, Throwable t) {
                 Log.e("PostAdapter", "Error retrieving UserModel object");
             }
         });
-        */
 
+        // Like button action
         holder.likeButton.setChecked(post.getIsLiked());
         holder.likeButton.setOnClickListener(v -> toggleLike(post, holder.likeButton.isChecked()));
+        holder.likeButton.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#FFA300")));
 
+        // Comment button action
         holder.commentButton.setOnClickListener(v -> {
             CommentBottomSheet commentBottomSheet = CommentBottomSheet.newInstance(postId);
             commentBottomSheet.show(((FragmentActivity) v.getContext()).getSupportFragmentManager(), "CommentBottomSheet");
         });
 
+        // Save button action
         holder.saveButton.setChecked(post.getIsSaved());
         holder.saveButton.setOnClickListener(v -> toggleSaved(post, holder.saveButton.isChecked()));
-
-        tagScrollHandler = new Handler();
-        getPostTags(holder, post);
-        getUserTags(holder, post);
-        holder.likeButton.setChecked(post.getIsLiked());
-        holder.likeButton.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#FFA300")));
-
-        holder.saveButton.setChecked(post.getIsSaved());
         holder.saveButton.setButtonTintList(ColorStateList.valueOf(Color.RED));
 
-        // Button to EDIT A POST - ONLY FOR ProfileFragment
-        // Check if this PostAdapter is inside ProfileFragment
-        FragmentActivity activity = (FragmentActivity) context;
-        Fragment currentFragment = activity.getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
-
+        // Editing a Post action -- only available on the ProfileFragment under "POSTS" toggle button
         if (showEditButton) {
             holder.postEditButton.setVisibility(View.VISIBLE);
-
             holder.postEditButton.setOnClickListener(v -> {
                 PopupMenu popup = new PopupMenu(context, holder.postEditButton);
                 popup.inflate(R.menu.menu_edit_post);
-
-                popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        int itemId = item.getItemId();
-                        if (itemId == R.id.menu_edit) {
-                            Log.d("EDIT POST", "user "+userId+" wants to edit post #"+postId);
-                            EditPostFragment editPostFragment = EditPostFragment.newInstance(postId);
-                            FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
-                            Navigation.replaceFragment(fragmentManager, editPostFragment, "EDIT_POST_FRAGMENT", R.id.mainScreenFrame);
-                            return true;
-                        } else if (itemId == R.id.menu_delete) {
-                            new DeletePostAsync().execute(post);
-                            return true;
-                        }
-                        return false;
+                popup.setOnMenuItemClickListener(item -> {
+                    if (item.getItemId() == R.id.menu_edit) {
+                        Log.d("EDIT POST", "user wants to edit post #" + postId);
+                        EditPostFragment editPostFragment = EditPostFragment.newInstance(postId);
+                        FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
+                        Navigation.replaceFragment(fragmentManager, editPostFragment, "EDIT_POST_FRAGMENT", R.id.mainScreenFrame);
+                        return true;
+                    } else if (item.getItemId() == R.id.menu_delete) {
+                        new DeletePostAsync(post).execute();
+                        return true;
                     }
+                    return false;
                 });
-
                 popup.show();
             });
         } else {
@@ -281,6 +260,41 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     }
 
+    // Connect to API Server and set the Post as isDeleted == TRUE
+    private class DeletePostAsync extends AsyncTask<Void, Void, Void> {
+        private final PostModel post;
+
+        public DeletePostAsync(PostModel post) {
+            this.post = post;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            PostClient client = SPWebApiRepository.getInstance().getPostClient();
+            UserModel user = AppSettings.getInstance().getUser();
+            int userId = user.getUserId();
+            int postId = post.getPostId();
+            try {
+                client.deletePost(postId, userId);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
+        }
+
+        // Refresh the fragment after deletion
+        @Override
+        protected void onPostExecute(Void result) {
+            FragmentActivity activity = (FragmentActivity) context;
+            Fragment currentFragment = activity.getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
+            if (currentFragment instanceof com.soundpaletteui.Activities.Profile.ProfileFragment) {
+                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                Navigation.replaceFragment(fragmentManager, new com.soundpaletteui.Activities.Profile.ProfileFragment(), "PROFILE_FRAGMENT", R.id.mainScreenFrame);
+            }
+        }
+    }
+
+    // Like function with API Server
     private void toggleLike(PostModel post, boolean isLiked) {
         post.setIsLiked(isLiked);
         new ToggleLikeAsync().execute(post);
@@ -299,6 +313,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     }
 
+
+    // Saved function with API Server
     private void toggleSaved(PostModel post, boolean isSaved) {
         post.setIsSaved(isSaved);
         new ToggleSavedAsync().execute(post);
@@ -317,36 +333,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     }
 
-    // Updates the database to toogle the Post as isDeleted() and reload Posts
-    private class DeletePostAsync extends AsyncTask<PostModel, Void, Void> {
-        @Override
-        protected Void doInBackground(PostModel... post) {
-            PostClient client = SPWebApiRepository.getInstance().getPostClient();
-            UserModel user = AppSettings.getInstance().getUser();
-            userId = user.getUserId();
-            try {
-                Log.d("DELETE POST NOW", userId+" wants to the delete Post#"+postId);
-                client.deletePost(postId, userId);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            // Refresh the fragment after deletion
-            Log.d("REFRESH AFTER DELETE", "yes let's refresh");
-            FragmentActivity activity = (FragmentActivity) context;
-            Fragment currentFragment = activity.getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
-            if (currentFragment instanceof com.soundpaletteui.Activities.Profile.ProfileFragment) {
-                FragmentManager fragmentManager = activity.getSupportFragmentManager();
-                Navigation.replaceFragment(fragmentManager, new com.soundpaletteui.Activities.Profile.ProfileFragment(), "PROFILE_FRAGMENT", R.id.mainScreenFrame);
-            }
-        }
-    }
-
-    // Retrieves the list of tags in the post
+    // Get the Post Tags and set them to the Adapter
     private void getPostTags(PostViewHolder holder, PostModel post) {
         new Thread(() -> {
             List<TagModel> postTagsList = post.getPostTags();
@@ -362,46 +349,39 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     startAutoScroll(holder);
                 } else {
                     holder.postTagsRecycle.setAdapter(null);
-                    Log.d("PostAdapter", "postTagsRecycle not found in view for this post");
                 }
             });
         }).start();
     }
 
-    // Retrieves the list of users tagged in the post
+    // Get the User tags and set them to the Adapter
     private void getUserTags(PostViewHolder holder, PostModel post) {
         new Thread(() -> {
             List<String> userTagsList = post.getPostUserTags();
-
             ((Activity) context).runOnUiThread(() -> {
                 if (userTagsList != null) {
                     userTagAdapter = new TagUserAdapter(userTagsList, context);
-
                     holder.userTagsRecycle.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
                     holder.userTagsRecycle.setAdapter(userTagAdapter);
-
                     if (holder.userTagsRecycle.getOnFlingListener() == null) {
                         SnapHelper snapHelper = new LinearSnapHelper();
                         snapHelper.attachToRecyclerView(holder.userTagsRecycle);
                     }
-
                     startAutoScroll(holder);
                 } else {
                     holder.userTagsRecycle.setAdapter(null);
-                    Log.d("PostAdapter", "userTagsRecycle not found in view for this post");
                 }
             });
         }).start();
     }
 
-
-    // Auto scrolls the horizontal list of tags
+    // Auto scroll for Post Tags
     private void startAutoScroll(PostViewHolder holder) {
+        tagScrollHandler = new Handler();
         tagScrollHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (holder.getAdapterPosition() == RecyclerView.NO_POSITION) return;
-
                 if (postTagAdapter != null && postTagAdapter.getItemCount() > 0) {
                     if (scrollPosition < postTagAdapter.getItemCount()) {
                         holder.postTagsRecycle.smoothScrollToPosition(scrollPosition++);
@@ -410,7 +390,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         holder.postTagsRecycle.smoothScrollToPosition(scrollPosition);
                     }
                 }
-
                 if (userTagAdapter != null && userTagAdapter.getItemCount() > 0) {
                     if (scrollPosition < userTagAdapter.getItemCount()) {
                         holder.userTagsRecycle.smoothScrollToPosition(scrollPosition++);
@@ -419,7 +398,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         holder.userTagsRecycle.smoothScrollToPosition(scrollPosition);
                     }
                 }
-
                 tagScrollHandler.postDelayed(this, 2000);
             }
         }, 2000);
