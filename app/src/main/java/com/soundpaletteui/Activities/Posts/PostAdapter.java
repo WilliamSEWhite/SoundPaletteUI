@@ -346,7 +346,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         }
     }
 
-
     // Retrieves the list of tags in the post
     private void getPostTags(PostViewHolder holder, PostModel post) {
         new Thread(() -> {
