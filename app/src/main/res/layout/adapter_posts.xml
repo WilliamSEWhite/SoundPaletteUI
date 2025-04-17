@@ -171,6 +171,22 @@
                 android:padding="5dp"
                 android:paddingEnd="10dp"
                 android:button="@drawable/save_button"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/postEditButton"
+                android:layout_width="60dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:contentDescription="Post Options"
+                android:padding="5dp"
+                android:scaleType="center"
+                android:src="@drawable/icon_edit_24" />
+
         </LinearLayout>
 
 </LinearLayout>
