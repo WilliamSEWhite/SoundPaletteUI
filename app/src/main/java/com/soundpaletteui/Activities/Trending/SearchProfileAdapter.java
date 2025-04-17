@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Messages.ChatroomFragment;
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
+import com.soundpaletteui.Infrastructure.Models.User.UserSearchModel;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModelLite;
@@ -31,10 +32,10 @@ import java.util.ArrayList;
 
 public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdapter.ProfileViewHolder> {
 
-    private final ArrayList<UserProfileModelLite> profileList;
+    private final ArrayList<UserSearchModel> profileList;
     private Context context;
 
-    public SearchProfileAdapter(ArrayList<UserProfileModelLite> profileList) {
+    public SearchProfileAdapter(ArrayList<UserSearchModel> profileList) {
         this.profileList = profileList;
     }
 
@@ -48,7 +49,7 @@ public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdap
 
     @Override
     public void onBindViewHolder(@NonNull ProfileViewHolder holder, int position) {
-        UserProfileModelLite userView = profileList.get(position);
+        UserSearchModel userView = profileList.get(position);
         final String username = userView.getUsername();
         final int followers = userView.getFollowerCount();
 
@@ -62,6 +63,8 @@ public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdap
             FragmentManager fragmentManager = ((FragmentActivity) context).getSupportFragmentManager();
             Navigation.replaceFragment(fragmentManager, profileFragment, "ProfileViewFragment", R.id.mainScreenFrame);
         });
+
+        holder.followButton.setText(userView.isFollowing() ? "Unfollow" : "Follow");
 
         // Follow/Unfollow Toggle
         holder.followButton.setOnClickListener(v -> {
@@ -103,10 +106,10 @@ public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdap
 
     // AsyncTask for toggling follow/unfollow
     private class ToggleFollowAsync extends AsyncTask<Void, Void, Boolean> {
-        private final UserProfileModelLite profile;
+        private final UserSearchModel profile;
         private final boolean shouldFollow;
 
-        public ToggleFollowAsync(UserProfileModelLite profile, boolean shouldFollow) {
+        public ToggleFollowAsync(UserSearchModel profile, boolean shouldFollow) {
             this.profile = profile;
             this.shouldFollow = shouldFollow;
         }

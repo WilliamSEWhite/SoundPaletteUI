@@ -3,6 +3,7 @@ package com.soundpaletteui.SPApiServices.ApiClients;
 import android.util.Log;
 
 import com.google.firebase.firestore.auth.User;
+import com.soundpaletteui.Infrastructure.Models.User.UserSearchModel;
 import com.soundpaletteui.SPApiServices.ApiEndpoints.UserEndpoints;
 import com.soundpaletteui.Infrastructure.Models.User.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
@@ -82,10 +83,10 @@ public class UserClient {
         return response.body();
     }
 
-    public List<String> searchUsers(String searchTerm) throws IOException {
+    public List<String> searchUsersLite(String searchTerm) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
 
-        Call<List<String>> call = userEndpoints.searchUsers(userId, searchTerm);
+        Call<List<String>> call = userEndpoints.searchUsersLite(userId, searchTerm);
         Response<List<String>> response = call.execute();
 
         if (!response.isSuccessful()) {
@@ -104,8 +105,25 @@ public class UserClient {
     }
 
 
-    public List<UserProfileModelLite> getProfilesForUsername(String searchTerm) {
-        return null;
+    public List<UserSearchModel> searchUsers(String searchTerm) throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+
+        Call<List<UserSearchModel>> call = userEndpoints.searchUsers(userId, searchTerm);
+        Response<List<UserSearchModel>> response = call.execute();
+
+        if (!response.isSuccessful()) {
+            Log.e("PostClient", "Error fetching users: " + response.code() + " - " + response.message());
+            return new ArrayList<>();
+        }
+
+        List<UserSearchModel> users = response.body();
+        if (users == null) {
+            Log.w("UserClient", "Received null response body for users.");
+            return new ArrayList<>();
+        }
+
+        Log.d("UserClient", "Fetched " + users.size() + " user.");
+        return users;
     }
 
 }
