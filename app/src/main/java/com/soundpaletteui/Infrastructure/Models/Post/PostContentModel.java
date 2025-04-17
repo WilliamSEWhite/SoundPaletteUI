@@ -1,6 +1,7 @@
 package com.soundpaletteui.Infrastructure.Models.Post;
 
 import com.google.gson.annotations.SerializedName;
+import com.soundpaletteui.Infrastructure.Models.FileModel;
 
 public class PostContentModel {
     @SerializedName("PostTextContent")
@@ -12,11 +13,11 @@ public class PostContentModel {
     @SerializedName("FontColour")
     private String fontColour;
 
+
     public PostContentModel(String postTextContent, String backgroundColour, String fontColour) {
         this.postTextContent = postTextContent;
         this.backgroundColour = backgroundColour;
         this.fontColour = fontColour;
-
     }
 
     public String getPostTextContent(){
