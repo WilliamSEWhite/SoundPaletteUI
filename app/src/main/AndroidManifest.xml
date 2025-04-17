@@ -40,7 +40,8 @@
         <activity android:name=".Activities.MainScreenActivity" android:exported="false" android:hardwareAccelerated="false"/>
         <activity android:name=".Activities.Profile.RegisterActivity" android:exported="false" />
         <activity android:name=".Activities.Profile.RegisterTagsActivity" android:exported="false" />
-        <activity android:name=".Activities.Interactions.CommentBottomSheet" />
+        <activity android:name=".Activities.Interactions.CommentBottomSheet"
+            tools:ignore="Instantiatable" />
 
         <!-- File provider -->
         <provider
@@ -55,13 +56,8 @@
     </application>
 </manifest>
 
+<!--    Previous Android Manifest before splash activity; was changed on April 12th-->
 
-
-
-
-
-<!--Previous Android Manifest before splash activity; was changed on April 12th-->
-<!--    <?xml version="1.0" encoding="utf-8"?>-->
 <!--<manifest xmlns:android="http://schemas.android.com/apk/res/android"-->
 <!--xmlns:tools="http://schemas.android.com/tools">-->
 

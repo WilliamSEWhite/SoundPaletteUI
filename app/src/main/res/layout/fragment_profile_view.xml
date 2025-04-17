@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@android:color/transparent"
-    tools:context=".Activities.Profile.ProfileFragment">
+    tools:context=".Activities.Profile.ProfileViewFragment">
 
     <!-- Profile Username, Follow and Message Buttons -->
     <LinearLayout

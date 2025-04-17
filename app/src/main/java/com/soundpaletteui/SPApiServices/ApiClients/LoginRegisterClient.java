@@ -16,11 +16,13 @@ public class LoginRegisterClient {
         loginRegisterApiEndpoint = retrofit.create(LoginRegisterApiEndpoints.class);
     }
 
+    /** retrieves login info from api server and returns to UI */
     public UserModel loginUser(String username, String password) throws IOException {
         Call<UserModel> call = loginRegisterApiEndpoint.loginUser(username, password);
         Response<UserModel> response = call.execute();
         return response.body();
     }
+    /** registers user login info to api server */
     public UserModel registerUser(String username, String password) throws IOException {
         Call<UserModel> call = loginRegisterApiEndpoint.registerUser(username, password);
         Response<UserModel> response = call.execute();
