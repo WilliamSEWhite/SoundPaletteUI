@@ -160,6 +160,9 @@ public class PostFragment extends Fragment {
                     case "search":
                         posts = postClient.searchPosts(searchTerm);
                         break;
+                    case "tag":
+                        posts = postClient.getPostsByTag(Integer.parseInt(searchTerm));
+                        break;
                     default:
                         // fallback if needed
                         posts = postClient.getPosts();

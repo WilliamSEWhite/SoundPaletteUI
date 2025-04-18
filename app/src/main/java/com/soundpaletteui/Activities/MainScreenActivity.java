@@ -123,6 +123,10 @@ public class MainScreenActivity extends AppCompatActivity {
         });
     }
 
+    public void viewPostsByTags(String tagId){
+        searchFragment.viewPostsByTag(tagId);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_header, menu);

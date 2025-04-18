@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.soundpaletteui.Activities.MainScreenActivity;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.R;
 
@@ -49,6 +50,8 @@ public class TagBasicAdapter extends RecyclerView.Adapter {
 
         TagModel tag = tagList.get(position);
         viewHolder.tagName.setText(tag.getTagName());
+
+
     }
 
     /** gets the size of the tag list */

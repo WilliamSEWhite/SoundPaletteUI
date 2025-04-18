@@ -351,6 +351,13 @@ public class SearchFragment extends Fragment {
 
     }
 
+    public void viewPostsByTag(String tagId){
+        FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
+        PostFragment postFragment = PostFragment.newInstance("tag", String.valueOf(tagId));
+        transaction.replace(R.id.postFragment, postFragment);
+        transaction.commit();
+    }
+
     private void setUsersFragment(){
         String searchTerm = inputSearch.getText().toString();
 

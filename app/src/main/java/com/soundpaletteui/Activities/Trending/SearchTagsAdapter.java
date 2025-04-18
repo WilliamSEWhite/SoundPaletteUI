@@ -8,15 +8,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.soundpaletteui.Activities.MainScreenActivity;
 import com.soundpaletteui.Activities.Messages.ChatroomFragment;
+import com.soundpaletteui.Activities.Posts.PostFragment;
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserSearchModel;
@@ -55,6 +59,11 @@ public class SearchTagsAdapter extends RecyclerView.Adapter<SearchTagsAdapter.Ta
         final String tagName = tag.getTagName();
 
         holder.tagNameDisplay.setText(tagName);
+        holder.tagContainer.setOnClickListener(v -> seePostsForTag(tag.getTagId()));
+    }
+
+    private void seePostsForTag(int tagId){
+        ((MainScreenActivity) context).viewPostsByTags(String.valueOf(tagId));
     }
 
     @Override
@@ -64,10 +73,13 @@ public class SearchTagsAdapter extends RecyclerView.Adapter<SearchTagsAdapter.Ta
 
     public static class TagsViewHolder extends RecyclerView.ViewHolder {
         TextView tagNameDisplay;
+        LinearLayout tagContainer;
 
         public TagsViewHolder(@NonNull View itemView) {
             super(itemView);
             tagNameDisplay = itemView.findViewById(R.id.tagName);
+            tagContainer = itemView.findViewById(R.id.tag_container);
+
         }
     }
 }
