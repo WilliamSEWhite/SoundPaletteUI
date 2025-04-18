@@ -23,6 +23,7 @@ import com.bumptech.glide.Glide;
 import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
 import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.R;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 
 import java.io.File;
 
@@ -59,6 +60,26 @@ public class ImageUtils {
                 });
             }).start();
         }
+    }
+
+    /** get profile image by username */
+    public static void getProfileImageByUsername(String username, ImageView imageView, Context context) {
+        UserUtils.getUserId(username, new UserUtils.UserIdCallback() {
+            @Override
+            public void onUserIdReceived(int userId) {
+                ImageUtils.getProfileImage(
+                        userId,
+                        SPWebApiRepository.getInstance().getFileClient().getProfileImage(userId),
+                        imageView,
+                        context
+                );
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                Log.e("getProfileImageByUsername", "Could not load profile image", t);
+            }
+        });
     }
 
     /** get profile image */
@@ -129,7 +150,7 @@ public class ImageUtils {
                 ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 100);
             }
         } else {
-            Log.e("ImageUtils", "Context is not an Activity");
+            Log.e("requestStoragePermission", "Context is not an Activity");
         }
 
     }

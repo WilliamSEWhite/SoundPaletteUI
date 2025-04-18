@@ -200,8 +200,11 @@ public class ProfileEditFragment extends Fragment {
 
     /** loads the profile image **/
     private void loadProfileImage() {
-        Call<FileModel> call = fileClient.getProfileImage(userId);
-        ImageUtils.getProfileImage(userId, call, imageView, requireContext());
+//        Call<FileModel> call = fileClient.getProfileImage(userId);
+//        ImageUtils.getProfileImage(userId, call, imageView, requireContext());
+        ImageUtils.getProfileImageByUsername(AppSettings.getInstance().getUsername(),
+                imageView,
+                requireContext());
     }
     /** upload profile image */
     private void uploadProfileImage() {
