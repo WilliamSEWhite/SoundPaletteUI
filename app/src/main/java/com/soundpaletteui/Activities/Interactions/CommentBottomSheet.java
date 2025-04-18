@@ -68,7 +68,7 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
         noCommentsMessage = view.findViewById(R.id.noCommentsDisplay);
 
         commentList = new ArrayList<>();
-        adapter = new CommentAdapter(commentList);
+        adapter = new CommentAdapter(requireActivity(), commentList, () -> dismiss());
         recyclerView.setAdapter(adapter);
 
         commentInput = view.findViewById(R.id.comment_textbox);

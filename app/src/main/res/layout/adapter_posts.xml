@@ -55,6 +55,7 @@
                             android:orientation="horizontal"
                             android:scrollbars="horizontal"
                             android:overScrollMode="never"
+                            android:paddingTop="0dp"
                             android:padding="2dp" />
 
                 </LinearLayout>
