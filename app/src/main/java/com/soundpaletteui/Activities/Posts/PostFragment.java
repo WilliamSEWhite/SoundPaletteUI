@@ -57,6 +57,7 @@ public class PostFragment extends Fragment {
     private int page = 0;
     private int totalItemCount;
     private ProgressBar loading;
+    private boolean isLoading = false;
     int count = 0;
     private NestedScrollView nestedSV;
 
@@ -136,7 +137,7 @@ public class PostFragment extends Fragment {
         SwipeRefreshLayout.OnRefreshListener swipeRefreshListner = new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                page = 1;
+                page = 0;
                 new GetPostsTask().execute();
             }
         };
@@ -159,6 +160,7 @@ public class PostFragment extends Fragment {
     private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
         @Override
         protected List<PostModel> doInBackground(Void... voids) {
+
             List<PostModel> posts = null;
             try {
                 switch (algoType) {
