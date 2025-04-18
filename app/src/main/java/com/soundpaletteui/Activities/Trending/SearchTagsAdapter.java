@@ -45,7 +45,7 @@ public class SearchTagsAdapter extends RecyclerView.Adapter<SearchTagsAdapter.Ta
     @Override
     public TagsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
-        View view = LayoutInflater.from(context).inflate(R.layout.adapter_search_tags, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.adapter_search_post_tags, parent, false);
         return new TagsViewHolder(view);
     }
 

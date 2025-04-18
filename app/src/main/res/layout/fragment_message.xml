@@ -18,6 +18,20 @@
     android:orientation="vertical"
     android:background="@android:color/transparent">
 
+
+    <!-- Display no chatrooms if none -->
+    <TextView
+        android:id="@+id/noChatroomsDisplay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No comments yet."
+        android:textAlignment="center"
+        android:padding="16dp"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:alpha="0" />
+
     <!-- RecyclerView to display messages -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewMessages"

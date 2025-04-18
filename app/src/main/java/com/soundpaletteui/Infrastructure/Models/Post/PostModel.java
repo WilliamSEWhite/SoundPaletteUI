@@ -100,5 +100,7 @@ public class PostModel {
     public void setIsSaved(boolean isSaved) {
         this.isSaved = isSaved;
     }
+    public void setLikeCount(int likeCount) {this.likeCount = likeCount;}
+    public void setCommentCount(int count) {this.commentCount = count;}
 
 }

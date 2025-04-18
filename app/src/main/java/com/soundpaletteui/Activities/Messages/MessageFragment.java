@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,6 +39,7 @@ public class MessageFragment extends Fragment {
     private String username;
     private RecyclerView messagesRecyclerView;
     private View createChatroomButton;
+    private TextView noChatroomsDisplay;
     private ArrayList<ChatroomModel> allChatrooms = new ArrayList<>();
     private final ChatClient messageClient = SPWebApiRepository.getInstance().getChatClient();
 
@@ -48,6 +50,8 @@ public class MessageFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_message, container, false);
+
+        noChatroomsDisplay = rootView.findViewById(R.id.noChatroomsDisplay);
 
         // Get and configure the emoji background
         EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
@@ -107,10 +111,26 @@ public class MessageFragment extends Fragment {
     }
 
     private void setupRecyclerView() {
-        if (messagesRecyclerView.getAdapter() == null) {
-            messagesRecyclerView.setAdapter(new ChatroomAdapter(allChatrooms));
+        if (allChatrooms.isEmpty()) {
+            messagesRecyclerView.setVisibility(View.GONE);
+            noChatroomsDisplay.setVisibility(View.VISIBLE);
+            noChatroomsDisplay.animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .start();
         } else {
-            messagesRecyclerView.getAdapter().notifyDataSetChanged();
+            messagesRecyclerView.setVisibility(View.VISIBLE);
+            noChatroomsDisplay.animate()
+                    .alpha(0f)
+                    .setDuration(200)
+                    .withEndAction(() -> noChatroomsDisplay.setVisibility(View.GONE))
+                    .start();
+
+            if (messagesRecyclerView.getAdapter() == null) {
+                messagesRecyclerView.setAdapter(new ChatroomAdapter(allChatrooms));
+            } else {
+                messagesRecyclerView.getAdapter().notifyDataSetChanged();
+            }
         }
     }
 }

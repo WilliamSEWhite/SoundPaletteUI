@@ -20,6 +20,21 @@
         android:textStyle="bold"
         android:layout_marginBottom="8dp"/>
 
+
+    <!-- Display no messages if none -->
+    <TextView
+        android:id="@+id/noCommentsDisplay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No comments yet."
+        android:textAlignment="center"
+        android:padding="16dp"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="14sp"
+        android:visibility="gone"
+        android:alpha="0" />
+
+
     <!-- RecyclerView for displaying comments -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/comment_recyclerview"

@@ -91,7 +91,7 @@
                 <CheckBox
                     android:id="@+id/followButton"
                     android:layout_width="60dp"
-                    android:layout_height="25dp"
+                    android:layout_height="33dp"
                     android:text="Follow"
                     android:textSize="9dp"
                     android:gravity="center"

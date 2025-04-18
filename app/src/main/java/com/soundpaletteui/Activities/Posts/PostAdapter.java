@@ -197,8 +197,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         // Comment button action
         holder.commentButton.setOnClickListener(v -> {
             CommentBottomSheet commentBottomSheet = CommentBottomSheet.newInstance(postId);
+            commentBottomSheet.setOnCommentAddedListener(newCount -> {
+                post.setCommentCount(newCount);
+                notifyItemChanged(holder.getAdapterPosition());
+            });
             commentBottomSheet.show(((FragmentActivity) v.getContext()).getSupportFragmentManager(), "CommentBottomSheet");
         });
+
 
         // Save button action
         holder.saveButton.setChecked(post.getIsSaved());
@@ -293,9 +298,22 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     // Like function with API Server
     private void toggleLike(PostModel post, boolean isLiked) {
+        int position = postList.indexOf(post);
         post.setIsLiked(isLiked);
+
+        // Update like count locally for immediate UI feedback
+        int currentLikeCount = post.getLikeCount();
+        if (isLiked) {
+            post.setLikeCount(currentLikeCount + 1);
+        } else {
+            post.setLikeCount(currentLikeCount - 1);
+        }
+
+        // Refresh the UI
+        notifyItemChanged(position);
         new ToggleLikeAsync().execute(post);
     }
+
 
     private class ToggleLikeAsync extends AsyncTask<PostModel, Void, Void> {
         protected Void doInBackground(PostModel... post) {

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,8 +40,11 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
     private List<CommentModel> commentList;
     private EditText commentInput;
     private Button sendButton;
+    private TextView noCommentsMessage;
     private int postId;
     private int userId;
+
+    private OnCommentAddedListener commentAddedListener;
 
     public static CommentBottomSheet newInstance(int postId) {
         CommentBottomSheet fragment = new CommentBottomSheet();
@@ -61,6 +65,8 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
         recyclerView = view.findViewById(R.id.comment_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        noCommentsMessage = view.findViewById(R.id.noCommentsDisplay);
+
         commentList = new ArrayList<>();
         adapter = new CommentAdapter(commentList);
         recyclerView.setAdapter(adapter);
@@ -77,31 +83,27 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
             commentInput.setText("");
             if (!text.isEmpty()) {
                 new PostCommentAsync().execute(new NewPostCommentModel(user.getUserId(), postId, text));
-                if(commentList.size()>1){
+                if (commentList.size() > 1) {
                     recyclerView.smoothScrollToPosition(commentList.size() - 1);
                 }
                 new FetchCommentsAsync().execute();
-
             }
         });
 
         return view;
     }
 
-    // AsyncTask to simulate fetching dummy comments
     private class FetchCommentsAsync extends AsyncTask<Void, Void, List<CommentModel>> {
         @Override
         protected List<CommentModel> doInBackground(Void... voids) {
-            List<CommentModel> dummyComments = new ArrayList<>();
-
+            List<CommentModel> fetchedComments = new ArrayList<>();
             try {
                 PostInteractionClient postInteractionClient = SPWebApiRepository.getInstance().getPostInteractionClient();
-                dummyComments = postInteractionClient.getCommentsForPost(postId);
-
-            } catch (IOException e) {  }
-
-            // Generate dummy comments
-            return dummyComments;
+                fetchedComments = postInteractionClient.getCommentsForPost(postId);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return fetchedComments;
         }
 
         @Override
@@ -109,82 +111,75 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
             commentList.clear();
             commentList.addAll(comments);
             adapter.notifyDataSetChanged();
+
+            if (comments.isEmpty()) {
+                recyclerView.setVisibility(View.GONE);
+                noCommentsMessage.setVisibility(View.VISIBLE);
+                noCommentsMessage.animate()
+                        .alpha(1f)
+                        .setDuration(300)
+                        .start();
+            } else {
+                recyclerView.setVisibility(View.VISIBLE);
+                noCommentsMessage.animate()
+                        .alpha(0f)
+                        .setDuration(200)
+                        .withEndAction(() -> noCommentsMessage.setVisibility(View.GONE))
+                        .start();
+            }
         }
     }
+
     private class PostCommentAsync extends AsyncTask<NewPostCommentModel, Void, Void> {
         @Override
         protected Void doInBackground(NewPostCommentModel... newComment) {
-
             try {
                 PostInteractionClient postInteractionClient = SPWebApiRepository.getInstance().getPostInteractionClient();
                 postInteractionClient.postComment(newComment[0]);
-
-            } catch (IOException e) {  }
-
-            // Generate dummy comments
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             return null;
         }
 
         @Override
         protected void onPostExecute(Void v) {
-
+            new FetchUpdatedCommentCountTask().execute(postId);
         }
     }
 
-
-//    AsyncTask to fetch comments from API
-//    private class FetchCommentsTask extends AsyncTask<Void, Void, List<CommentModel>> {
-//        @Override
-//        protected List<CommentModel> doInBackground(Void... voids) {
-//            try {
-//                return commentClient.getComments(postId);  // Fetch comments from API
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return new ArrayList<>();  // Return empty list on error
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(List<CommentModel> comments) {
-//            if (comments.isEmpty()) {
-//                Toast.makeText(getContext(), "No comments found.", Toast.LENGTH_SHORT).show();
-//            } else {
-//                commentList.clear();
-//                commentList.addAll(comments);
-//                adapter.notifyDataSetChanged();
-//            }
-//        }
-//    }
-
-//    AsyncTask to send a new comment to API
-//    private class SendCommentTask extends AsyncTask<CommentModel, Void, Boolean> {
-//        @Override
-//        protected Boolean doInBackground(CommentModel... params) {
-//            try {
-//                commentClient.makeComment(params[0]);
-//                return true;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//                return false;
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Boolean success) {
-//            if (success) {
-//                new FetchCommentsTask().execute();  // Refresh comments after posting
-//            } else {
-//                Toast.makeText(getContext(), "Failed to send comment", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
-
-    // Initializes views and loads user data.
     private void initComponents(View view) {
-        // Get arguments instead of Intent
         user = AppSettings.getInstance().getUser();
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
         userClient = SPWebApiRepository.getInstance().getUserClient();
+    }
+
+    public interface OnCommentAddedListener {
+        void onCommentCountUpdated(int newCount);
+    }
+
+    public void setOnCommentAddedListener(OnCommentAddedListener listener) {
+        this.commentAddedListener = listener;
+    }
+
+    private class FetchUpdatedCommentCountTask extends AsyncTask<Integer, Void, Integer> {
+        @Override
+        protected Integer doInBackground(Integer... params) {
+            int postId = params[0];
+            try {
+                PostInteractionClient client = SPWebApiRepository.getInstance().getPostInteractionClient();
+                return client.getCommentsForPost(postId).size();
+            } catch (IOException e) {
+                return -1;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Integer updatedCount) {
+            if (commentAddedListener != null && updatedCount >= 0) {
+                commentAddedListener.onCommentCountUpdated(updatedCount);
+            }
+        }
     }
 }
