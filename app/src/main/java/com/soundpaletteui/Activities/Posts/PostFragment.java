@@ -11,15 +11,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.google.type.DateTime;
+import com.google.type.DateTimeOrBuilder;
 import com.soundpaletteui.SPApiServices.ApiClients.PostClient;
 import com.soundpaletteui.Infrastructure.Models.Post.PostModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
@@ -49,6 +53,13 @@ public class PostFragment extends Fragment {
     private String searchTerm;
     private SwipeRefreshLayout swipeRefreshLayout;
     private TextView noPosts;
+    private DateTime loadDate;
+    private int page = 0;
+    private int totalItemCount;
+    private ProgressBar loading;
+    int count = 0;
+    private NestedScrollView nestedSV;
+
 
     // New Instance of a PostFragment with algorithmType only
     public static PostFragment newInstance(String algorithmType) {
@@ -105,6 +116,19 @@ public class PostFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         noPosts = view.findViewById(R.id.list_empty);
+//        loading = view.findViewById(R.id.loading);
+        nestedSV = view.findViewById(R.id.idNestedSV);
+
+        nestedSV.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
+            @Override
+            public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
+                if (scrollY == v.getChildAt(0).getMeasuredHeight() - v.getMeasuredHeight()) {
+//                    loading.setVisibility(View.VISIBLE);
+                    page++;
+                    new GetPostsTask().execute();
+                }
+            }
+        });
 
         recyclerView.setRecycledViewPool(new RecyclerView.RecycledViewPool()); // Add this line
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
@@ -112,9 +136,11 @@ public class PostFragment extends Fragment {
         SwipeRefreshLayout.OnRefreshListener swipeRefreshListner = new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                page = 1;
                 new GetPostsTask().execute();
             }
         };
+
 
         // SetOnRefreshListener on SwipeRefreshLayout
         swipeRefreshLayout.setOnRefreshListener(swipeRefreshListner);
@@ -137,35 +163,35 @@ public class PostFragment extends Fragment {
             try {
                 switch (algoType) {
                     case "popular":
-                        posts = postClient.getPosts();
+                        posts = postClient.getPosts(page);
                         break;
                     case "user":
-                        posts = postClient.getPostsForUser();
+                        posts = postClient.getPostsForUser(page);
                         break;
                     case "saved":
-                        posts = postClient.getSavedPostsForUser();
+                        posts = postClient.getSavedPostsForUser(page);
                         break;
                     case "username":
-                        posts = postClient.getPostsForUsername(searchTerm);
+                        posts = postClient.getPostsForUsername(searchTerm, page);
                         break;
                     case "following":
-                        posts = postClient.getFollowingPosts();
+                        posts = postClient.getFollowingPosts(page);
                         break;
                     case "trending":
-                        posts = postClient.getTrendingPosts(searchTerm);
+                        posts = postClient.getTrendingPosts(searchTerm, page);
                         break;
                     case "postusertags":
-                        posts = postClient.getTaggedPostsForUsername(searchTerm);
+                        posts = postClient.getTaggedPostsForUsername(searchTerm, page);
                         break;
                     case "search":
-                        posts = postClient.searchPosts(searchTerm);
+                        posts = postClient.searchPosts(searchTerm, page);
                         break;
                     case "tag":
-                        posts = postClient.getPostsByTag(Integer.parseInt(searchTerm));
+                        posts = postClient.getPostsByTag(Integer.parseInt(searchTerm), page);
                         break;
                     default:
                         // fallback if needed
-                        posts = postClient.getPosts();
+                        posts = postClient.getPosts(page);
                 }
             } catch (IOException e) {
                 Log.e(TAG, "Error fetching posts", e);
@@ -182,11 +208,10 @@ public class PostFragment extends Fragment {
                 posts = new ArrayList<>();
             }
             Log.d(TAG, "Fetched dummy posts: " + posts.size());
-            allPosts.clear();
-            allPosts.addAll(posts);
+            if(page == 1)
+                allPosts.clear();
 
-            // Testing audio posts with dummy data
-//            loadDummyAudio(allPosts);
+            allPosts.addAll(posts);
 
             setupRecyclerView();
         }
@@ -234,107 +259,5 @@ public class PostFragment extends Fragment {
         gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
         rootView.setBackground(gradientDrawable);
     }
-
-// Untested getPostsTask that should connect to the API Server
-// Note: PostFragment takes an algorithmType and searchTerm (opt) parameters
-//    private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
-//        @Override
-//        protected List<PostModel> doInBackground(Void... voids) {
-//            try {
-//                PostClient client = SPWebApiRepository.getInstance().getPostClient();
-//                List<PostModel> posts;
-//
-//                String algorithmType = getArguments().getString(ARG_ALGO_TYPE, nul);
-//                String searchTerm = getArguments().getString(ARG_SEARCH_TERM, null);
-//
-//                switch (algorithmType) {
-//                    case "user":          //Posts by the current User
-//                        posts = client.getUsersPosts(userId);
-//                        break;
-//                    case "following":     //All posts based on User's followers
-//                        posts = client.getFollowingPosts(userId);
-//                        break;
-//                    case "saved":         //All saved posts
-//                        posts = client.getSavedPosts(userId);
-//                        break;
-//                    case "new":           //All new posts
-//                        posts = client.getNewestPosts();
-//                        break;
-//                    case "popular":       //All popular posts
-//                        posts = client.getPopularPosts();
-//                        break;
-//                    case "trending":      //All trending posts
-//                        posts = client.getTrendingPosts();
-//                        break;
-//                    case "searchTerm":    //Posts based on search term
-//                        posts = client.getSearchTermPosts(ARG_SEARCH_TERM);
-//                        break;
-//                    default:              //All posts
-//                        posts = client.getAllPosts();
-//                        break;
-//                }
-////    private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
-////        @Override
-////        protected List<PostModel> doInBackground(Void... voids) {
-////            try {
-////                PostClient client = SPWebApiRepository.getInstance().getPostClient();
-////                List<PostModel> posts;
-////
-////                String algorithmType = getArguments().getString(ARG_ALGO_TYPE, nul);
-////                String searchTerm = getArguments().getString(ARG_SEARCH_TERM, null);
-////
-////                switch (algorithmType) {
-////                    case "user":          //Posts by the current User
-////                        posts = client.getUsersPosts(userId);
-////                        break;
-////                    case "following":     //All posts based on User's followers
-////                        posts = client.getFollowingPosts(userId);
-////                        break;
-////                    case "saved":         //All saved posts
-////                        posts = client.getSavedPosts(userId);
-////                        break;
-////                    case "new":           //All new posts
-////                        posts = client.getNewestPosts();
-////                        break;
-////                    case "popular":       //All popular posts
-////                        posts = client.getPopularPosts();
-////                        break;
-////                    case "trending":      //All trending posts
-////                        posts = client.getTrendingPosts();
-////                        break;
-////                    case "searchTerm":    //Posts based on search term
-////                        posts = client.getSearchTermPosts(ARG_SEARCH_TERM);
-////                        break;
-////                    default:              //All posts
-////                        posts = client.getAllPosts();
-////                        break;
-////                }
-////
-////                return (posts != null) ? posts : new ArrayList<>();
-////            } catch (IOException e) {
-////                Log.e(TAG, "Error fetching posts", e);
-////                return new ArrayList<>();
-////            }
-////        }
-////
-//                return (posts != null) ? posts : new ArrayList<>();
-//            } catch (IOException e) {
-//                Log.e(TAG, "Error fetching posts", e);
-//                return new ArrayList<>();
-//            }
-//        }
-//
-//        @Override
-//        protected void onPostExecute(List<PostModel> posts) {
-//            if (posts == null) {
-//                Log.w(TAG, "Received null posts list, initializing empty list");
-//                posts = new ArrayList<>();
-//            }
-//            Log.d(TAG, "Fetched posts: " + posts.size());
-//            allPosts.clear();
-//            allPosts.addAll(posts);
-//            setupRecyclerView();
-//        }
-//    }
 
 }

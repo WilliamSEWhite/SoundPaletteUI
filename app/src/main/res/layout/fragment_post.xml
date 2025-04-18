@@ -4,21 +4,33 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="8dp">
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/swipeRefreshLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerView"
+
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbars="vertical"
-            />
+            >
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/idNestedSV"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical"
+                />
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>    <TextView
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+<!--    <ProgressBar-->
+<!--        android:id="@+id/loading"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content" />-->
+    <TextView
     android:layout_width="match_parent"
     android:layout_height="0dip"
     android:layout_weight="0.92"
@@ -27,5 +39,6 @@
     android:textSize="30sp"
     android:id="@+id/list_empty"
     android:text="There are no posts to show here..."/>
+
 
 </LinearLayout>

@@ -104,12 +104,8 @@ public class EditPostFragment extends Fragment {
         @Override
         protected PostModel doInBackground(Void... voids) {
             try {
-                List<PostModel> allPosts = SPWebApiRepository.getInstance().getPostClient().getPostsForUser();
-                for (PostModel p : allPosts) {
-                    if (p.getPostId() == postId) {
-                        return p;
-                    }
-                }
+                PostModel post = SPWebApiRepository.getInstance().getPostClient().getPost(postId);
+                return post;
             } catch (IOException e) {
                 Log.e("EditPostFragment", "Failed to load post", e);
             }
