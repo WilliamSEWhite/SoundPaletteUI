@@ -108,7 +108,7 @@ public class UISettings {
         rootView.setBackground(animatedGradientDrawable);
 
         ValueAnimator hueAnimator = ValueAnimator.ofFloat(0f, 360f);
-        hueAnimator.setDuration(ANIMATION_DURATION);
+        hueAnimator.setDuration(30000);
         hueAnimator.setRepeatCount(ValueAnimator.INFINITE);
         hueAnimator.setInterpolator(new LinearInterpolator());
         hueAnimator.addUpdateListener(animation -> {
