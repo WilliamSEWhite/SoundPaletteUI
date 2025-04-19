@@ -94,12 +94,12 @@ public class SearchFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
 
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
-        UISettings.applyBrightnessGradientBackground(rootView, 330f, isDarkMode);
+        UISettings.applyBrightnessGradientBackground(rootView, 280f, isDarkMode);
         final View rootLayout = rootView.findViewById(R.id.root_layout);
 
         EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
         emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
-        emojiBackground.setAlpha(0.25f);
+        emojiBackground.setAlpha(0.65f);
 
         initComponents(rootView);
 
@@ -162,7 +162,7 @@ public class SearchFragment extends Fragment {
 
 
             setPostFragment();
-            UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 280f, isDarkMode);
         });
         frameTags.setOnClickListener(v -> {
             trendingRange.setVisibility(GONE);
@@ -208,7 +208,7 @@ public class SearchFragment extends Fragment {
 
 
             setTagsFragment();
-            UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 280f, isDarkMode);
         });
         frameUsers.setOnClickListener(v -> {
             trendingRange.setVisibility(GONE);
@@ -254,7 +254,7 @@ public class SearchFragment extends Fragment {
 
 
             setUsersFragment();
-            UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 280f, isDarkMode);
         });
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -311,10 +311,10 @@ public class SearchFragment extends Fragment {
     }
     private void setButtonTextSelected(TextView textView, boolean isSelected) {
         if (isSelected) {
-            textView.setTypeface(null, Typeface.BOLD);
-            textView.setTextSize(19);
+//            textView.setTypeface(null, Typeface.BOLD);
+            textView.setTextSize(20);
         } else {
-            textView.setTypeface(null, Typeface.NORMAL);
+//            textView.setTypeface(null, Typeface.NORMAL);
             textView.setTextSize(18);
         }
     }

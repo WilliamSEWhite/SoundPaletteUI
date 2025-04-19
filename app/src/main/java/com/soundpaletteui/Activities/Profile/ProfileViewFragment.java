@@ -23,9 +23,11 @@ import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
 import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
 import com.soundpaletteui.Activities.Messages.ChatroomFragment;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModelLite;
 import com.soundpaletteui.Infrastructure.Models.User.UserProfileModelLite;
@@ -137,7 +139,18 @@ public class ProfileViewFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_profile_view, container, false);
+
+        // 1) Apply gradient + emoji
+        View root = rootView.findViewById(R.id.root_layout);
+        boolean isDark = DarkModePreferences.isDarkModeEnabled(root.getContext());
+        UISettings.applyBrightnessGradientBackground(root, 0f, isDark);
+
+        com.soundpaletteui.Views.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
+        emojiBg.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_GRID);
+        emojiBg.setAlpha(0.65f);
+
         try {
             initComponents(rootView);
         } catch (IOException e) {

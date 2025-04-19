@@ -15,6 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Username"
+        android:fontFamily="@font/lobstertwoitalic"
         android:textColor="@color/white"
         android:textSize="10sp" />
 

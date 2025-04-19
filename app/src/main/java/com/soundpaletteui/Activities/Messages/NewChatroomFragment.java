@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,14 +21,17 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.SearchAdapters.UserSearchAdapter;
 import com.soundpaletteui.Activities.SearchAdapters.UserSelectedAdapter;
-import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
-import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModelLite;
 import com.soundpaletteui.Infrastructure.Models.Chat.NewChatroomModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
-import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.R;
+import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
+import com.soundpaletteui.Views.EmojiBackgroundView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -57,143 +59,128 @@ public class NewChatroomFragment extends Fragment {
         return new NewChatroomFragment();
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        currentUser = AppSettings.getInstance().getUser();
-        userClient = SPWebApiRepository.getInstance().getUserClient();
-        chatClient = SPWebApiRepository.getInstance().getChatClient();
-    }
-
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_chatroom_setup, container, false);
 
-        // Initialize UI components
-        chatroomNameEdit = rootView.findViewById(R.id.chatroomNameEdit);
-        userSearchInput = rootView.findViewById(R.id.userSearchInput);
-        userSearchResults = rootView.findViewById(R.id.userSearchResults);
-        selectedUsersView = rootView.findViewById(R.id.selectedUsersView);
-        saveButton = rootView.findViewById(R.id.saveButton);
+        // 1) Apply the same brightness-gradient & emoji background as Search
+        View rootLayout = rootView.findViewById(R.id.root_layout);
+        boolean isDark = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
+        UISettings.applyBrightnessGradientBackground(rootLayout, 240f, isDark);
 
-        // Set up adapters and RecyclerViews
-        userSearchAdapter = new UserSearchAdapter(searchResults, user -> {
-            if (!selectedUsers.contains(user)) {
-                selectedUsers.add(user);
+        EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
+        emojiBg.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
+        emojiBg.setAlpha(0.65f);
+
+        // 2) Your existing initialization
+        chatroomNameEdit   = rootView.findViewById(R.id.chatroomNameEdit);
+        userSearchInput    = rootView.findViewById(R.id.userSearchInput);
+        userSearchResults  = rootView.findViewById(R.id.userSearchResults);
+        selectedUsersView  = rootView.findViewById(R.id.selectedUsersView);
+        saveButton         = rootView.findViewById(R.id.saveButton);
+
+        currentUser = AppSettings.getInstance().getUser();
+        userClient  = SPWebApiRepository.getInstance().getUserClient();
+        chatClient  = SPWebApiRepository.getInstance().getChatClient();
+
+        userSearchAdapter = new UserSearchAdapter(searchResults, username -> {
+            if (!selectedUsers.contains(username)) {
+                selectedUsers.add(username);
                 selectedUsersAdapter.notifyDataSetChanged();
             }
         });
-
-        // Action to remove the selected user from list
-        selectedUsersAdapter = new UserSelectedAdapter(selectedUsers, user -> {
-            selectedUsers.remove(user);
+        selectedUsersAdapter = new UserSelectedAdapter(selectedUsers, username -> {
+            selectedUsers.remove(username);
             selectedUsersAdapter.notifyDataSetChanged();
         });
 
-        // Set up the list of users to select from
         userSearchResults.setLayoutManager(new LinearLayoutManager(getContext()));
         userSearchResults.setAdapter(userSearchAdapter);
 
-        // Set up the list of users selected
-        selectedUsersView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        selectedUsersView.setLayoutManager(
+                new LinearLayoutManager(getContext(),
+                        LinearLayoutManager.HORIZONTAL,
+                        false)
+        );
         selectedUsersView.setAdapter(selectedUsersAdapter);
 
-        // Dummy data for user search results
         userSearchInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override
-            // Prompt for API return at 3 letters, then again at 5+
-            public void onTextChanged(CharSequence s, int start, int before, int count)
-            {
-                if(s.length()>3){
-                    searchUsersAsync(s.toString());
-                }
+            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+            @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
+                if (s.length() > 3) searchUsersAsync(s.toString());
             }
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void afterTextChanged(Editable s) {}
         });
 
-        // Save button listener
         saveButton.setOnClickListener(v -> {
-            String chatRoomName = chatroomNameEdit.getText().toString().trim();
-
-            // If the selected Users is empty
+            String roomName = chatroomNameEdit.getText().toString().trim();
             if (selectedUsers.isEmpty()) {
-                Log.d("NewChatroomFragment", "No users selected.");
                 new AlertDialog.Builder(getContext())
                         .setTitle("Error")
                         .setMessage("Chatroom users cannot be empty.")
                         .setPositiveButton("OK", null)
                         .show();
             } else {
-                // Create a new Chatroom with ChatroomName and List<String> usernames
-                new CreateChatroomTaskAsync().execute();
+                new CreateChatroomTaskAsync().execute(roomName);
             }
         });
 
         return rootView;
     }
 
-    // Sends the actions to create a new Chatroom in the API Server
-    private class CreateChatroomTaskAsync extends AsyncTask<Void, Void, ChatroomModelLite> {
-        protected ChatroomModelLite doInBackground(Void... d) {
+    private class CreateChatroomTaskAsync
+            extends AsyncTask<String, Void, ChatroomModelLite> {
+        @Override
+        protected ChatroomModelLite doInBackground(String... params) {
             try {
-                String chatRoomName = chatroomNameEdit.getText().toString().trim();
-                List<String> usernames = new ArrayList<>();
-                usernames.addAll(selectedUsers);
-                usernames.add(AppSettings.getInstance().getUsername());
-
-                Log.d("NewChatroomFragment", "Creating a new Chatroom titled: " + chatRoomName);
-                NewChatroomModel newChatroom = new NewChatroomModel(chatRoomName, usernames);
-                return chatClient.createChatroom(newChatroom);
-
+                String name = params[0];
+                List<String> users = new ArrayList<>(selectedUsers);
+                users.add(currentUser.getUsername());
+                return chatClient.createChatroom(
+                        new NewChatroomModel(name, users)
+                );
             } catch (IOException e) {
-                Log.e("NewChatroomFragment", "Failed to create chatroom: " + e.getMessage());
                 return null;
             }
         }
-
         @Override
-        protected void onPostExecute(ChatroomModelLite createdChatroom) {
-            if (createdChatroom != null) {
-                openChatroom(createdChatroom);
+        protected void onPostExecute(ChatroomModelLite chatroom) {
+            if (chatroom != null) {
+                FragmentManager fm = requireActivity().getSupportFragmentManager();
+                FragmentTransaction tx = fm.beginTransaction();
+                tx.replace(
+                        R.id.mainScreenFrame,
+                        ChatroomFragment.newInstance(chatroom.getChatroomId(), chatroom.getName())
+                );
+                tx.addToBackStack(null).commit();
             } else {
                 new AlertDialog.Builder(getContext())
                         .setTitle("Error")
-                        .setMessage("Chatroom could not be created. Please try again.")
+                        .setMessage("Could not create chatroom.")
                         .setPositiveButton("OK", null)
                         .show();
             }
         }
     }
 
-
-    private void openChatroom(ChatroomModelLite chatroom){
-        ChatroomFragment chatroomFragment = ChatroomFragment.newInstance(chatroom.getChatroomId(), chatroom.getName());
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.mainScreenFrame, chatroomFragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
     private void searchUsersAsync(String searchTerm) {
         new Thread(() -> {
             try {
-                UserClient client = SPWebApiRepository.getInstance().getUserClient();
-                List<String> results = client.searchUsersLite(searchTerm);
+                List<String> results =
+                        SPWebApiRepository.getInstance()
+                                .getUserClient()
+                                .searchUsersLite(searchTerm);
 
                 requireActivity().runOnUiThread(() -> {
                     searchResults.clear();
                     searchResults.addAll(results);
                     userSearchAdapter.notifyDataSetChanged();
                 });
-
-            } catch (IOException e) {
-                Log.e("NewChatroomFragment", "Failed to load dummy users: " + e.getMessage());
-            }
+            } catch (IOException e) {/* log if needed */}
         }).start();
     }
 }

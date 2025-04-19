@@ -23,6 +23,7 @@
         <TextView
             android:id="@+id/textMessageUsername"
             android:layout_width="match_parent"
+            android:fontFamily="@font/lobstertworegular"
             android:layout_height="wrap_content"
             android:text="USERNAME"
             android:textColor="@android:color/darker_gray"
@@ -35,6 +36,7 @@
             android:id="@+id/textMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/inriasansregular"
             android:text="This is a really long example of a message and how it would appear on the actual screen"
             android:textColor="@color/black"
 
@@ -59,6 +61,8 @@
         android:layout_gravity="bottom"
         android:background="@android:color/transparent"
         android:padding="15dp"
+        android:tint="@color/white"
+        android:alpha="0.8"
         android:scaleType="centerCrop"
         android:scaleX="1.3"
         android:scaleY="1.3"

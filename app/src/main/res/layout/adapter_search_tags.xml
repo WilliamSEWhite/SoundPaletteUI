@@ -10,7 +10,7 @@
         android:id="@+id/tagName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/white"
+        android:textColor="@color/black"
         android:shadowColor="@color/black"
         android:textStyle="bold"
         android:shadowDx="2"

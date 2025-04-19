@@ -1,169 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/root_layout"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context=".Activities.Profile.RegisterActivity">
 
-    <include
-        android:id="@+id/toolbar"
-        layout="@layout/header"/>
+    <!-- 1) Emoji background layer -->
+    <com.soundpaletteui.Views.EmojiBackgroundView
+        android:id="@+id/emojiBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <LinearLayout
+        android:id="@+id/root_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="5"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="@dimen/register_fields"
-        android:gravity="center"
         android:background="@android:color/transparent">
 
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/header"/>
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/transparent"
-
+            android:layout_height="0dp"
+            android:layout_weight="5"
             android:orientation="vertical"
-            android:background="@drawable/rounded_corners">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Email"
-                android:layout_gravity="start"
-                android:paddingStart="5dp"/>
+            android:padding="@dimen/register_fields"
+            android:gravity="center"
+            android:background="@android:color/transparent">
 
-            <EditText
-                android:id="@+id/registerEmail"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:hint="someone@youremail.com"/>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@android:color/transparent"
-
-            android:orientation="vertical"
-            android:background="@drawable/rounded_corners">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Phone"
-                android:layout_gravity="start"
-                android:paddingStart="5dp"/>
-
-            <EditText
-                android:id="@+id/registerPhone"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:hint="###-###-####"/>
-
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="center"
-            android:layout_margin="@dimen/edit_text_margin"
-
-            android:id="@+id/pick_date">
+            <!-- Email -->
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_gravity="start">
+                android:backgroundTint="@color/white"
+                android:background="@drawable/rounded_corners">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
-                    android:id="@+id/selected_date"
-                    android:hint="Select your birthday"
-
-                    android:layout_gravity="center"/>
-                <View
+                    android:text="Email"
+                    android:paddingStart="5dp"/>
+                <EditText
+                    android:id="@+id/registerEmail"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/white"/>
-
+                    android:layout_height="wrap_content"
+                    android:hint="someone@youremail.com"/>
             </LinearLayout>
 
-            <ImageView
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:background="@null"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/icon_calendar" />
-        </LinearLayout>
+            <!-- Phone -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:backgroundTint="@color/white"
+                android:background="@drawable/rounded_corners">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Phone"
+                    android:paddingStart="5dp"/>
+                <EditText
+                    android:id="@+id/registerPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="###-###-####"/>
+            </LinearLayout>
+
+            <!-- Date of Birth picker -->
+            <LinearLayout
+                android:id="@+id/pick_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/rounded_corners"
+                android:backgroundTint="@color/white"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_margin="@dimen/edit_text_margin">
+                <TextView
+                    android:id="@+id/selected_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:hint="Select your birthday"/>
+                <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    app:srcCompat="@drawable/icon_calendar"/>
+            </LinearLayout>
+
+            <!-- Profile picture -->
             <ImageView
                 android:id="@+id/registerProfilePicture"
                 android:layout_width="@dimen/profile_pic"
-                android:alpha="1"
-
                 android:layout_height="@dimen/profile_pic"
-                android:layout_margin="@dimen/edit_text_margin"
                 android:src="@drawable/baseline_person_100"
                 android:background="@drawable/posts_profile"
+                android:backgroundTint="@color/white"
+                android:clickable="true"/>
 
-                android:focusable="true"
-                android:clickable="true" />
-        </LinearLayout>
-        <Spinner
-            android:id="@+id/registerLocation"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:drawable/btn_dropdown"
-            android:spinnerMode="dropdown" />
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="@dimen/btn_padding"
-        android:orientation="horizontal"
-        android:background="@color/sp_main_bg">
 
-        <FrameLayout
-            android:id="@+id/frame_save"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginStart="@dimen/edit_text_margin"
-            android:background="@drawable/round_button_shape"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackgroundBorderless">
-
-            <pl.droidsonroids.gif.GifImageView
-                android:id="@+id/gif_save"
+            <!-- Location spinner -->
+            <Spinner
+                android:id="@+id/registerLocation"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/posts_profile"/>
-
-            <TextView
-                android:id="@+id/save_text"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Next"
-                android:textColor="@android:color/white"
-                android:textSize="30sp"
-                android:textStyle="bold"/>
-        </FrameLayout>
+                android:background="@android:drawable/btn_dropdown"/>
+        </LinearLayout>
+
+        <!-- Save button -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="@dimen/btn_padding"
+            android:orientation="horizontal"
+            android:background="@android:color/transparent">
+
+            <FrameLayout
+                android:id="@+id/frame_save"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/edit_text_margin"
+                android:background="@drawable/round_button_shape"
+                android:clickable="true"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless">
+
+                <pl.droidsonroids.gif.GifImageView
+                    android:id="@+id/gif_save"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/search_gif"/>
+
+                <TextView
+                    android:id="@+id/save_text"
+                    android:layout_width="wrap_content"
+                    android:fontFamily="@font/lobstertwoitalic"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Next"
+                    android:textColor="@android:color/white"
+                    android:textSize="30sp"
+                    android:textStyle="bold"/>
+            </FrameLayout>
+        </LinearLayout>
+
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>

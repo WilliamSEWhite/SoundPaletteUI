@@ -19,5 +19,6 @@
         android:layout_height="wrap_content"
         android:text="Label"
         android:textSize="12sp"
+        android:fontFamily="@font/lobstertworegular"
         android:textColor="@android:color/darker_gray" />
 </LinearLayout>

@@ -8,5 +8,6 @@
         android:type="linear" />
 
     <corners
-        android:radius="16dp" />
+        android:bottomLeftRadius="6dp"
+    />
 </shape>

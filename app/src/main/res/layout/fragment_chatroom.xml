@@ -24,15 +24,17 @@
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:background="@drawable/white_translucency_gradient_horizontal_chattab"
+        android:fontFamily="@font/monoton"
         android:gravity="center"
         android:text="\@USERNAME"
-        android:textColor="#012E49"
-        android:textSize="20dp"
-        android:textStyle="bold" />
+        android:textColor="#F6F6FD"
+
+        android:textSize="20dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="40dp"
+
         android:paddingTop="10dp"
         android:orientation="horizontal">
 
@@ -48,16 +50,18 @@
             android:layout_height="match_parent"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
+
             android:layout_weight="2">
 
             <Button
                 android:id="@+id/editChatroomButton"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="EDIT"
-                android:textSize="8dp"
-                android:background="@drawable/frosted_glass_button">
-            </Button>
+                android:fontFamily="@font/inriasansregular"
+                android:backgroundTint="#7E91DB"
+                android:text="Edit"
+
+                android:textSize="9dp"></Button>
         </LinearLayout>
 
     </LinearLayout>
@@ -120,11 +124,11 @@
             android:layout_width="72dp"
             android:layout_height="31dp"
             android:layout_gravity="center"
-            android:background="@drawable/frosted_glass_button"
+            android:backgroundTint="#3C5BD6"
 
             android:text="Send"
-            android:textSize="10dp"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="10dp" />
 
 
     </LinearLayout>

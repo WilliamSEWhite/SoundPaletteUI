@@ -6,10 +6,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp"
         android:background="@drawable/white_translucency_gradient_horizontal_chattab"
+        android:gravity="center_vertical"
         android:orientation="vertical"
-        android:gravity="center_vertical">
+        android:padding="16dp">
 
         <!-- Usernames -->
         <TextView
@@ -17,39 +17,39 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
+            android:fontFamily="@font/monoton"
             android:shadowColor="@color/black"
             android:shadowDx="2"
             android:shadowDy="1"
             android:text="Chatroom Name"
-            android:textColor="#8CB7D3"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textColor="#F5F5FF"
+            android:textSize="16sp" />
 
         <!-- Last Message -->
         <TextView
             android:id="@+id/lastMessage"
             android:layout_width="wrap_content"
+            android:fontFamily="@font/inriasansbold"
             android:layout_height="wrap_content"
-            android:text="Last message here"
-            android:textSize="14sp"
-            android:textColor="@color/white"
             android:shadowColor="@color/black"
             android:shadowDx="2"
             android:shadowDy="1"
-            />
+            android:text="Last message here"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
 
         <!-- Last Message Date -->
         <TextView
             android:id="@+id/lastMessageDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="01/01/2000"
-            android:textSize="8sp"
-            android:textColor="@color/black"
             android:shadowColor="@color/black"
             android:shadowDx="2"
             android:shadowDy="1"
-            android:textStyle="italic"/>
+            android:text="01/01/2000"
+            android:textColor="@color/black"
+            android:textSize="8sp"
+            android:textStyle="italic" />
 
     </LinearLayout>
 </LinearLayout>

@@ -208,7 +208,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         // Save button action
         holder.saveButton.setChecked(post.getIsSaved());
         holder.saveButton.setOnClickListener(v -> toggleSaved(post, holder.saveButton.isChecked()));
-        holder.saveButton.setButtonTintList(ColorStateList.valueOf(Color.RED));
+        holder.saveButton.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#8B0000")));
 
         // Editing a Post action -- only available on the ProfileFragment under "POSTS" toggle button
         if (showEditButton) {

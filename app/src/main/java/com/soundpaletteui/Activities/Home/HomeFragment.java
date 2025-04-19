@@ -125,7 +125,7 @@ public class HomeFragment extends Fragment {
                 frameFollower.getBackground().mutate().setTint(ORANGE_COLOR);
                 frameFollower.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
 
-                UISettings.applyBrightnessGradientBackground(rootLayout, 30f, darkMode);
+                UISettings.applyBrightnessGradientBackground(rootLayout, 0f, darkMode);
                 exploreGifDrawable.start();
                 gifHandler.postDelayed(exploreGifDrawable::stop, 800);
             } catch (ClassCastException e) {
@@ -147,7 +147,7 @@ public class HomeFragment extends Fragment {
             setButtonTextSelected(textFollower, false);
 
             View toolbar = requireActivity().findViewById(R.id.toolbar);
-            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 30f, isDarkMode);
+            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 5f, isDarkMode);
         });
 
         frameFollower.setOnClickListener(v -> {
@@ -206,8 +206,8 @@ public class HomeFragment extends Fragment {
         View rootLayout = getView().findViewById(R.id.root_layout);
         View toolbar = requireActivity().findViewById(R.id.toolbar);
         if ("explore".equals(selectedTab)) {
-            UISettings.applyBrightnessGradientBackground(rootLayout, 30f, isDarkMode);
-            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 30f, isDarkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 0f, isDarkMode);
+            UISettings.applyFlippedBrightnessGradientBackground(toolbar, 0f, isDarkMode);
         } else {
             UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
             UISettings.applyFlippedBrightnessGradientBackground(toolbar, 330f, isDarkMode);
@@ -244,10 +244,10 @@ public class HomeFragment extends Fragment {
     // Sets the text style for a TextView based on whether it is selected.
     private void setButtonTextSelected(TextView textView, boolean isSelected) {
         if (isSelected) {
-            textView.setTypeface(null, Typeface.BOLD);
-            textView.setTextSize(19);
+//            textView.setTypeface(null, Typeface.BOLD);
+            textView.setTextSize(20);
         } else {
-            textView.setTypeface(null, Typeface.NORMAL);
+//            textView.setTypeface(null, Typeface.NORMAL);
             textView.setTextSize(18);
         }
     }

@@ -1,129 +1,150 @@
-<LinearLayout
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/background_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_dark_teal"
-    android:padding="16dp">
+    tools:context=".Activities.Messages.EditChatroomFragment">
 
-    <ScrollView
+    <!-- 1) Emoji background layer -->
+    <com.soundpaletteui.Views.EmojiBackgroundView
+        android:id="@+id/emojiBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/root_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:orientation="vertical"
+        android:background="@android:color/transparent"
+        android:padding="16dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="16dp"
-            android:orientation="vertical"
-            android:gravity="center_vertical">
+            android:fillViewport="true">
 
-            <!-- Chatroom Name -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Chatroom Name"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:paddingStart="12dp"
-                android:paddingBottom="5dp"/>
-
-            <EditText
-                android:id="@+id/chatroomNameEdit"
-                android:layout_width="330dp"
-                android:layout_height="40dp"
-                android:background="@drawable/background_transparent_rec1"
-                android:autoSizeMaxTextSize="30dp"
-                android:hint="Chatroom Name..."
-                android:textColorHint="#B8DEE3"
-                android:textColor="@color/white"
-                android:layout_marginEnd="8dp"
-                android:paddingBottom="12dp"/>
-
-            <View
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"/>
-
-            <!-- Usernames of Members in Chatrooom -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Member Usernames"
-                android:textSize="14sp"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:paddingStart="12dp"
-                android:paddingBottom="5dp"/>
-
-            <EditText
-                android:id="@+id/userSearchInput"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@drawable/background_transparent_rec1"
-                android:autoSizeMaxTextSize="30dp"
-                android:hint="Enter a Username.."
-                android:textColorHint="#B8DEE3"
-                android:textColor="@color/white"
-                android:paddingStart="12dp"/>
-
-            <!-- Search results -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/userSearchResults"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="@drawable/background_transparent_rec1"/>
-
-            <!-- Selected Members -->
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/selectedUsersView"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/background_transparent_rec1"
-                android:orientation="horizontal"/>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                />
-            <FrameLayout
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="10dp"
-                >
-                <Button
-                    android:id="@+id/leaveChatroomButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_gravity="start"
-                    android:background="@drawable/frosted_glass_button"
-                    android:text="LEAVE"
-                    android:textColor="@android:color/white"
-                    android:visibility="gone"/>
-                <Button
-                    android:id="@+id/saveButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:layout_gravity="end"
-                    android:background="@drawable/frosted_glass_button"
-                    android:text="SAVE"
-                    android:textColor="@android:color/white" />
+                android:orientation="vertical">
 
-            </FrameLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+
+                    <!-- Chatroom Name -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Chatroom Name"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/white"
+                        android:paddingStart="12dp"
+                        android:paddingBottom="5dp"/>
+
+                    <EditText
+                        android:id="@+id/chatroomNameEdit"
+                        android:layout_width="330dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/white_translucency_gradient_create"
+                        android:hint="Chatroom Name..."
+                        android:textColorHint="@color/colorOnSurface"
+                        android:textColor="@color/black"
+                        android:layout_marginEnd="8dp"
+                        android:paddingBottom="12dp"/>
+
+                    <View
+                        android:layout_width="wrap_content"
+                        android:layout_height="20dp"/>
+
+                    <!-- Member Usernames -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Member Usernames"
+                        android:textSize="14sp"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:paddingStart="12dp"
+                        android:paddingBottom="5dp"/>
+
+                    <EditText
+                        android:id="@+id/userSearchInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@drawable/white_translucency_gradient_create"
+
+                        android:hint="Enter a Username.."
+                        android:textColorHint="@color/colorOnSurface"
+                        android:textColor="@color/black"
+                        android:paddingStart="12dp"/>
+
+                    <!-- Search results -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/userSearchResults"
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"
+                        android:background="@drawable/white_translucency_gradient_create"
+
+                        />
 
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="100dp"/>
+                    <!-- Selected Members -->
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/selectedUsersView"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/white_translucency_gradient_create"
 
-        </LinearLayout>
+                        android:orientation="horizontal"/>
 
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"/>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="10dp">
+
+                        <Button
+                            android:id="@+id/leaveChatroomButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:layout_gravity="start"
+                            android:background="@drawable/frosted_glass_button"
+                            android:fontFamily="@font/inriasansregular"
+                            android:text="Leave"
+                            android:textColor="@android:color/white"
+                            android:visibility="gone"/>
+
+                        <Button
+                            android:id="@+id/saveButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="50dp"
+                            android:layout_gravity="end"
+                            android:backgroundTint="#3A39F4"
+                            android:fontFamily="@font/inriasansregular"
+                            android:text="Save"
+                            android:textColor="@android:color/white" />
+
+                    </FrameLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="100dp"/>
+
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</FrameLayout>

@@ -67,7 +67,7 @@
         android:shadowDx="3"
         android:shadowDy="3"
         android:shadowRadius="4"
-        android:text="&quot;SoundPalette&quot;"
+        android:text="SoundPalette"
         android:textColor="@color/white"
         android:textSize="50sp"
         android:textStyle="bold" />
@@ -126,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Register"
-                android:textColor="#DBC92D"
+                android:textColor="#C5B940"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </FrameLayout>
@@ -139,7 +139,7 @@
             android:clickable="true"
 
             android:focusable="true"
-            android:background="@drawable/login_buttons"
+            android:background="@drawable/chatbox_inactive"
 
             android:foreground="?android:attr/selectableItemBackgroundBorderless">
 
@@ -150,7 +150,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="Login"
-                android:textColor="#BDA906"
+                android:textColor="#438092"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </FrameLayout>

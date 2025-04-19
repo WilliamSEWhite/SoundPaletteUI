@@ -24,7 +24,6 @@ public class EmojiBackgroundView extends View {
     private int patternType = PATTERN_GRID;
 
     private final String[] emojiArray = {
-            "🎹", // Musical Keyboard
             "🎼", // Musical Score
             "🎺", // Trumpet
             "🎻", // Violin
@@ -35,7 +34,6 @@ public class EmojiBackgroundView extends View {
             "🎧", // Headphone
             "🎭", // Performing Arts
             "🎨", // Artist Palette
-            "📻", // Radio
             "🎬"  // Clapper Board
     };
 

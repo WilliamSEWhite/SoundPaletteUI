@@ -10,17 +10,18 @@
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:padding="5dp"
-        android:background="@drawable/background_transparent_round5"
+        android:background="@drawable/white_translucency_gradient_searchtag"
         android:orientation="horizontal" android:id="@+id/tag_container">
 
         <TextView
             android:id="@+id/tagName"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="TagName"
-            android:textColor="@color/black"
-            android:paddingStart="10dp"
+            android:fontFamily="@font/monoton"
             android:gravity="center|start"
+            android:paddingStart="10dp"
+            android:text="TagName"
+            android:textColor="#F5EEF4"
             android:textSize="28dp" />
 
     </LinearLayout>

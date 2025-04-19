@@ -430,10 +430,10 @@ public class ProfileFragment extends Fragment {
     // Sets the style of a TextView to selected or unselected.
     private void setButtonTextSelected(TextView textView, boolean isSelected) {
         if (isSelected) {
-            textView.setTypeface(null, Typeface.BOLD);
-            textView.setTextSize(19);
+//            textView.setTypeface(null, Typeface.BOLD);
+            textView.setTextSize(20);
         } else {
-            textView.setTypeface(null, Typeface.NORMAL);
+//            textView.setTypeface(null, Typeface.NORMAL);
             textView.setTextSize(18);
         }
     }

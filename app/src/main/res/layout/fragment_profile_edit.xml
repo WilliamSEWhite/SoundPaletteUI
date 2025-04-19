@@ -23,6 +23,7 @@
             android:layout_height="match_parent"
             android:background="@color/white"
             android:src="@drawable/baseline_person_100"
+            android:backgroundTint="@color/white"
             app:shapeAppearanceOverlay="@style/CircleImageView" />
 
         <ImageButton
@@ -47,10 +48,11 @@
             android:layout_height="40dp"
             android:layout_gravity="left|center"
             android:layout_margin="10dp"
-            android:text="TAGS"
-            android:textSize="@dimen/btn_text_size"
+            android:backgroundTint="#A38701"
+            android:fontFamily="@font/inriasansregular"
+            android:text="Tags"
             android:textColor="@color/white"
-            android:backgroundTint="@color/colorOnSurface"/>
+            android:textSize="@dimen/btn_text_size" />
         <!-- display profile tags -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/userProfileTags"
@@ -59,7 +61,9 @@
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:layout_weight="1"
-            android:background="@color/white">
+            android:background="@drawable/white_translucency_gradient_create"
+
+            >
         </androidx.recyclerview.widget.RecyclerView>
     </LinearLayout>
     <!-- Username -->
@@ -69,7 +73,9 @@
         android:layout_height="@dimen/edit_text"
         android:layout_marginTop="12dp"
         android:hint="Username"
-        android:background="@color/white"
+
+        android:background="@drawable/white_translucency_gradient_create"
+
         android:textSize="@dimen/row_text"
         android:padding="12dp"
         android:enabled="false"/>
@@ -81,7 +87,8 @@
         android:layout_height="@dimen/edit_text"
         android:layout_marginTop="12dp"
         android:hint="Email Address"
-        android:background="@color/white"
+        android:background="@drawable/white_translucency_gradient_create"
+
         android:inputType="textEmailAddress"
         android:textSize="@dimen/row_text"
         android:padding="12dp"/>
@@ -93,7 +100,8 @@
         android:layout_height="@dimen/edit_text"
         android:layout_marginTop="12dp"
         android:hint="Phone Number"
-        android:background="@color/white"
+        android:background="@drawable/white_translucency_gradient_create"
+
         android:inputType="phone"
         android:textSize="@dimen/row_text"
         android:padding="12dp"/>
@@ -105,7 +113,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
         android:hint="Edit your bio..."
-        android:background="@color/white"
+        android:background="@drawable/white_translucency_gradient_create"
+
         android:textSize="@dimen/row_text"
         android:padding="12dp"
         android:inputType="textMultiLine"
@@ -120,7 +129,9 @@
         android:layout_height="@dimen/spinner_height"
         android:layout_marginTop="12dp"
         android:textSize="@dimen/row_text"
-        android:background="@color/white"
+        android:background="@drawable/white_translucency_gradient_create"
+        android:backgroundTint="@color/white"
+
         android:paddingLeft="12dp"
         android:paddingRight="12dp"/>
 
@@ -133,26 +144,29 @@
         android:layout_marginTop="16dp">
 
         <Button
+            android:id="@+id/btnCancel"
             android:layout_width="@dimen/btn_main_width"
             android:layout_height="@dimen/btn_main_height"
             android:layout_gravity="center"
+            android:fontFamily="@font/inriasansregular"
             android:layout_margin="10dp"
-            android:id="@+id/btnCancel"
-            android:text="CANCEL"
-            android:textSize="@dimen/btn_text_size"
+            android:backgroundTint="#A38701"
+            android:text="Cancel"
             android:textColor="@color/white"
-            android:backgroundTint="@color/colorOnSurface"/>
+            android:textSize="@dimen/btn_text_size" />
 
         <Button
             android:layout_width="@dimen/btn_main_width"
             android:layout_height="@dimen/btn_main_height"
             android:layout_gravity="center"
+            android:fontFamily="@font/inriasansregular"
             android:layout_margin="10dp"
+
             android:id="@+id/btnSave"
             android:text="@string/btn_save"
             android:textSize="@dimen/btn_text_size"
             android:textColor="@color/white"
-            android:backgroundTint="@color/colorOnSurface"/>
+            android:backgroundTint="#A38701"/>
 
     </LinearLayout>
 

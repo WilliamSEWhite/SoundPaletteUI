@@ -32,7 +32,9 @@ import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserSearchModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.R;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
@@ -89,10 +91,23 @@ public class EditPostFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // 1) inflate the new wrapped layout
         View rootView = inflater.inflate(R.layout.fragment_post_create, container, false);
+
+        // 2) apply emoji + hue gradient
+        View rootLayout = rootView.findViewById(R.id.root_layout);
+        boolean isDark = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
+        UISettings.applyBrightnessGradientBackground(rootLayout, 50f, isDark);
+
+        com.soundpaletteui.Views.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
+        emojiBg.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_SPIRAL);
+        emojiBg.setAlpha(0.65f);
+
+        // 3) wire up preview button & start loading the post
         previewButton = rootView.findViewById(R.id.previewButton);
         previewButton.setOnClickListener(v -> showPostPreview());
         new LoadPostTask(rootView).execute();
+
         return rootView;
     }
 

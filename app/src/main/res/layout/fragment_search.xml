@@ -82,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
-                android:src="@drawable/posts_profile" />
+                android:src="@drawable/search_gif" />
 
             <TextView
                 android:id="@+id/postsToggle"
@@ -90,7 +90,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
-                android:text="POSTS"
+                android:text="Posts"
+                android:fontFamily="@font/lobstertworegular"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </FrameLayout>
@@ -111,15 +112,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
-                android:src="@drawable/saved_profile" />
+                android:src="@drawable/search_gif" />
 
             <TextView
                 android:id="@+id/tagsToggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:fontFamily="@font/lobstertworegular"
                 android:textColor="@android:color/white"
-                android:text="TAGS"
+                android:text="Tags"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </FrameLayout>
@@ -139,15 +141,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
-                android:src="@drawable/saved_profile" />
+                android:src="@drawable/search_gif" />
 
             <TextView
                 android:id="@+id/usersToggle"
                 android:layout_width="wrap_content"
+                android:fontFamily="@font/lobstertworegular"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:textColor="@android:color/white"
-                android:text="USERS"
+                android:text="Users"
                 android:textSize="18sp"
                 android:textStyle="bold" />
         </FrameLayout>
@@ -160,9 +163,12 @@
         android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
+            android:fontFamily="@font/monoton"
+            android:textColor="@color/white"
             android:layout_height="wrap_content"
-            android:text="Trending"
+            android:text="     Trending       "
             android:textSize="20dp"
+
             android:layout_gravity="center"/>
 
         <Spinner

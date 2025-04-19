@@ -22,6 +22,7 @@ import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,8 @@ import com.soundpaletteui.Activities.SearchAdapters.TagSearchAdapter;
 import com.soundpaletteui.Activities.SearchAdapters.TagSelectedAdapter;
 import com.soundpaletteui.Activities.SearchAdapters.UserSearchAdapter;
 import com.soundpaletteui.Activities.SearchAdapters.UserSelectedAdapter;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.SPApiServices.ApiClients.PostClient;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
@@ -52,6 +55,7 @@ import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
+import com.soundpaletteui.Views.EmojiBackgroundView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -175,6 +179,13 @@ public class CreatePostFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post_create, container, false);
+        LinearLayout rootLayout = rootView.findViewById(R.id.root_layout);
+        boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
+        UISettings.applyBrightnessGradientBackground(rootLayout, 200f, isDarkMode);
+
+        com.soundpaletteui.Views.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
+        emojiBg.setPatternType(EmojiBackgroundView.PATTERN_RADIAL);
+        emojiBg.setAlpha(0.65f);
         user = AppSettings.getInstance().getUser();
         userId = user.getUserId();
 

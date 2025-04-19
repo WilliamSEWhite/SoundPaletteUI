@@ -88,11 +88,11 @@ public class MainScreenActivity extends AppCompatActivity {
 
             View toolbarView = findViewById(R.id.toolbar);
             ColorStateList tint;
-            float hue = 0;
+            float hue = 30;
             int selected = item.getItemId();
 
             if (selected == R.id.nav_home) {
-                hue = 30f;
+                hue = 0f;
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), homeFragment, "HOME_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_profile) {
@@ -106,18 +106,17 @@ public class MainScreenActivity extends AppCompatActivity {
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), new MessageFragment(), "MESSAGE_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_search) {
-                hue = 330f;
+                hue = 280f;
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), searchFragment, "SEARCH_FRAGMENT", R.id.mainScreenFrame);
             } else {
                 hue = 30f;
             }
-
+animateHeaderShadow();
             tint = createColorStateList(toolbarView, hue);
             binding.bottomNavigationView.setItemIconTintList(tint);
             binding.bottomNavigationView.setItemTextColor(tint);
             updateBottomNavShadows(item.getItemId(), hue);
-            // Refresh the options menu so that the three dots are visible only on HomeFragment
             supportInvalidateOptionsMenu();
             return true;
         });
@@ -219,7 +218,7 @@ public class MainScreenActivity extends AppCompatActivity {
     private void animateHeaderShadow() {
         final TextView titleCenter = findViewById(R.id.title_center);
         if (titleCenter == null) return;
-        final int shadowColor = getResources().getColor(R.color.white);
+        final int shadowColor = getResources().getColor(R.color.colorBackgroundLight);
         final float initialRadius = 2f;
         final float finalRadius = 5f;
         final float[] currentRadius = {initialRadius};
@@ -261,7 +260,7 @@ public class MainScreenActivity extends AppCompatActivity {
 
     // Sets the initial color for the Home button upon startup.
     private void setInitialHomeButtonColor() {
-        ColorStateList homeButtonTint = createColorStateList(findViewById(R.id.toolbar), 30f);
+        ColorStateList homeButtonTint = createColorStateList(findViewById(R.id.toolbar), 0f);
         binding.bottomNavigationView.setItemIconTintList(homeButtonTint);
         binding.bottomNavigationView.setItemTextColor(homeButtonTint);
 
@@ -276,7 +275,9 @@ public class MainScreenActivity extends AppCompatActivity {
             if (actionView != null) {
                 TextView label = actionView.findViewById(R.id.bottom_nav_label);
                 label.setShadowLayer(0, 0, 0, Color.TRANSPARENT);
-                label.setTypeface(null, Typeface.NORMAL);
+//                label.setTypeface(null, Typeface.NORMAL);
+                label.setTextSize(10);
+
             }
         }
         MenuItem checkedItem = bottomNav.getMenu().findItem(checkedItemId);
@@ -285,7 +286,8 @@ public class MainScreenActivity extends AppCompatActivity {
             int selectedColor = Color.HSVToColor(new float[]{hue, 1f, 1f});
             int shadowColor = darkenColor(selectedColor);
             label.setShadowLayer(8, 6, 6, shadowColor);
-            label.setTypeface(null, Typeface.BOLD);
+//            label.setTypeface(null, Typeface.BOLD);
+            label.setTextSize(12);
         }
     }
 
