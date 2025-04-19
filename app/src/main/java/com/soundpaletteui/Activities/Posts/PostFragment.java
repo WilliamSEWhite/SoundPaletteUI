@@ -210,7 +210,7 @@ public class PostFragment extends Fragment {
                 posts = new ArrayList<>();
             }
             Log.d(TAG, "Fetched dummy posts: " + posts.size());
-            if(page == 1)
+            if(page == 0)
                 allPosts.clear();
 
             allPosts.addAll(posts);
