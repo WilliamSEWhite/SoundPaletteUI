@@ -139,7 +139,7 @@
             android:clickable="true"
 
             android:focusable="true"
-            android:background="@drawable/chatbox_inactive"
+            android:background="@drawable/chatbox_inactive_l"
 
             android:foreground="?android:attr/selectableItemBackgroundBorderless">
 
