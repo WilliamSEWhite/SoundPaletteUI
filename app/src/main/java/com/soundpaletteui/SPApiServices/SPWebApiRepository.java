@@ -7,6 +7,7 @@ import com.google.gson.GsonBuilder;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
 import com.soundpaletteui.SPApiServices.ApiClients.LoginRegisterClient;
+import com.soundpaletteui.SPApiServices.ApiClients.NotificationClient;
 import com.soundpaletteui.SPApiServices.ApiClients.PostClient;
 import com.soundpaletteui.SPApiServices.ApiClients.PostInteractionClient;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
@@ -73,4 +74,8 @@ public class SPWebApiRepository {
     public static FileClient getFileClient() {
         return new FileClient(retrofit);
     }
+    public static NotificationClient getNotificationClient() {
+        return new NotificationClient(retrofit);
+    }
+
 }
