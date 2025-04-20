@@ -24,6 +24,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundpaletteui.Activities.Home.HomeFragment;
 import com.soundpaletteui.Activities.LoginRegister.LoginActivity;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
+import com.soundpaletteui.Activities.Notifications.NotificationFragment;
 import com.soundpaletteui.Activities.Posts.CreatePostFragment;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.Activities.Trending.SearchFragment;
@@ -150,6 +151,7 @@ animateHeaderShadow();
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+
         if (id == R.id.action_toggle_dark_mode) {
             System.out.println("Button change");
             UISettings.applyFlippedBrightnessGradientBackground(recyclerView, 120f, homeFragment.darkMode);
@@ -164,21 +166,27 @@ animateHeaderShadow();
             } else {
                 binding.bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.white));
             }
-//            homeFragment.setTheme(isDarkMode);
+
             recreate();
             return true;
-        }
-        else if(id == R.id.log_out){
+
+        } else if (id == R.id.notificationButton) {
+            Navigation.replaceFragment(getSupportFragmentManager(), new NotificationFragment(), "NOTIFICATION_FRAGMENT", R.id.mainScreenFrame);
+            return true;
+
+        } else if (id == R.id.log_out) {
             AppSettings.setUsernameValue(this, "");
             AppSettings.setPasswordValue(this, "");
 
             Intent intent = new Intent(MainScreenActivity.this, LoginActivity.class);
             startActivity(intent); // Start the next activity
             finish(); // Finish the current activity
-
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
+
 
     // Initializes Fragment Activities to replace Main Fragment.
     private void initComponents() {

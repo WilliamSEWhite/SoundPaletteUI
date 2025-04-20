@@ -1,5 +1,6 @@
 package com.soundpaletteui.Activities.Profile;
 
+import android.app.Notification;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -20,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundpaletteui.Activities.Notifications.NotificationFragment;
 import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
 import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
@@ -84,7 +86,7 @@ public class ProfileFragment extends Fragment {
     private final int FULL_ALPHA = 255;
     private final int TRANSPARENT_ALPHA = 77;
     /** buttons */
-    Button btnEditTags, btnEditSaved;
+    Button viewNotificationButton, btnEditSaved;
     /** Tag stuff */
     private LinearLayoutManager linearLayoutManager;
     private TagClient tagClient;
@@ -184,10 +186,10 @@ public class ProfileFragment extends Fragment {
 
         fileClient = SPWebApiRepository.getInstance().getFileClient();
 
-        btnEditTags = rootView.findViewById(R.id.editTagsButton);
+        viewNotificationButton = rootView.findViewById(R.id.viewNotificationButton);
         btnEditSaved = rootView.findViewById(R.id.editSavedButton);
 
-        btnEditTags.setOnClickListener(v -> editUserTags(new ProfileEditTagsFragment(), "PROFILE_EDIT_TAGS_FRAGMENT"));
+        viewNotificationButton.setOnClickListener(v -> viewNotifications(new NotificationFragment(), "VIEW_NOTIFICATIONS_FRAGMENT"));
         btnEditSaved.setOnClickListener(v -> editSaved(new ProfileEditFragment(), "PROFILE_EDIT_FRAGMENT"));
 
         recyclerView = rootView.findViewById(R.id.recycler_tag);
@@ -221,12 +223,8 @@ public class ProfileFragment extends Fragment {
         profileFollowersDisplay = rootView.findViewById(R.id.profileFollowersDisplay);
         profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
 
-        btnEditTags.setBackgroundColor(Color.parseColor("#FFD700"));
+        viewNotificationButton.setBackgroundColor(Color.parseColor("#FFD700"));
         btnEditSaved.setBackgroundColor(Color.parseColor("#FFD700"));
-
-        // Edit Profile Button Actions
-        AppCompatImageButton buttonEdit = rootView.findViewById(R.id.editProfileButton);
-        buttonEdit.setOnClickListener(v -> editProfile(new ProfileEditFragment(), "PROFILE_EDIT_FRAGMENT"));
 
         // Post Button Actions
         framePosts.setOnClickListener(v -> {
@@ -358,7 +356,7 @@ public class ProfileFragment extends Fragment {
     }
 
     /** edit user tags */
-    private void editUserTags(Fragment newFragment, String tag) {
+    private void viewNotifications(Fragment newFragment, String tag) {
         Bundle bundle = new Bundle();
         bundle.putInt("nav", 0);
         newFragment.setArguments(bundle);

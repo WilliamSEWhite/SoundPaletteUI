@@ -44,24 +44,6 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-
-            android:paddingStart="5dp"
-            android:paddingEnd="5dp"
-            android:layout_weight="2">
-
-            <Button
-                android:id="@+id/editTagsButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:fontFamily="@font/inriasansregular"
-                android:text="Edit Tags"
-                android:textStyle="bold"
-                android:textSize="7dp"></Button>
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
             android:layout_weight="2">
@@ -75,6 +57,26 @@
                 android:text="Profile"
                 android:textSize="9dp"></Button>
         </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            android:layout_weight="2">
+
+            <Button
+                android:id="@+id/viewNotificationButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/inriasansregular"
+                android:text="Edit Tags"
+                android:textStyle="bold"
+                android:textSize="7dp"></Button>
+        </LinearLayout>
+
     </LinearLayout>
 
     <!-- Profile Information -->
@@ -100,14 +102,6 @@
                 android:backgroundTint="@color/white"
                 />
 
-
-            <ImageButton
-                android:id="@+id/editProfileButton"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_gravity="bottom|end"
-                android:background="@drawable/icon_edit_24"
-                android:padding="5dp"/>
         </FrameLayout>
 
         <!-- Poster's Information -->
