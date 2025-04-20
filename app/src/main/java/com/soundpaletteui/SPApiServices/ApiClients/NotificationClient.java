@@ -2,6 +2,8 @@ package com.soundpaletteui.SPApiServices.ApiClients;
 
 import android.util.Log;
 
+import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModelLite;
+import com.soundpaletteui.Infrastructure.Models.Chat.NewChatroomModel;
 import com.soundpaletteui.Infrastructure.Models.Notifications.NotificationModel;
 import com.soundpaletteui.Infrastructure.Models.Notifications.NotificationSettingModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
@@ -67,4 +69,13 @@ public class NotificationClient {
         Response<Void> response = call.execute();
         return null;
     }
+
+    public boolean getNotificationFlag(int userId) throws IOException {
+        //Call<Boolean> call = apiEndpoints.getNotificationFlag(userId);
+        //Response<Boolean> response = call.execute();
+
+        //return response.body();
+        return true;
+    }
+
 }

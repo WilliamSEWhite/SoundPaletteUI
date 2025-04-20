@@ -1,12 +1,8 @@
 package com.soundpaletteui.Activities.Profile;
 
-import android.app.Notification;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,24 +13,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundpaletteui.Activities.MainScreenActivity;
 import com.soundpaletteui.Activities.Notifications.NotificationFragment;
 import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
+import com.soundpaletteui.Infrastructure.Models.Notifications.NotificationSettingModel;
 import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
+import com.soundpaletteui.SPApiServices.ApiClients.NotificationClient;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 
-import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
-import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
-import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
 
 import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
 import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
-import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
@@ -51,10 +45,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -64,7 +56,6 @@ import androidx.recyclerview.widget.SnapHelper;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
-import retrofit2.Call;
 
 // Displays and manages a user's profile, including posts and saved content.
 public class ProfileFragment extends Fragment {
@@ -102,6 +93,12 @@ public class ProfileFragment extends Fragment {
     private boolean darkMode;
     private String selectedTab = "posts";
     EmojiBackgroundView emojiBackground;
+    private View notificationDot;
+    private final NotificationClient notificationClient = SPWebApiRepository.getInstance().getNotificationClient();
+    private Handler notificationPollingHandler = new Handler(Looper.getMainLooper());
+    private Runnable notificationPollingRunnable;
+    private boolean isPollingNotifications = false;
+
 
     private SharedPreferences.OnSharedPreferenceChangeListener darkModeListener =
             (sharedPreferences, key) -> {
@@ -127,6 +124,7 @@ public class ProfileFragment extends Fragment {
         super.onDestroy();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
         sp.unregisterOnSharedPreferenceChangeListener(darkModeListener);
+        stopNotificationPolling();
     }
 
     /** refreshes profile data when resuming fragment */
@@ -137,7 +135,26 @@ public class ProfileFragment extends Fragment {
         updateUI();
         new Handler(Looper.getMainLooper()).postDelayed(() -> getProfileBio(), 500);
         loadProfileImage();
+
+        // Checks to see when there is a notification or not
+        new Thread(() -> {
+            try {
+                boolean notificationFlag = notificationClient.getNotificationFlag(Integer.parseInt(userId));
+                requireActivity().runOnUiThread(() -> {
+                if (notificationFlag) {
+                    setNotificationDotVisible(notificationFlag);
+                    ((MainScreenActivity) requireActivity()).showNotificationDotOnProfile(true);
+                } else {
+                    startNotificationPolling();
+                    ((MainScreenActivity) requireActivity()).showNotificationDotOnProfile(false);
+                }
+                });
+            } catch (IOException e) {
+                Log.e("NOTIFICATION", "Error fetching notification count", e);
+            }
+        }).start();
     }
+
 
     // Inflates the layout and sets up UI for posts and saved content.
     @Nullable
@@ -173,6 +190,9 @@ public class ProfileFragment extends Fragment {
         UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
         emojiBackground = rootView.findViewById(R.id.emojiBackground);
         emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
+
+        notificationDot = rootView.findViewById(R.id.notificationDot);
+
 
         // Get arguments instead of Intent
         user = AppSettings.getInstance().getUser();
@@ -441,4 +461,46 @@ public class ProfileFragment extends Fragment {
         super.onPause();
         MediaPlayerManager.getInstance().release();
     }
+
+    // Turn the notification indicator ON/OFF
+    private void setNotificationDotVisible(boolean visible) {
+        if (notificationDot != null) {
+            notificationDot.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void startNotificationPolling() {
+        if (isPollingNotifications) return;
+        isPollingNotifications = true;
+
+        notificationPollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                new Thread(() -> {
+                    try {
+                        boolean notificationFlag = notificationClient.getNotificationFlag(Integer.parseInt(userId));
+                        if (notificationFlag) {
+                            requireActivity().runOnUiThread(() -> setNotificationDotVisible(true));
+                            ((MainScreenActivity) requireActivity()).showNotificationDotOnProfile(true);
+                            stopNotificationPolling();
+                        } else {
+                            notificationPollingHandler.postDelayed(this, 5000);
+                        }
+                    } catch (IOException e) {
+                        Log.e("NOTIFICATION POLLING", "Error checking notification count", e);
+                        notificationPollingHandler.postDelayed(this, 5000);
+                    }
+                }).start();
+            }
+        };
+
+        notificationPollingHandler.post(notificationPollingRunnable);
+    }
+
+    private void stopNotificationPolling() {
+        isPollingNotifications = false;
+        notificationPollingHandler.removeCallbacks(notificationPollingRunnable);
+    }
+
+
 }
