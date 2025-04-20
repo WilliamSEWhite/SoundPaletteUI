@@ -2,6 +2,7 @@ package com.soundpaletteui.Activities.Posts;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -13,6 +14,7 @@ import android.view.*;
 import android.widget.*;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,7 +34,9 @@ import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserSearchModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.R;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
@@ -89,10 +93,23 @@ public class EditPostFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // 1) inflate the new wrapped layout
         View rootView = inflater.inflate(R.layout.fragment_post_create, container, false);
+
+        // 2) apply emoji + hue gradient
+        View rootLayout = rootView.findViewById(R.id.root_layout);
+        boolean isDark = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
+        UISettings.applyBrightnessGradientBackground(rootLayout, 50f, isDark);
+
+        com.soundpaletteui.Views.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
+        emojiBg.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_SPIRAL);
+        emojiBg.setAlpha(0.65f);
+
+        // 3) wire up preview button & start loading the post
         previewButton = rootView.findViewById(R.id.previewButton);
         previewButton.setOnClickListener(v -> showPostPreview());
         new LoadPostTask(rootView).execute();
+
         return rootView;
     }
 
@@ -104,12 +121,8 @@ public class EditPostFragment extends Fragment {
         @Override
         protected PostModel doInBackground(Void... voids) {
             try {
-                List<PostModel> allPosts = SPWebApiRepository.getInstance().getPostClient().getPostsForUser();
-                for (PostModel p : allPosts) {
-                    if (p.getPostId() == postId) {
-                        return p;
-                    }
-                }
+                PostModel post = SPWebApiRepository.getInstance().getPostClient().getPost(postId);
+                return post;
             } catch (IOException e) {
                 Log.e("EditPostFragment", "Failed to load post", e);
             }
@@ -203,6 +216,26 @@ public class EditPostFragment extends Fragment {
             fontColourSelector.setOnClickListener(v -> openColourPicker(false));
         } else {
             postContentView = inflater.inflate(R.layout.fragment_post_create_media, postContentContainer, false);
+
+// Disable file selection for audio/image posts
+            TextView mediaContent = postContentView.findViewById(R.id.mediaContent);
+            ImageButton mediaButton = postContentView.findViewById(R.id.mediaButton);
+            LinearLayout linearLayout = postContentView.findViewById(R.id.linearLayout);
+
+            Context context = linearLayout.getContext();
+            linearLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.white_translucency_gradient_create_grey));
+
+            if (mediaContent != null) {
+                mediaContent.setEnabled(false);
+                mediaContent.setFocusable(false);
+                mediaContent.setClickable(false);
+                mediaContent.setText(currentPost.getPostContent().getPostTextContent());
+                mediaContent.setTextColor(ContextCompat.getColor(context, R.color.black));
+            }
+
+            if (mediaButton != null) {
+                mediaButton.setEnabled(false);
+            }
         }
 
         postContentContainer.addView(postContentView);

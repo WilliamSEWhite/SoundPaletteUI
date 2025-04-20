@@ -56,7 +56,7 @@
                     android:id="@+id/fontColourDisplay"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
-                    android:background="@color/white"/>
+                    android:background="@color/black"/>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/fontColourSelector"
@@ -85,9 +85,9 @@
             android:padding="5dp"
             android:textSize="12dp"
             android:hint="What did you want to say?"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/black"
             android:textColorHint="#BEC0BE"
-            android:background="@drawable/background_transparent_rec3"/>
+            android:background="@drawable/white_translucency_gradient_create"/>
 
     </LinearLayout>
 </FrameLayout>

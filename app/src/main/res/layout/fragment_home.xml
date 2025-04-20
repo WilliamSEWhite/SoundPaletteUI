@@ -51,9 +51,11 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="Explore"
+                    android:fontFamily="@font/lobstertworegular"
+                    android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                   />
             </FrameLayout>
 
             <FrameLayout
@@ -80,9 +82,11 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:text="Following"
+                    android:fontFamily="@font/lobstertworegular"
+                    android:textStyle="bold"
                     android:textColor="@android:color/white"
                     android:textSize="18sp"
-                    android:textStyle="bold" />
+                    />
             </FrameLayout>
         </LinearLayout>
 

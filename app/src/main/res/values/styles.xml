@@ -3,4 +3,16 @@
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">50%</item>
     </style>
+    <!-- for selected / active item -->
+    <style name="BottomNavTextActive" parent="TextAppearance.MaterialComponents.Caption">
+        <!-- use Lobster -->
+        <item name="fontFamily">@font/lobstertwobolditalic</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <!-- for normal / inactive item  -->
+    <style name="BottomNavTextInactive" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="fontFamily">@font/inriasansregular</item>
+        <item name="android:textSize">11sp</item>
+    </style>
 </resources>

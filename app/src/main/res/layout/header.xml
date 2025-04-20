@@ -4,7 +4,7 @@
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/white_translucency_gradient_vertical"
+    android:background="@color/colorOnSurface"
     android:minHeight="?attr/actionBarSize"
     android:theme="@style/ThemeOverlay.AppCompat.Dark"
     app:menu="@menu/menu_header"
@@ -18,6 +18,7 @@
         android:background="@null"
         android:scaleType="fitCenter"
         app:tint="@color/white"
+
         android:alpha="0.8"
         android:src="@drawable/baseline_music_note_48"
         android:shadowColor="@color/white"
@@ -30,19 +31,19 @@
         android:layout_width="wrap_content"
         android:layout_height="65sp"
         android:layout_gravity="center"
+        android:fontFamily="@font/lobster_regular"
         android:paddingStart="10dp"
         android:paddingTop="15dp"
         android:paddingEnd="10dp"
-        android:text="SoundPalette"
-        android:textAlignment="center"
-        android:textColor="@android:color/white"
-    android:textStyle="bold"
-    android:textSize="30sp"
-        android:shadowColor="@color/white"
+        android:shadowColor="@color/black"
         android:shadowDx="3"
         android:shadowDy="3"
         android:shadowRadius="4"
- />
+        android:text="SoundPalette"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
 
 

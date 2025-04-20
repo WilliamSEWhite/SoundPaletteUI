@@ -23,12 +23,16 @@ import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomInfoModel;
 import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomUpdateModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.Activities.SearchAdapters.UserSearchAdapter;
+import com.soundpaletteui.Activities.SearchAdapters.UserSelectedAdapter;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
+import com.soundpaletteui.R;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
-import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
-import com.soundpaletteui.Infrastructure.Utilities.Navigation;
-import com.soundpaletteui.R;
+import com.soundpaletteui.Views.EmojiBackgroundView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,7 +44,7 @@ public class EditChatroomFragment extends Fragment {
     private static final String ARG_CHATROOM_ID = "chatRoomId";
 
     private int chatRoomId;
-    private String  newChatroomName;
+    private String newChatroomName;
     private EditText chatroomNameEdit, userSearchInput;
     private RecyclerView userSearchResults, selectedUsersView;
     private Button saveButton, leaveButton;
@@ -48,17 +52,15 @@ public class EditChatroomFragment extends Fragment {
     private UserClient userClient;
     private ChatClient chatClient;
     private UserModel currentUser;
+    private ChatroomInfoModel chatroomInfo;
 
     private List<String> selectedUsers = new ArrayList<>();
     private List<String> searchResults = new ArrayList<>();
-
-    private UserSearchAdapter userSearchAdapter;
-    private com.soundpaletteui.Activities.SearchAdapters.UserSelectedAdapter selectedUsersAdapter;
-
-    private ChatroomInfoModel chatroomInfo;
-
     private List<String> membersToAdd = new ArrayList<>();
     private List<String> membersToRemove = new ArrayList<>();
+
+    private UserSearchAdapter userSearchAdapter;
+    private UserSelectedAdapter selectedUsersAdapter;
 
     public EditChatroomFragment() {}
 
@@ -77,171 +79,181 @@ public class EditChatroomFragment extends Fragment {
             chatRoomId = getArguments().getInt(ARG_CHATROOM_ID);
         }
         currentUser = AppSettings.getInstance().getUser();
-        userClient = SPWebApiRepository.getInstance().getUserClient();
-        chatClient = SPWebApiRepository.getInstance().getChatClient();
+        userClient   = SPWebApiRepository.getInstance().getUserClient();
+        chatClient   = SPWebApiRepository.getInstance().getChatClient();
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+
         View rootView = inflater.inflate(R.layout.fragment_chatroom_setup, container, false);
 
-        chatroomNameEdit = rootView.findViewById(R.id.chatroomNameEdit);
-        userSearchInput = rootView.findViewById(R.id.userSearchInput);
-        userSearchResults = rootView.findViewById(R.id.userSearchResults);
-        selectedUsersView = rootView.findViewById(R.id.selectedUsersView);
-        saveButton = rootView.findViewById(R.id.saveButton);
-        leaveButton = rootView.findViewById(R.id.leaveChatroomButton);
+        // — Apply emoji + gradient just like Search screen —
+        View rootLayout = rootView.findViewById(R.id.root_layout);
+        boolean isDark = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
+        UISettings.applyBrightnessGradientBackground(rootLayout, 240f, isDark);
 
+        EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
+        emojiBg.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
+        emojiBg.setAlpha(0.65f);
 
-        userSearchAdapter = new UserSearchAdapter(searchResults, user -> {
+        // — Bind views —
+        chatroomNameEdit   = rootView.findViewById(R.id.chatroomNameEdit);
+        userSearchInput    = rootView.findViewById(R.id.userSearchInput);
+        userSearchResults  = rootView.findViewById(R.id.userSearchResults);
+        selectedUsersView  = rootView.findViewById(R.id.selectedUsersView);
+        saveButton         = rootView.findViewById(R.id.saveButton);
+        leaveButton        = rootView.findViewById(R.id.leaveChatroomButton);
+
+        // — Adapters —
+        userSearchAdapter = new UserSearchAdapter(searchResults, username -> {
             List<String> currentMembers = chatroomInfo.getChatroomMembers();
-            if(!currentMembers.contains(user))
-                membersToAdd.add(user);
-            if(membersToRemove.contains(user))
-                membersToRemove.remove(user);
+            if (!currentMembers.contains(username)) membersToAdd.add(username);
+            if (membersToRemove.contains(username)) membersToRemove.remove(username);
 
-
-            if (!selectedUsers.contains(user)) {
-                selectedUsers.add(user);
+            if (!selectedUsers.contains(username)) {
+                selectedUsers.add(username);
                 selectedUsersAdapter.notifyDataSetChanged();
             }
         });
-
-        selectedUsersAdapter = new com.soundpaletteui.Activities.SearchAdapters.UserSelectedAdapter(selectedUsers, user -> {
-
+        selectedUsersAdapter = new UserSelectedAdapter(selectedUsers, username -> {
             List<String> currentMembers = chatroomInfo.getChatroomMembers();
+            if (currentMembers.contains(username)) membersToRemove.add(username);
+            if (membersToAdd.contains(username)) membersToAdd.remove(username);
 
-            if(currentMembers.contains(user))
-                membersToRemove.add(user);
-            if(membersToAdd.contains(user))
-                membersToAdd.remove(user);
-
-            selectedUsers.remove(user);
+            selectedUsers.remove(username);
             selectedUsersAdapter.notifyDataSetChanged();
         });
 
         userSearchResults.setLayoutManager(new LinearLayoutManager(getContext()));
         userSearchResults.setAdapter(userSearchAdapter);
 
-        selectedUsersView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
+        selectedUsersView.setLayoutManager(
+                new LinearLayoutManager(getContext(),
+                        LinearLayoutManager.HORIZONTAL,
+                        false)
+        );
         selectedUsersView.setAdapter(selectedUsersAdapter);
 
-
+        // — Search TextWatcher —
         userSearchInput.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count)             {
-                if(s.length()>3){
-                    searchUsersAsync(s.toString());
-                }
+            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+            @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
+                if (s.length() > 3) searchUsersAsync(s.toString());
             }
             @Override public void afterTextChanged(Editable s) {}
         });
 
+        // — Save & Leave buttons —
         saveButton.setOnClickListener(v -> {
             newChatroomName = chatroomNameEdit.getText().toString().trim();
             new UpdateChatroomAsync().execute();
-
-
         });
         leaveButton.setVisibility(View.VISIBLE);
-        leaveButton.setOnClickListener(v -> {
-            newChatroomName = chatroomNameEdit.getText().toString().trim();
-            new LeaveChatroomAsync().execute();
-        });
+        leaveButton.setOnClickListener(v -> new LeaveChatroomAsync().execute());
 
+        // — Load existing chatroom info —
         new GetChatroomInfoAsync().execute();
 
         return rootView;
     }
 
-    private void populateView(){
+    private void populateView() {
         selectedUsers.clear();
         selectedUsers.addAll(chatroomInfo.getChatroomMembers());
         selectedUsersAdapter.notifyDataSetChanged();
-
         chatroomNameEdit.setText(chatroomInfo.getChatroomName());
-
     }
 
-    private void searchUsersAsync(String searchTerm) {
+    private void searchUsersAsync(String term) {
         new Thread(() -> {
             try {
-                UserClient client = SPWebApiRepository.getInstance().getUserClient();
-                List<String> results = client.searchUsersLite(searchTerm);
-
+                List<String> results =
+                        userClient.searchUsersLite(term);
                 requireActivity().runOnUiThread(() -> {
                     searchResults.clear();
                     searchResults.addAll(results);
                     userSearchAdapter.notifyDataSetChanged();
                 });
-
             } catch (IOException e) {
-                Log.e("NewChatroomFragment", "Failed to load dummy users: " + e.getMessage());
+                Log.e("EditChat", "Search failed", e);
             }
         }).start();
     }
 
-
-    private class UpdateChatroomAsync extends AsyncTask<Void, Void, Void> {
+    private class GetChatroomInfoAsync extends AsyncTask<Void,Void,Void> {
         @Override
-        protected Void doInBackground(Void... d) {
+        protected Void doInBackground(Void... v) {
             try {
-                if(!Objects.equals(newChatroomName, chatroomInfo.getChatroomName()) ||  !membersToAdd.isEmpty() || !membersToRemove.isEmpty()){
-                    ChatroomUpdateModel updateChatroom = new ChatroomUpdateModel(chatroomInfo.getChatroomId(), newChatroomName, membersToAdd, membersToRemove);
-                    chatClient.updateChatroom(updateChatroom);
-                }
-
+                chatroomInfo = chatClient.getChatroomInfo(chatRoomId);
             } catch (IOException e) {
-                Log.e("EDIT CHATROOM", "Failed to update chatroom: " + e.getMessage());
+                Log.e("EditChat", "Fetch info failed", e);
             }
             return null;
         }
-        protected void onPostExecute(Void v) {
-            ChatroomFragment chatroomFragment = ChatroomFragment.newInstance(chatRoomId, chatroomInfo.getChatroomName());
-            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-            FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.mainScreenFrame, chatroomFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();        }
-
-    }
-    private class GetChatroomInfoAsync extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-                ChatClient client = SPWebApiRepository.getChatClient();
-                chatroomInfo = client.getChatroomInfo(chatRoomId);
-            } catch (IOException e) {
-                Log.e("ChatroomFragment", "Error leaving chatroom", e);
-            }
-            return null;
-        }
-
         @Override
         protected void onPostExecute(Void v) {
             populateView();
         }
     }
-    private class LeaveChatroomAsync extends AsyncTask<Void, Void, Boolean> {
+
+    private class UpdateChatroomAsync extends AsyncTask<Void,Void,Void> {
         @Override
-        protected Boolean doInBackground(Void... voids) {
+        protected Void doInBackground(Void... v) {
             try {
-                ChatClient client = SPWebApiRepository.getChatClient();
-                client.removeUserFromChatroom(chatRoomId);
+                if (!Objects.equals(newChatroomName, chatroomInfo.getChatroomName())
+                        || !membersToAdd.isEmpty()
+                        || !membersToRemove.isEmpty()) {
+
+                    chatClient.updateChatroom(
+                            new ChatroomUpdateModel(
+                                    chatroomInfo.getChatroomId(),
+                                    newChatroomName,
+                                    membersToAdd,
+                                    membersToRemove
+                            )
+                    );
+                }
+            } catch (IOException e) {
+                Log.e("EditChat", "Update failed", e);
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void v) {
+            Navigation.replaceFragment(
+                    requireActivity().getSupportFragmentManager(),
+                    ChatroomFragment.newInstance(chatRoomId,
+                            chatroomInfo.getChatroomName()),
+                    "CHATROOM_FRAGMENT",
+                    R.id.mainScreenFrame
+            );
+        }
+    }
+
+    private class LeaveChatroomAsync extends AsyncTask<Void,Void,Boolean> {
+        @Override
+        protected Boolean doInBackground(Void... v) {
+            try {
+                chatClient.removeUserFromChatroom(chatRoomId);
                 return true;
             } catch (IOException e) {
-                Log.e("ChatroomFragment", "Error leaving chatroom", e);
+                Log.e("EditChat", "Leave failed", e);
                 return false;
             }
         }
-
         @Override
-        protected void onPostExecute(Boolean success) {
-            if (success) {
-                MessageFragment messageFragment = new MessageFragment();
-                FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-                Navigation.replaceFragment(fragmentManager, messageFragment, "MESSAGE_FRAGMENT", R.id.mainScreenFrame);
+        protected void onPostExecute(Boolean ok) {
+            if (ok) {
+                Navigation.replaceFragment(
+                        requireActivity().getSupportFragmentManager(),
+                        new MessageFragment(),
+                        "MESSAGE_FRAGMENT",
+                        R.id.mainScreenFrame
+                );
             }
         }
     }

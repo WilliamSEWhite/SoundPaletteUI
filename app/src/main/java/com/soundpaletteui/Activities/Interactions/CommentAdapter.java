@@ -1,5 +1,7 @@
 package com.soundpaletteui.Activities.Interactions;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,21 +58,23 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
             Log.d("ProfileViewFragment", "Username clicked: " + username);
 
             if (profileClickListener != null) {
-                profileClickListener.onProfileClick();
+                profileClickListener.onProfileClick(); // triggers dismiss()
             }
 
-            ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(username);
-            FragmentManager fragmentManager = activity.getSupportFragmentManager();
-            com.soundpaletteui.Infrastructure.Utilities.Navigation.replaceFragment(
-                    fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame
-            );
+            // Delay navigation to ensure BottomSheet is dismissed first
+            new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(username);
+                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                com.soundpaletteui.Infrastructure.Utilities.Navigation.replaceFragment(
+                        fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame
+                );
+            }, 300);
         });
     }
 
     public interface OnProfileClickListener {
         void onProfileClick();
     }
-
 
     @Override
     public int getItemCount() {

@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.SnapHelper;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.soundpaletteui.Activities.Interactions.CommentBottomSheet;
 import com.soundpaletteui.Activities.MainScreenActivity;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
@@ -127,8 +128,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             // Assigns the image here
             Glide.with(context)
                     .load(context.getResources().getIdentifier(imageName, "drawable", context.getPackageName()))
-                    .override(800, 800)
-                    .centerCrop()
+                    .thumbnail(0.1f)
+                    .override(400, 400)
+                    .dontAnimate()
+                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
                     .into(postImageDisplay);
 
         // Sets Post to display audio type posts
@@ -197,7 +200,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         // Save button action
         holder.saveButton.setChecked(post.getIsSaved());
         holder.saveButton.setOnClickListener(v -> toggleSaved(post, holder.saveButton.isChecked()));
-        holder.saveButton.setButtonTintList(ColorStateList.valueOf(Color.RED));
+        holder.saveButton.setButtonTintList(ColorStateList.valueOf(Color.parseColor("#8B0000")));
 
         // Editing a Post action -- only available on the ProfileFragment under "POSTS" toggle button
         if (showEditButton) {

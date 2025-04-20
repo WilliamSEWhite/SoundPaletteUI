@@ -21,7 +21,7 @@ import java.util.Objects;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private static final int SPLASH_DISPLAY_LENGTH = 2500; // 5 seconds pause
+    private static final int SPLASH_DISPLAY_LENGTH = 1000; // 5 seconds pause
     private boolean isLoggedIn = false;
     private final AppSettings appSettings = AppSettings.getInstance();
 
@@ -32,13 +32,13 @@ public class SplashActivity extends AppCompatActivity {
 
         SplashEmojiView splashEmojiView = findViewById(R.id.splashEmojiBackground);
 
-        // Click listener to skip the splash and go directly to the LoginActivity
-        splashEmojiView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                skipSplash();
-            }
-        });
+//        // Click listener to skip the splash and go directly to the LoginActivity
+//        splashEmojiView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                skipSplash();
+//            }
+//        });
 
         // Delay handler for normal splash behavior
         new Handler().postDelayed(new Runnable() {

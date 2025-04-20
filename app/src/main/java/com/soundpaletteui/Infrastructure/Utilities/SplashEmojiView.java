@@ -29,7 +29,6 @@ public class SplashEmojiView extends View {
             "🎧", // Headphone
             "🎭", // Performing Arts
             "🎨", // Artist Palette
-            "📻", // Radio
             "🎬"  // Clapper Board
     };
     private final Random random = new Random();
@@ -139,7 +138,7 @@ public class SplashEmojiView extends View {
     }
 
     private float randomSpeed() {
-        return 8f + random.nextFloat() * 8f;
+        return 8f + random.nextFloat() * 18f;
     }
 
     private int randomColor() {

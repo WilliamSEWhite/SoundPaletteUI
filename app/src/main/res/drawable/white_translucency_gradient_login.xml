@@ -3,11 +3,10 @@
 
     <gradient
         android:orientation="horizontal"
-        android:startColor="#E5FFFFFF"
-        android:endColor="#33FFFFFF"
+        android:startColor="#FCFFFFFF"
+        android:endColor="#F8FFFFFF"
         android:type="linear" />
 
     <corners
-        android:radius="16dp"
-        />
+        android:radius="16dp" />
 </shape>

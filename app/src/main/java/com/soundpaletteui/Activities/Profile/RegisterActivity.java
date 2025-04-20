@@ -48,7 +48,9 @@ import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import java.io.File;
@@ -59,6 +61,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
@@ -76,20 +79,18 @@ public class RegisterActivity extends AppCompatActivity {
     private Uri imageUri;                   // image URI from external source
     private ImageView profileImage;         // object to display the image
     private String currentPhotoPath;        // current photo path
-    private Spinner location;               // country
+    private Spinner locationSpinner;               // country
     private ArrayList<LocationModel> countries;             // list of countries
     private Intent intent;
     private UserModel user;
+    private static final int PICK_IMAGE_REQUEST = 1;
+    private Date dob;
     private UserClient userClient;
     private int userId;
-    //    private Date dob, dateCreated;
-    private Date dob, dateCreated;
-//    private String Dob;
-//    private GifImageView gifClear;
+    private UserProfileModel userProfileModel;
     private FrameLayout frameSave;
     private GifImageView gifSave;
     private TextView textSave;
-    private UserProfileModel userProfileModel;
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private FileClient fileClient;
     /**
@@ -99,7 +100,16 @@ public class RegisterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        View rootView = findViewById(R.id.root_layout);
+
+        // — Apply emoji + brightness gradient exactly like Search/Create‑Post
+        View root = findViewById(R.id.root_layout);
+        boolean isDark = DarkModePreferences.isDarkModeEnabled(this);
+        UISettings.applyBrightnessGradientBackground(root, 280f, isDark);
+
+        com.soundpaletteui.Views.EmojiBackgroundView emojiBg = findViewById(R.id.emojiBackground);
+        emojiBg.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_SPIRAL);
+        emojiBg.setAlpha(0.65f);
+
         initComponents();
         // launches the image picker
         pickImageLauncher = registerForActivityResult(
@@ -119,52 +129,38 @@ public class RegisterActivity extends AppCompatActivity {
 
     /** initializes components in the UI */
     private void initComponents() {
-        // initialise UI objects
-        //txtUsername = findViewById(R.id.registerUsername);
-        txtEmail = findViewById(R.id.registerEmail);
-        txtPhone = findViewById(R.id.registerPhone);
-        LinearLayout pickDateBtn = findViewById(R.id.pick_date);
-        pickDateBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(dob == null)
-                    dob = new Date();
-                int year = dob.getYear() + 1900;
-                int month = dob.getMonth();
-                int day = dob.getDate();
+        txtEmail       = findViewById(R.id.registerEmail);
+        txtPhone       = findViewById(R.id.registerPhone);
+        profileImage   = findViewById(R.id.registerProfilePicture);
+        frameSave      = findViewById(R.id.frame_save);
+        gifSave        = findViewById(R.id.gif_save);
+        locationSpinner= findViewById(R.id.registerLocation);
 
-                DatePickerDialog datePickerDialog = new DatePickerDialog(
-                        RegisterActivity.this,
-                        new DatePickerDialog.OnDateSetListener() {
-                            @Override
-                            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                                Date date = new Date(year-1900, month, dayOfMonth);
+        fileClient     = SPWebApiRepository.getInstance().getFileClient();
+        userClient     = SPWebApiRepository.getInstance().getUserClient();
+        user           = appSettings.getUser();
+        userId         = getIntent().getIntExtra("userId", 0);
+        userProfileModel = new UserProfileModel(user.getUserId(),
+                "I haven't updated my bio yet…", "/dev/null");
 
-                                TextView selectedDate = findViewById(R.id.selected_date);
-                                dob = date;
-                                selectedDate.setText(new SimpleDateFormat("MMMM dd, yyyy").format(dob));
-
-                            }
-                        },
-                        year, month, day);
-                datePickerDialog.show();
-            }
+        // pick DOB
+        findViewById(R.id.pick_date).setOnClickListener(v -> {
+            if (dob == null) dob = new Date();
+            int y = dob.getYear() + 1900, m = dob.getMonth(), d = dob.getDate();
+            new DatePickerDialog(this, (view, year, month, day) -> {
+                dob = new Date(year-1900, month, day);
+                ((TextView)findViewById(R.id.selected_date))
+                        .setText(new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
+                                .format(dob));
+            }, y, m, d).show();
         });
-        profileImage = findViewById(R.id.registerProfilePicture);
-        fileClient = SPWebApiRepository.getInstance().getFileClient();
-        location = findViewById(R.id.registerLocation);
-
-        btnSave = findViewById(R.id.btnSave);
-
-        frameSave = findViewById(R.id.frame_save);
-        gifSave = findViewById(R.id.gif_save);
-        textSave = findViewById(R.id.save_text);
-
+        
         profileImage.setOnClickListener(v -> editProfileImage());
         frameSave.setOnClickListener(v -> {
             try {
                 final GifDrawable saveGif = (GifDrawable) gifSave.getDrawable();
                 frameSave.getBackground().mutate().setAlpha(255);
+//                UISettings.applyBrightnessGradientBackground(findViewById(R.id.root_layout), 60f);
                 saveGif.start();
                 new android.os.Handler().postDelayed(() -> saveGif.stop(), 800);
             } catch (ClassCastException e) {
@@ -181,7 +177,7 @@ public class RegisterActivity extends AppCompatActivity {
         userClient = SPWebApiRepository.getInstance().getUserClient();
         getCountries();     // load countries from database
         user = AppSettings.getInstance().getUser();
-        userProfileModel = new UserProfileModel(user.getUserId(), "", "/dev/null");
+        userProfileModel = new UserProfileModel(user.getUserId(), "I haven't updated my bio yet...", "/dev/null");
     }
 
     /** upload profile image */
@@ -209,9 +205,10 @@ public class RegisterActivity extends AppCompatActivity {
         CountrySelectAdapter adapter = new CountrySelectAdapter(this,
                 android.R.layout.simple_spinner_item,
                 countries);
-        location = (Spinner) findViewById(R.id.registerLocation);
-        location.setAdapter(adapter); // Set the custom adapter to the spinner
-        location.setSelection(0);                              //retain previously selected value
+        locationSpinner = (Spinner) findViewById(R.id.registerLocation);
+        locationSpinner.setAdapter(adapter); // Set the custom adapter to the spinner
+        // You can create an anonymous listener to handle the event when is selected an spinner item
+        locationSpinner.setSelection(0);                              //retain previously selected value
     }
 
     /** save information to database */
@@ -227,6 +224,7 @@ public class RegisterActivity extends AppCompatActivity {
         Intent i = new Intent(RegisterActivity.this, RegisterTagsActivity.class);
         startActivity(i);
         finish();
+
     }
 
     /** displays the image in the register screen */
@@ -303,9 +301,11 @@ public class RegisterActivity extends AppCompatActivity {
 
                 String email = txtEmail.getText().toString();
                 String phone = txtPhone.getText().toString();
+                LocationModel loc = (LocationModel)
+                        locationSpinner.getSelectedItem();
 
-                CountrySelectAdapter adapter = (CountrySelectAdapter) location.getAdapter();
-                LocationModel selectedLocation = adapter.getItem(location.getSelectedItemPosition());
+                CountrySelectAdapter adapter = (CountrySelectAdapter) locationSpinner.getAdapter();
+                LocationModel selectedLocation = adapter.getItem(locationSpinner.getSelectedItemPosition());
                 if(selectedLocation != null) {
                     UserInfoModel newUserInfo = new UserInfoModel(user.getUserId(),
                             selectedLocation.getLocationId(), email, phone, dob, dateCreated);

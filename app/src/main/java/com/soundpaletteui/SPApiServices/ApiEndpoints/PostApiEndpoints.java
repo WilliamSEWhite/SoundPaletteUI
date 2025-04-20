@@ -27,31 +27,34 @@ public interface PostApiEndpoints {
     Call<Void> createPost(@Body NewPostModel newPost);
 
     @GET("api/post/get-feed")
-    Call<List<PostModel>> getPosts(@Query("userId") int userId);
+    Call<List<PostModel>> getPosts(@Query("userId") int userId, @Query("page") int page);
     @GET("api/post/get-user-posts")
-    Call<List<PostModel>> getPostsForUser(@Query("userId") int userId);
+    Call<List<PostModel>> getPostsForUser(@Query("userId") int userId, @Query("page") int page);
 
     @GET("api/post/get-username-posts")
-    Call<List<PostModel>> getPostsForUsername(@Query("userId") int userId, @Query("username") String username);
+    Call<List<PostModel>> getPostsForUsername(@Query("userId") int userId, @Query("username") String username, @Query("page") int page);
     @GET("api/post/get-tagged-username-posts")
-    Call<List<PostModel>> getTaggedPostsForUsername(@Query("userId") int userId, @Query("username") String username);
+    Call<List<PostModel>> getTaggedPostsForUsername(@Query("userId") int userId, @Query("username") String username, @Query("page") int page);
     @GET("api/post/get-following-posts")
-    Call<List<PostModel>> getFollowingPosts(@Query("userId") int userId);
+    Call<List<PostModel>> getFollowingPosts(@Query("userId") int userId, @Query("page") int page);
 
     @GET("api/post/get-user-saved-posts")
-    Call<List<PostModel>> getUserSavedPosts(@Query("userId") int userId);
+    Call<List<PostModel>> getUserSavedPosts(@Query("userId") int userId, @Query("page") int page);
 
     @GET("api/post/delete-post")
     Call<Void> deletePost(@Query("postId") int postId, @Query("userId") int userId);
     @GET("api/post/get-trending-posts")
-    Call<List<PostModel>> getTrendingPosts(@Query("userId") int userId, @Query("range") String range);
+    Call<List<PostModel>> getTrendingPosts(@Query("userId") int userId, @Query("range") String range, @Query("page") int page);
     @GET("api/post/get-posts-by-tag")
-    Call<List<PostModel>> getPostsByTag(@Query("userId") int userId, @Query("tagId") int tagId);
+    Call<List<PostModel>> getPostsByTag(@Query("userId") int userId, @Query("tagId") int tagId, @Query("page") int page);
     @GET("api/post/search-posts")
-    Call<List<PostModel>> searchPosts(@Query("userId") int userId, @Query("searchTerm") String searchTerm);
+    Call<List<PostModel>> searchPosts(@Query("userId") int userId, @Query("searchTerm") String searchTerm, @Query("page") int page);
 
 
     @POST("api/post/update-post")
     Call<Void> updatePost(@Body PostModel updatedPost);
+    @GET("api/post/get-post")
+    Call<PostModel> getPost(@Query("userId") int userId, @Query("postId") int postId);
+
 
 }

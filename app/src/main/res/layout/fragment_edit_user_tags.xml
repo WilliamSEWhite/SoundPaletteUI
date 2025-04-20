@@ -22,6 +22,7 @@
             android:layout_height="match_parent"
             android:background="@color/white"
             android:src="@drawable/baseline_person_100"
+            android:backgroundTint="@color/white"
             app:shapeAppearanceOverlay="@style/CircleImageView" />
     </FrameLayout>
     <LinearLayout
@@ -37,7 +38,13 @@
             android:layout_gravity="center"
             android:padding="15dp"
             android:text="@string/txt_modTagTitle"
+            android:fontFamily="@font/monoton"
             android:textSize="@dimen/sub_title_text"
+            android:shadowDx="2"
+            android:shadowDy="2"
+            android:shadowColor="@color/black"
+            android:shadowRadius="2"
+
             android:textColor="@color/white"/>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -45,7 +52,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="25dp"
-            android:background="@color/white"/>
+            android:background="@drawable/rounded_corners"
+            android:backgroundTint="@color/white"
+            />
     </LinearLayout>
 
     <LinearLayout
@@ -57,15 +66,16 @@
         android:layout_marginTop="16dp">
 
         <Button
+            android:id="@+id/btnDone"
             android:layout_width="@dimen/btn_main_width"
             android:layout_height="@dimen/btn_main_height"
             android:layout_gravity="center"
             android:layout_margin="10dp"
-            android:id="@+id/btnDone"
+            android:backgroundTint="#F5CF0E"
+            android:fontFamily="@font/inriasansregular"
             android:text="DONE"
-            android:textSize="@dimen/btn_text_size"
             android:textColor="@color/white"
-            android:backgroundTint="@color/colorOnSurface"/>
+            android:textSize="@dimen/btn_text_size" />
 
     </LinearLayout>
 
