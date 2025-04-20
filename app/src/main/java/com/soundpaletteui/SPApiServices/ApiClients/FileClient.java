@@ -57,4 +57,9 @@ public class FileClient {
     public Call<FileModel> getProfileImage(int userId) {
         return fileApiEndpoints.getProfileImage(userId);
     }
+
+    /** get post file from API server */
+    public Call<FileModel> getPostFile(int fileId) {
+        return fileApiEndpoints.getPostFile(fileId);
+    }
 }

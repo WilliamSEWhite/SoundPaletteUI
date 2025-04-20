@@ -25,4 +25,7 @@ public interface FileApiEndpoints {
 
     @GET("/api/file/get-profile-image/{userId}")
     Call<FileModel> getProfileImage(@Path("userId") int userId);
+
+    @GET("/api/file/get-post-file/{fileId}")
+    Call<FileModel> getPostFile(@Path("fileId") int fileId);
 }

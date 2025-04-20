@@ -233,12 +233,12 @@ public class HomeFragment extends Fragment {
     }
 
     private void replacePostFragment(String algoType, String userId) {
-        PostFragment postFragment = PostFragment.newInstance(algoType, userId);
+        PostFragment postFragment = PostFragment.newInstance(algoType, userId, false);
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         Navigation.replaceFragment(requireActivity().getSupportFragmentManager(),
-                transaction, postFragment, "POST_FRAGMENT", R.id.postFragment);
-        /*transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
-        transaction.commit();*/
+                transaction, postFragment,
+                "POST_FRAGMENT",
+                R.id.postFragment);
     }
 
     // Sets the text style for a TextView based on whether it is selected.

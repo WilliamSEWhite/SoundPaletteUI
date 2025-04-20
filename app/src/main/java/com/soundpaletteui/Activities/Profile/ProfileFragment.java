@@ -423,8 +423,12 @@ public class ProfileFragment extends Fragment {
         Log.d("SHOW EDIT BUTTON", String.valueOf(showEditButton));
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(algoType, userId, showEditButton);
-        transaction.replace(R.id.postFragment, postFragment);
-        transaction.commit();
+        Navigation.replaceFragment(requireActivity().getSupportFragmentManager(),
+                transaction, postFragment,
+                "POST_FRAGMENT",
+                R.id.postFragment);
+        /*transaction.replace(R.id.postFragment, postFragment);
+        transaction.commit();*/
     }
 
     // Sets the style of a TextView to selected or unselected.

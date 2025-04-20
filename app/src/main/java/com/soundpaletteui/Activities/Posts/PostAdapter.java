@@ -92,7 +92,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         PostModel post = postList.get(position);
         int postId = post.getPostId();
-
+        Log.d("PostAdapter", "PostId: " + postId);
         holder.postUsername.setText(post.getUsername());
         holder.postCaption.setText(post.getPostCaption());
         holder.postFragmentDisplay.removeAllViews();
@@ -123,16 +123,18 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         } else if (post.getPostType() == IMAGE_POST) {
             fragmentView = inflater.inflate(R.layout.adapter_posts_image, holder.postFragmentDisplay, false);
             ImageView postImageDisplay = fragmentView.findViewById(R.id.postImageDisplay);
-            String imageName = post.getPostContent().getPostTextContent().replace(".png", "").replace(".jpg", "");
+            int fileId = post.getFileId();
+            ImageUtils.getPostImage(fileId, SPWebApiRepository.getInstance().getFileClient().getPostFile(fileId), postImageDisplay, context);
+            //String imageName = post.getPostContent().getPostTextContent().replace(".png", "").replace(".jpg", "");
 
             // Assigns the image here
-            Glide.with(context)
+            /*Glide.with(context)
                     .load(context.getResources().getIdentifier(imageName, "drawable", context.getPackageName()))
                     .thumbnail(0.1f)
                     .override(400, 400)
                     .dontAnimate()
                     .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                    .into(postImageDisplay);
+                    .into(postImageDisplay);*/
 
         // Sets Post to display audio type posts
         } else if (post.getPostType() == AUDIO_POST) {

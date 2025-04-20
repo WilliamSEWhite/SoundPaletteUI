@@ -83,7 +83,7 @@ public class ImageUtils {
     }
 
     /** get profile image */
-    public static void getProfileImage(int userId, Call<FileModel> fileCall, ImageView imageView, Context context) {
+    public static void getProfileImage(int fileId, Call<FileModel> fileCall, ImageView imageView, Context context) {
         fileCall.enqueue(new Callback<FileModel>() {
             @Override
             public void onResponse(Call<FileModel> call, Response<FileModel> response) {
@@ -115,6 +115,45 @@ public class ImageUtils {
             public void onFailure(Call<FileModel> call, Throwable t) {
                 Log.e("getProfileImage", "Error loading profile image", t);
                 //imageView = ContextCompat.getDrawable(context, R.drawable.baseline_person_100);
+            }
+        });
+    }
+
+    /** gets post image */
+    public static void getPostImage(int userId, Call<FileModel> fileCall, ImageView imageView, Context context) {
+        fileCall.enqueue(new Callback<FileModel>() {
+            @Override
+            public void onResponse(Call<FileModel> call, Response<FileModel> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    String imageUrl = response.body().getFileUrl();
+                    String base64Image = response.body().getByteArrayContent();
+                    //byte[] decodedImage = Base64.getDecoder().decode(base64Image);
+                    byte[] decodedImage = Base64.decode(base64Image, Base64.DEFAULT);
+                    Bitmap image = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
+                    if(image != null) {
+                        Log.d("getPostImage", "API call was successful: " + imageUrl);
+                        Glide.with(context)
+                                .load(image)
+                                .placeholder(R.drawable.baseline_broken_image_400)
+                                .error(R.drawable.baseline_broken_image_400)
+                                .into(imageView);
+                    }
+                    else {
+                        Log.e("getPostImage", "Bitmap decoding failed");
+                        Toast.makeText(context, "Image decoding failed", Toast.LENGTH_SHORT).show();
+                        Glide.with(context)
+                                .load(R.drawable.baseline_broken_image_400)
+                                .into(imageView);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FileModel> call, Throwable t) {
+                Log.e("getPostImage", "Error loading profile image", t);
+                Glide.with(context)
+                        .load(R.drawable.baseline_broken_image_400)
+                        .into(imageView);
             }
         });
     }
