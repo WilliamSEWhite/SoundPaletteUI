@@ -94,10 +94,6 @@ public class ProfileFragment extends Fragment {
     private String selectedTab = "posts";
     EmojiBackgroundView emojiBackground;
     private View notificationDot;
-    private final NotificationClient notificationClient = SPWebApiRepository.getInstance().getNotificationClient();
-    private Handler notificationPollingHandler = new Handler(Looper.getMainLooper());
-    private Runnable notificationPollingRunnable;
-    private boolean isPollingNotifications = false;
 
 
     private SharedPreferences.OnSharedPreferenceChangeListener darkModeListener =
@@ -108,6 +104,13 @@ public class ProfileFragment extends Fragment {
             };
 
     public ProfileFragment() {
+    }
+
+    // Turn the notification indicator ON/OFF
+    public void setNotificationDotVisible(boolean visible) {
+        if (notificationDot != null) {
+            notificationDot.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
     }
 
     @Override
@@ -124,7 +127,6 @@ public class ProfileFragment extends Fragment {
         super.onDestroy();
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
         sp.unregisterOnSharedPreferenceChangeListener(darkModeListener);
-        stopNotificationPolling();
     }
 
     /** refreshes profile data when resuming fragment */
@@ -136,23 +138,10 @@ public class ProfileFragment extends Fragment {
         new Handler(Looper.getMainLooper()).postDelayed(() -> getProfileBio(), 500);
         loadProfileImage();
 
-        // Checks to see when there is a notification or not
-        new Thread(() -> {
-            try {
-                boolean notificationFlag = notificationClient.getNotificationFlag(Integer.parseInt(userId));
-                requireActivity().runOnUiThread(() -> {
-                if (notificationFlag) {
-                    setNotificationDotVisible(notificationFlag);
-                    ((MainScreenActivity) requireActivity()).showNotificationDotOnProfile(true);
-                } else {
-                    startNotificationPolling();
-                    ((MainScreenActivity) requireActivity()).showNotificationDotOnProfile(false);
-                }
-                });
-            } catch (IOException e) {
-                Log.e("NOTIFICATION", "Error fetching notification count", e);
-            }
-        }).start();
+        if (user != null) {
+            userId = String.valueOf(user.getUserId());
+            ((MainScreenActivity) requireActivity()).startNotificationPolling(Integer.parseInt(userId));
+        }
     }
 
 
@@ -461,46 +450,4 @@ public class ProfileFragment extends Fragment {
         super.onPause();
         MediaPlayerManager.getInstance().release();
     }
-
-    // Turn the notification indicator ON/OFF
-    private void setNotificationDotVisible(boolean visible) {
-        if (notificationDot != null) {
-            notificationDot.setVisibility(visible ? View.VISIBLE : View.GONE);
-        }
-    }
-
-    private void startNotificationPolling() {
-        if (isPollingNotifications) return;
-        isPollingNotifications = true;
-
-        notificationPollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                new Thread(() -> {
-                    try {
-                        boolean notificationFlag = notificationClient.getNotificationFlag(Integer.parseInt(userId));
-                        if (notificationFlag) {
-                            requireActivity().runOnUiThread(() -> setNotificationDotVisible(true));
-                            ((MainScreenActivity) requireActivity()).showNotificationDotOnProfile(true);
-                            stopNotificationPolling();
-                        } else {
-                            notificationPollingHandler.postDelayed(this, 5000);
-                        }
-                    } catch (IOException e) {
-                        Log.e("NOTIFICATION POLLING", "Error checking notification count", e);
-                        notificationPollingHandler.postDelayed(this, 5000);
-                    }
-                }).start();
-            }
-        };
-
-        notificationPollingHandler.post(notificationPollingRunnable);
-    }
-
-    private void stopNotificationPolling() {
-        isPollingNotifications = false;
-        notificationPollingHandler.removeCallbacks(notificationPollingRunnable);
-    }
-
-
 }

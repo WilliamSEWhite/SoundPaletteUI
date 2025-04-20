@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,7 +42,11 @@ import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+import com.soundpaletteui.SPApiServices.ApiClients.NotificationClient;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.databinding.ActivityMainBinding;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,6 +61,10 @@ public class MainScreenActivity extends AppCompatActivity {
     private HomeFragment homeFragment;
     private ProfileFragment profileFragment;
     private SearchFragment searchFragment;
+    private Handler notificationPollingHandler = new Handler(Looper.getMainLooper());
+    private Runnable notificationPollingRunnable;
+    private boolean isPollingNotifications = false;
+    private final NotificationClient notificationClient = SPWebApiRepository.getInstance().getNotificationClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +76,9 @@ public class MainScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle("");
         user = AppSettings.getInstance().getUser();
+        if (user != null) {
+            startNotificationPolling(user.getUserId());
+        }
         initComponents();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -131,22 +144,25 @@ public class MainScreenActivity extends AppCompatActivity {
         View profileItemView = bottomNav.findViewById(R.id.nav_profile);
 
         if (profileItemView != null) {
-            View dot = profileItemView.findViewById(R.id.notification_dot_overlay);
-            if (dot == null && show) {
-                dot = new View(this);
-                dot.setId(R.id.notification_dot_overlay);
-                dot.setBackgroundResource(R.drawable.round_red_shape);
-                int size = (int) getResources().getDimension(R.dimen.dot_size);
-                FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
-                params.topMargin = 4;
-                params.rightMargin = 44;
-                params.gravity = Gravity.END | Gravity.TOP;
-                ((ViewGroup) profileItemView).addView(dot, params);
-            } else if (dot != null) {
-                dot.setVisibility(show ? View.VISIBLE : View.GONE);
-            }
+            profileItemView.post(() -> {
+                View dot = profileItemView.findViewById(R.id.notification_dot_overlay);
+                if (dot == null && show) {
+                    dot = new View(this);
+                    dot.setId(R.id.notification_dot_overlay);
+                    dot.setBackgroundResource(R.drawable.round_red_shape);
+                    int size = (int) getResources().getDimension(R.dimen.dot_size);
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
+                    params.topMargin = 4;
+                    params.rightMargin = 44;
+                    params.gravity = Gravity.END | Gravity.TOP;
+                    ((ViewGroup) profileItemView).addView(dot, params);
+                } else if (dot != null) {
+                    dot.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
         }
     }
+
 
     public void viewPostsByTags(String tagId) {
         searchFragment.viewPostsByTag(tagId);
@@ -311,4 +327,47 @@ public class MainScreenActivity extends AppCompatActivity {
         hsv[2] *= 0.8f;
         return Color.HSVToColor(hsv);
     }
+
+
+    // Start to check if the user has any notifications
+    public void startNotificationPolling(int userId) {
+        if (isPollingNotifications) return;
+        isPollingNotifications = true;
+
+        notificationPollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                new Thread(() -> {
+                    try {
+                        boolean hasNewNotification = notificationClient.getNotificationFlag(userId);
+                        runOnUiThread(() -> {
+                            showNotificationDotOnProfile(hasNewNotification);
+
+                            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
+                            if (currentFragment instanceof ProfileFragment) {
+                                ((ProfileFragment) currentFragment).setNotificationDotVisible(hasNewNotification);
+                            }
+
+                            if (!hasNewNotification) {
+                                notificationPollingHandler.postDelayed(this, 5000);
+                            } else {
+                                stopNotificationPolling();
+                            }
+                        });
+                    } catch (IOException e) {
+                        notificationPollingHandler.postDelayed(this, 5000);
+                    }
+                }).start();
+            }
+        };
+
+        notificationPollingHandler.post(notificationPollingRunnable);
+    }
+
+    public void stopNotificationPolling() {
+        isPollingNotifications = false;
+        notificationPollingHandler.removeCallbacks(notificationPollingRunnable);
+    }
+
+
 }
