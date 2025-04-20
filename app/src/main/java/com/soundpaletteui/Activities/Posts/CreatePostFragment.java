@@ -1,5 +1,10 @@
 package com.soundpaletteui.Activities.Posts;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import androidx.core.content.ContextCompat;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -63,6 +68,7 @@ import java.util.Date;
 import java.util.List;
 
 public class CreatePostFragment extends Fragment {
+
     private int postPrompt, postType;
     private UserModel user;
     private List<TagModel> tags;
@@ -91,8 +97,9 @@ public class CreatePostFragment extends Fragment {
     private String backgroundColour = "#FFFFFF";
     private String fontColour = "#000000";
     private boolean selectingBackground = true;
-
     private ActivityResultLauncher<Intent> mediaPickerLauncher;
+    private static final int MEDIA_PERMISSION_REQUEST_CODE = 101;
+    private static final int LEGACY_STORAGE_PERMISSION_REQUEST_CODE = 102;
 
     public CreatePostFragment() {}
 
@@ -307,6 +314,20 @@ public class CreatePostFragment extends Fragment {
             postMediaContext = postContentView.findViewById(R.id.mediaContent);
 
             mediaButton.setOnClickListener(v -> {
+                boolean hasPermissions;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    hasPermissions = hasPermission(Manifest.permission.READ_MEDIA_IMAGES)
+                            && hasPermission(Manifest.permission.READ_MEDIA_AUDIO);
+                } else {
+                    hasPermissions = hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
+                }
+
+                if (!hasPermissions) {
+                    Toast.makeText(requireContext(), "Permission needed to access your media files.", Toast.LENGTH_SHORT).show();
+                    requestMediaPermissions();
+                    return;
+                }
+
                 Toast.makeText(requireContext(), "Scanning media folders...", Toast.LENGTH_SHORT).show();
 
                 String[] foldersToScan = new String[]{
@@ -547,6 +568,42 @@ public class CreatePostFragment extends Fragment {
                 Log.e("NewChatroomFragment", "Failed to load dummy users: " + e.getMessage());
             }
         }).start();
+    }
+
+
+    // Whether the user gave permission to access camera, media files etc.
+    private boolean hasPermission(String permission) {
+        return ContextCompat.checkSelfPermission(requireContext(), permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    // Function to request permissions if they have not been granted
+    private void requestMediaPermissions() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissions(
+                    new String[]{
+                            Manifest.permission.READ_MEDIA_IMAGES,
+                            Manifest.permission.READ_MEDIA_AUDIO
+                    },
+                    MEDIA_PERMISSION_REQUEST_CODE
+            );
+        } else {
+            requestPermissions(
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    LEGACY_STORAGE_PERMISSION_REQUEST_CODE
+            );
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == MEDIA_PERMISSION_REQUEST_CODE || requestCode == LEGACY_STORAGE_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(requireContext(), "Permission granted! Please tap again to select media.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(requireContext(), "Permission denied. You won't be able to select media files.", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
 }
