@@ -74,7 +74,7 @@ public class NotificationClient {
         //Call<Boolean> call = apiEndpoints.getNotificationFlag(userId);
         //Response<Boolean> response = call.execute();
         //return response.body();
-        return false;
+        return true;
     }
 
 
