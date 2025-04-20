@@ -3,13 +3,24 @@ package com.soundpaletteui.Infrastructure.Utilities;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
+import android.util.Base64;
 import android.util.Log;
+import android.widget.ImageButton;
+import android.widget.SeekBar;
+import android.widget.Toast;
+
+import com.soundpaletteui.Infrastructure.Models.FileModel;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class FileUtils {
 
@@ -62,5 +73,55 @@ public class FileUtils {
             Log.e("FileUtils", "Failed to convert and rename file");
             return null;
         }
+    }
+
+    public static void getPostAudio(int fileId, Call<FileModel> fileCall, Context context, ImageButton playButton, SeekBar seekBar) {
+        fileCall.enqueue(new Callback<FileModel>() {
+            @Override
+            public void onResponse(Call<FileModel> call, Response<FileModel> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Get the base64-encoded content of the audio file
+                    String base64Audio = response.body().getByteArrayContent();
+
+                    try {
+                        // Decode the base64 audio data
+                        byte[] decodedAudio = Base64.decode(base64Audio, Base64.DEFAULT);
+
+                        // Create a file in the cache directory
+                        File cacheDir = context.getCacheDir();
+                        File audioFile = new File(cacheDir, "downloaded_audio.mp3");
+
+                        // Write the decoded audio data to the file
+                        try (FileOutputStream fos = new FileOutputStream(audioFile)) {
+                            fos.write(decodedAudio);
+                            fos.flush();
+
+                            // Get the audio file URL (this can be a local URI since we saved the file)
+                            Uri audioUri = Uri.fromFile(audioFile);
+
+                            // Use MediaPlayerManager to handle playback
+                            MediaPlayerManager.getInstance().playPause(audioUri.toString(), playButton, seekBar);
+
+                        } catch (IOException e) {
+                            Log.e("getPostAudio", "Error writing audio to file", e);
+                            Toast.makeText(context, "Audio download failed", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (Exception e) {
+                        Log.e("getPostAudio", "Error decoding audio", e);
+                        Toast.makeText(context, "Audio decoding failed", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Log.e("getPostAudio", "Error: " + response.message());
+                    Toast.makeText(context, "Failed to download audio", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<FileModel> call, Throwable t) {
+                Log.e("getPostAudio", "Error downloading audio", t);
+                Toast.makeText(context, "Error downloading audio", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

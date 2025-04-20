@@ -90,7 +90,6 @@ public class ImageUtils {
                 if(response.isSuccessful() && response.body() != null) {
                     String imageUrl = response.body().getFileUrl();
                     String base64Image = response.body().getByteArrayContent();
-                    //byte[] decodedImage = Base64.getDecoder().decode(base64Image);
                     byte[] decodedImage = Base64.decode(base64Image, Base64.DEFAULT);
                     Bitmap image = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
                     if(image != null) {

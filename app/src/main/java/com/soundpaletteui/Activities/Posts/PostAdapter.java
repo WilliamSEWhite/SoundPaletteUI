@@ -39,6 +39,7 @@ import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.FileUtils;
 import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.Infrastructure.Utilities.UserUtils;
 import com.soundpaletteui.SPApiServices.ApiClients.PostClient;
@@ -141,13 +142,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             fragmentView = inflater.inflate(R.layout.adapter_posts_audio, holder.postFragmentDisplay, false);
 
             // Assigns the audio file here
+            int fileId = post.getFileId();
             ImageButton playPauseButton = fragmentView.findViewById(R.id.postAudioPlayPause);
             SeekBar audioSeekBar = fragmentView.findViewById(R.id.audioSeekBar);
             audioSeekBar.setMax(100);
             String audioSource = post.getPostContent().getPostTextContent();
 
             playPauseButton.setOnClickListener(v ->
-                    MediaPlayerManager.getInstance().playPause(audioSource, playPauseButton, audioSeekBar)
+                    //MediaPlayerManager.getInstance().playPause(audioSource, playPauseButton, audioSeekBar)
+                    FileUtils.getPostAudio(fileId,
+                            SPWebApiRepository.getInstance().getFileClient().getPostFile(fileId),
+                            context,
+                            playPauseButton,
+                            audioSeekBar)
             );
 
             audioSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
