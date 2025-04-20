@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,17 +55,19 @@ public class NotificationSettingsFragment extends Fragment {
 
         saveButton = rootView.findViewById(R.id.saveButton);
         saveButton.setOnClickListener(v -> {
-            try {
-                Log.d("NOTIFICATION SETTINGS", "Trying to save notifications...");
-                notificationClient.setNotificationSettings(allNotificationSettings);
-            } catch (IOException e) {
-                Log.d("NOTIFICATION SETTINGS", "There was an error saving notifications");
-                throw new RuntimeException(e);
+            //notificationClient.setNotificationSettings(allNotificationSettings);
+
+            Log.d("NOTIFICATION SETTINGS", "Trying to save notifications...");
+            Toast.makeText(requireContext(), "Notification settings saved!", Toast.LENGTH_SHORT).show();
+
+            for (NotificationSettingModel notif : allNotificationSettings) {
+                String status = notif.getValue() ? "ON" : "OFF";
+                Log.d("NOTIFICATION SETTINGS", notif.getNotificationSettingName() + " " + status);
             }
 
+            // Navigate back
             NotificationFragment notificationFragment = new NotificationFragment();
-            FragmentActivity activity = (FragmentActivity) v.getContext();
-            FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
             Navigation.replaceFragment(requireActivity().getSupportFragmentManager(),
                     transaction,
                     notificationFragment,

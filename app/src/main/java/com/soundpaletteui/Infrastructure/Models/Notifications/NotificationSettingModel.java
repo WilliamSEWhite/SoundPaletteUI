@@ -21,4 +21,5 @@ public class NotificationSettingModel {
     }
     public boolean getValue() { return value; }
     public String getNotificationSettingName() { return settingName; }
+    public void setValue(boolean value) { this.value = value; }
 }

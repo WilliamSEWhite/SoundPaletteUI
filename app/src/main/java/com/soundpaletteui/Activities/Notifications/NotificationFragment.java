@@ -63,7 +63,7 @@ public class NotificationFragment  extends Fragment {
         recyclerViewNotifications = view.findViewById(R.id.recyclerViewNotifications);
         recyclerViewNotifications.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
-        //getAllNotifications();
+        getAllNotifications();
         //new GetNotificationsTask().execute();
     }
 
@@ -94,11 +94,11 @@ public class NotificationFragment  extends Fragment {
         allNotifications.clear();
 
         Date now = new Date();
-        allNotifications.add(new NotificationModel(1, 1, "user1 sent you a message!", now));
-        allNotifications.add(new NotificationModel(2, 2, "user2 followed you", now));
-        allNotifications.add(new NotificationModel(3, 3, "user3 commented on your post", now));
-        allNotifications.add(new NotificationModel(4, 4, "user4 tagged in a post", now));
-        allNotifications.add(new NotificationModel(5, 5, "user5 liked your post!", now));
+        allNotifications.add(new NotificationModel(1, 1, "Duet with Destiny", "has a new message!", now));
+        allNotifications.add(new NotificationModel(2, 3, "user3", "followed you!", now));
+        allNotifications.add(new NotificationModel(3, 3, "user3", "liked your post!", now));
+        allNotifications.add(new NotificationModel(4, 3, "user3", "tagged in a post!", now));
+        allNotifications.add(new NotificationModel(5, 3, "user3", "comment on your post!", now));
 
         setupRecyclerView();
     }

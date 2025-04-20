@@ -10,14 +10,15 @@
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_toggle_dark_mode"
-        android:title="Toggle Dark Mode"
+        android:id="@+id/notificationButton"
+        android:title="Notifications"
         android:orderInCategory="101"
         app:showAsAction="never" />
 
+
     <item
-        android:id="@+id/notificationButton"
-        android:title="Notifications"
+        android:id="@+id/action_toggle_dark_mode"
+        android:title="Toggle Dark Mode"
         android:orderInCategory="101"
         app:showAsAction="never" />
 

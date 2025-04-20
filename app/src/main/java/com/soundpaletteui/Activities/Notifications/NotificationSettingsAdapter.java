@@ -34,14 +34,14 @@ public class NotificationSettingsAdapter extends RecyclerView.Adapter<com.soundp
 
     @Override
     public void onBindViewHolder(@NonNull NotificationSettingsAdapter.NotificationSettingsViewHolder holder, int position) {
+        NotificationSettingModel setting = notificationSettingList.get(position);
+        holder.notificationSettingName.setText(setting.getNotificationSettingName());
 
-        NotificationSettingModel notificationSetting = notificationSettingList.get(position);
-        holder.notificationSettingName.setText(notificationSetting.getNotificationSettingName());
+        holder.toggleButton.setChecked(setting.getValue());
 
-        boolean currentSetting = notificationSetting.getValue();
-        holder.toggleButton.setChecked(currentSetting);
-
-        boolean newSetiing = holder.toggleButton.isChecked();
+        holder.toggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            setting.setValue(isChecked);
+        });
     }
 
     @Override
@@ -59,5 +59,7 @@ public class NotificationSettingsAdapter extends RecyclerView.Adapter<com.soundp
             notificationSettingName = itemView.findViewById(R.id.notificationSettingName);
             toggleButton = itemView.findViewById(R.id.toggleButton);;
         }
+
     }
+
 }
