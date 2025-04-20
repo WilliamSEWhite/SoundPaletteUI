@@ -1,11 +1,8 @@
 package com.soundpaletteui.Activities.Profile;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,23 +13,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.soundpaletteui.Activities.MainScreenActivity;
+import com.soundpaletteui.Activities.Notifications.NotificationFragment;
 import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
+import com.soundpaletteui.Infrastructure.Models.Notifications.NotificationSettingModel;
 import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
+import com.soundpaletteui.SPApiServices.ApiClients.NotificationClient;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 
-import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Utilities.MediaPlayerManager;
-import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
-import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
 
 import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
 import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
-import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Activities.Posts.PostFragment;
@@ -49,10 +45,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -62,7 +56,6 @@ import androidx.recyclerview.widget.SnapHelper;
 import androidx.recyclerview.widget.LinearSnapHelper;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
-import retrofit2.Call;
 
 // Displays and manages a user's profile, including posts and saved content.
 public class ProfileFragment extends Fragment {
@@ -84,7 +77,7 @@ public class ProfileFragment extends Fragment {
     private final int FULL_ALPHA = 255;
     private final int TRANSPARENT_ALPHA = 77;
     /** buttons */
-    Button btnEditTags, btnEditSaved;
+    Button viewNotificationButton, btnEditSaved;
     /** Tag stuff */
     private LinearLayoutManager linearLayoutManager;
     private TagClient tagClient;
@@ -100,6 +93,8 @@ public class ProfileFragment extends Fragment {
     private boolean darkMode;
     private String selectedTab = "posts";
     EmojiBackgroundView emojiBackground;
+    private View notificationDot;
+
 
     private SharedPreferences.OnSharedPreferenceChangeListener darkModeListener =
             (sharedPreferences, key) -> {
@@ -109,6 +104,13 @@ public class ProfileFragment extends Fragment {
             };
 
     public ProfileFragment() {
+    }
+
+    // Turn the notification indicator ON/OFF
+    public void setNotificationDotVisible(boolean visible) {
+        if (notificationDot != null) {
+            notificationDot.setVisibility(visible ? View.VISIBLE : View.GONE);
+        }
     }
 
     @Override
@@ -135,7 +137,13 @@ public class ProfileFragment extends Fragment {
         updateUI();
         new Handler(Looper.getMainLooper()).postDelayed(() -> getProfileBio(), 500);
         loadProfileImage();
+
+        if (user != null) {
+            userId = String.valueOf(user.getUserId());
+            ((MainScreenActivity) requireActivity()).startNotificationPolling(Integer.parseInt(userId));
+        }
     }
+
 
     // Inflates the layout and sets up UI for posts and saved content.
     @Nullable
@@ -172,6 +180,9 @@ public class ProfileFragment extends Fragment {
         emojiBackground = rootView.findViewById(R.id.emojiBackground);
         emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
 
+        notificationDot = rootView.findViewById(R.id.notificationDot);
+
+
         // Get arguments instead of Intent
         user = AppSettings.getInstance().getUser();
         userList = new ArrayList<>();
@@ -183,10 +194,10 @@ public class ProfileFragment extends Fragment {
 
         //fileClient = SPWebApiRepository.getInstance().getFileClient();
 
-        btnEditTags = rootView.findViewById(R.id.editTagsButton);
+        viewNotificationButton = rootView.findViewById(R.id.viewNotificationButton);
         btnEditSaved = rootView.findViewById(R.id.editSavedButton);
 
-        btnEditTags.setOnClickListener(v -> editUserTags(new ProfileEditTagsFragment(), "PROFILE_EDIT_TAGS_FRAGMENT"));
+        viewNotificationButton.setOnClickListener(v -> viewNotifications(new NotificationFragment(), "VIEW_NOTIFICATIONS_FRAGMENT"));
         btnEditSaved.setOnClickListener(v -> editSaved(new ProfileEditFragment(), "PROFILE_EDIT_FRAGMENT"));
 
         recyclerView = rootView.findViewById(R.id.recycler_tag);
@@ -220,12 +231,8 @@ public class ProfileFragment extends Fragment {
         profileFollowersDisplay = rootView.findViewById(R.id.profileFollowersDisplay);
         profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
 
-        btnEditTags.setBackgroundColor(Color.parseColor("#FFD700"));
+        viewNotificationButton.setBackgroundColor(Color.parseColor("#FFD700"));
         btnEditSaved.setBackgroundColor(Color.parseColor("#FFD700"));
-
-        // Edit Profile Button Actions
-        AppCompatImageButton buttonEdit = rootView.findViewById(R.id.editProfileButton);
-        buttonEdit.setOnClickListener(v -> editProfile(new ProfileEditFragment(), "PROFILE_EDIT_FRAGMENT"));
 
         // Post Button Actions
         framePosts.setOnClickListener(v -> {
@@ -358,7 +365,7 @@ public class ProfileFragment extends Fragment {
     }
 
     /** edit user tags */
-    private void editUserTags(Fragment newFragment, String tag) {
+    private void viewNotifications(Fragment newFragment, String tag) {
         Bundle bundle = new Bundle();
         bundle.putInt("nav", 0);
         newFragment.setArguments(bundle);

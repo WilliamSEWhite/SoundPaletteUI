@@ -2,12 +2,12 @@ package com.soundpaletteui.SPApiServices.ApiClients;
 
 import android.util.Log;
 
-import com.soundpaletteui.Infrastructure.Models.Notification;
-import com.soundpaletteui.Infrastructure.Models.NotificationSetting;
-import com.soundpaletteui.Infrastructure.Models.Post.PostModel;
+import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModelLite;
+import com.soundpaletteui.Infrastructure.Models.Chat.NewChatroomModel;
+import com.soundpaletteui.Infrastructure.Models.Notifications.NotificationModel;
+import com.soundpaletteui.Infrastructure.Models.Notifications.NotificationSettingModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.SPApiServices.ApiEndpoints.NotificationApiEndpoints;
-import com.soundpaletteui.SPApiServices.ApiEndpoints.PostApiEndpoints;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,17 +24,17 @@ public class NotificationClient {
         apiEndpoints = retrofit.create(NotificationApiEndpoints.class);
 
     }
-    public List<Notification> getNotification() throws IOException {
+    public List<NotificationModel> getNotification() throws IOException {
         int userId = AppSettings.getInstance().getUserId();
-        Call<List<Notification>> call = apiEndpoints.getNotification(userId);
-        Response<List<Notification>> response = call.execute();
+        Call<List<NotificationModel>> call = apiEndpoints.getNotification(userId);
+        Response<List<NotificationModel>> response = call.execute();
 
         if (!response.isSuccessful()) {
             Log.e("PostClient", "Error fetching posts: " + response.code() + " - " + response.message());
             return new ArrayList<>();
         }
 
-        List<Notification> posts = response.body();
+        List<NotificationModel> posts = response.body();
         if (posts == null) {
             Log.w("PostClient", "Received null response body for posts.");
             return new ArrayList<>();
@@ -44,17 +44,17 @@ public class NotificationClient {
         return posts;
     }
 
-    public List<NotificationSetting> getNotificationSettings() throws IOException {
+    public List<NotificationSettingModel> getNotificationSettings() throws IOException {
         int userId = AppSettings.getInstance().getUserId();
-        Call<List<NotificationSetting>> call = apiEndpoints.getNotificationSettings(userId);
-        Response<List<NotificationSetting>> response = call.execute();
+        Call<List<NotificationSettingModel>> call = apiEndpoints.getNotificationSettings(userId);
+        Response<List<NotificationSettingModel>> response = call.execute();
 
         if (!response.isSuccessful()) {
             Log.e("PostClient", "Error fetching posts: " + response.code() + " - " + response.message());
             return new ArrayList<>();
         }
 
-        List<NotificationSetting> settings = response.body();
+        List<NotificationSettingModel> settings = response.body();
         if (settings == null) {
             Log.w("PostClient", "Received null response body for posts.");
             return new ArrayList<>();
@@ -64,9 +64,25 @@ public class NotificationClient {
         return settings;
     }
 
-    public Void setNotificationSettings(List<NotificationSetting> settings) throws IOException {
+    public Void setNotificationSettings(List<NotificationSettingModel> settings) throws IOException {
         Call<Void> call = apiEndpoints.setNotificationSettings(settings);
         Response<Void> response = call.execute();
         return null;
     }
+
+    public boolean getNotificationFlag(int userId) throws IOException {
+        //Call<Boolean> call = apiEndpoints.getNotificationFlag(userId);
+        //Response<Boolean> response = call.execute();
+        //return response.body();
+        return true;
+    }
+
+
+    public boolean getMessageFlag(int userId) throws IOException {
+        //Call<Boolean> call = apiEndpoints.getMessageFlag(userId);
+        //Response<Boolean> response = call.execute();
+        //return response.body();
+        return true;
+    }
+
 }

@@ -1,21 +1,27 @@
+// MainScreenActivity.java with notification dot overlay on Profile icon
 package com.soundpaletteui.Activities;
 
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.appcompat.widget.Toolbar; // Make sure to import Toolbar
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,6 +30,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundpaletteui.Activities.Home.HomeFragment;
 import com.soundpaletteui.Activities.LoginRegister.LoginActivity;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
+import com.soundpaletteui.Activities.Notifications.NotificationFragment;
+import com.soundpaletteui.Activities.Notifications.NotificationSettingsFragment;
 import com.soundpaletteui.Activities.Posts.CreatePostFragment;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.Activities.Trending.SearchFragment;
@@ -34,13 +42,15 @@ import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+import com.soundpaletteui.SPApiServices.ApiClients.NotificationClient;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.databinding.ActivityMainBinding;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Main activity managing the primary navigation among fragments.
- */
+// Main activity managing the primary navigation among fragments.
 public class MainScreenActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -51,6 +61,14 @@ public class MainScreenActivity extends AppCompatActivity {
     private HomeFragment homeFragment;
     private ProfileFragment profileFragment;
     private SearchFragment searchFragment;
+    private Handler notificationPollingHandler = new Handler(Looper.getMainLooper());
+    private Runnable notificationPollingRunnable;
+    private boolean isPollingNotifications = false;
+    private Handler messagePollingHandler = new Handler(Looper.getMainLooper());
+    private Runnable messagePollingRunnable;
+    private boolean isPollingMessages = false;
+
+    private final NotificationClient notificationClient = SPWebApiRepository.getInstance().getNotificationClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +80,10 @@ public class MainScreenActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle("");
         user = AppSettings.getInstance().getUser();
+        if (user != null) {
+            startNotificationPolling(user.getUserId());
+            startMessagePolling(user.getUserId());
+        }
         initComponents();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -112,7 +134,7 @@ public class MainScreenActivity extends AppCompatActivity {
             } else {
                 hue = 30f;
             }
-animateHeaderShadow();
+            animateHeaderShadow();
             tint = createColorStateList(toolbarView, hue);
             binding.bottomNavigationView.setItemIconTintList(tint);
             binding.bottomNavigationView.setItemTextColor(tint);
@@ -122,7 +144,7 @@ animateHeaderShadow();
         });
     }
 
-    public void viewPostsByTags(String tagId){
+    public void viewPostsByTags(String tagId) {
         searchFragment.viewPostsByTag(tagId);
     }
 
@@ -137,11 +159,7 @@ animateHeaderShadow();
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
         MenuItem darkModeToggle = menu.findItem(R.id.action_toggle_dark_mode);
         if (darkModeToggle != null) {
-            if (currentFragment instanceof HomeFragment) {
-                darkModeToggle.setVisible(true);
-            } else {
-                darkModeToggle.setVisible(false);
-            }
+            darkModeToggle.setVisible(currentFragment instanceof HomeFragment);
         }
         return super.onPrepareOptionsMenu(menu);
     }
@@ -150,33 +168,29 @@ animateHeaderShadow();
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_toggle_dark_mode) {
-            System.out.println("Button change");
-            UISettings.applyFlippedBrightnessGradientBackground(recyclerView, 120f, homeFragment.darkMode);
 
-            // Toggle the dark mode preference.
+        if (id == R.id.action_toggle_dark_mode) {
             boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(this);
             DarkModePreferences.setDarkModeEnabled(this, !isDarkMode);
-            System.out.println("DARK MODE: " + isDarkMode);
-            if (!isDarkMode) {
-                binding.bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.background_dark));
-
-            } else {
-                binding.bottomNavigationView.setBackgroundColor(ContextCompat.getColor(this, android.R.color.white));
-            }
-//            homeFragment.setTheme(isDarkMode);
             recreate();
             return true;
-        }
-        else if(id == R.id.log_out){
+
+        } else if (id == R.id.action_settings) {
+            Navigation.replaceFragment(getSupportFragmentManager(), new NotificationSettingsFragment(), "NOTIFICATION_SETTINGS_FRAGMENT", R.id.mainScreenFrame);
+            return true;
+
+        } else if (id == R.id.notificationButton) {
+            Navigation.replaceFragment(getSupportFragmentManager(), new NotificationFragment(), "NOTIFICATION_FRAGMENT", R.id.mainScreenFrame);
+            return true;
+
+        } else if (id == R.id.log_out) {
             AppSettings.setUsernameValue(this, "");
             AppSettings.setPasswordValue(this, "");
-
-            Intent intent = new Intent(MainScreenActivity.this, LoginActivity.class);
-            startActivity(intent); // Start the next activity
-            finish(); // Finish the current activity
-
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -189,8 +203,7 @@ animateHeaderShadow();
         searchFragment = new SearchFragment();
     }
 
-    // Function for Post creation - type selection.
-    private void selectPostType(){
+    private void selectPostType() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final View addPost = getLayoutInflater().inflate(R.layout.post_type_select_dialog, null);
         builder.setView(addPost);
@@ -263,7 +276,6 @@ animateHeaderShadow();
         ColorStateList homeButtonTint = createColorStateList(findViewById(R.id.toolbar), 0f);
         binding.bottomNavigationView.setItemIconTintList(homeButtonTint);
         binding.bottomNavigationView.setItemTextColor(homeButtonTint);
-
     }
 
     // Updates the shadow effect on the selected bottom navigation item.
@@ -275,9 +287,7 @@ animateHeaderShadow();
             if (actionView != null) {
                 TextView label = actionView.findViewById(R.id.bottom_nav_label);
                 label.setShadowLayer(0, 0, 0, Color.TRANSPARENT);
-//                label.setTypeface(null, Typeface.NORMAL);
                 label.setTextSize(10);
-
             }
         }
         MenuItem checkedItem = bottomNav.getMenu().findItem(checkedItemId);
@@ -286,7 +296,6 @@ animateHeaderShadow();
             int selectedColor = Color.HSVToColor(new float[]{hue, 1f, 1f});
             int shadowColor = darkenColor(selectedColor);
             label.setShadowLayer(8, 6, 6, shadowColor);
-//            label.setTypeface(null, Typeface.BOLD);
             label.setTextSize(12);
         }
     }
@@ -297,5 +306,132 @@ animateHeaderShadow();
         Color.colorToHSV(color, hsv);
         hsv[2] *= 0.8f;
         return Color.HSVToColor(hsv);
+    }
+
+
+    // Start to check if the user has any notifications (follows, likes, comments, tags)
+    public void startNotificationPolling(int userId) {
+        if (isPollingNotifications) return;
+        isPollingNotifications = true;
+
+        notificationPollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                new Thread(() -> {
+                    try {
+                        boolean hasNewNotification = notificationClient.getNotificationFlag(userId);
+                        runOnUiThread(() -> {
+                            showNotificationDotOnProfile(hasNewNotification);
+
+                            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
+                            if (currentFragment instanceof ProfileFragment) {
+                                ((ProfileFragment) currentFragment).setNotificationDotVisible(hasNewNotification);
+                            }
+
+                            if (!hasNewNotification) {
+                                notificationPollingHandler.postDelayed(this, 5000);
+                            } else {
+                                stopNotificationPolling();
+                            }
+                        });
+                    } catch (IOException e) {
+                        notificationPollingHandler.postDelayed(this, 5000);
+                    }
+                }).start();
+            }
+        };
+
+        notificationPollingHandler.post(notificationPollingRunnable);
+    }
+
+    public void stopNotificationPolling() {
+        isPollingNotifications = false;
+        notificationPollingHandler.removeCallbacks(notificationPollingRunnable);
+    }
+
+
+    // Start to check if the user has any message notifications
+    public void startMessagePolling(int userId) {
+        if (isPollingMessages) return;
+        isPollingMessages = true;
+
+        messagePollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                new Thread(() -> {
+                    try {
+                        boolean hasNewMessages = notificationClient.getMessageFlag(userId);
+                        runOnUiThread(() -> {
+                            showMessageDotOnMessages(hasNewMessages);
+
+                            if (!hasNewMessages) {
+                                messagePollingHandler.postDelayed(this, 5000);
+                            } else {
+                                stopMessagePolling(); // You can decide whether to stop or keep polling
+                            }
+                        });
+                    } catch (IOException e) {
+                        messagePollingHandler.postDelayed(this, 5000);
+                    }
+                }).start();
+            }
+        };
+
+        messagePollingHandler.post(messagePollingRunnable);
+    }
+
+    public void stopMessagePolling() {
+        isPollingMessages = false;
+        messagePollingHandler.removeCallbacks(messagePollingRunnable);
+    }
+
+
+    public void showNotificationDotOnProfile(boolean show) {
+        BottomNavigationView bottomNav = binding.bottomNavigationView;
+        View profileItemView = bottomNav.findViewById(R.id.nav_profile);
+
+        if (profileItemView != null) {
+            profileItemView.post(() -> {
+                View dot = profileItemView.findViewById(R.id.notification_dot_overlay);
+                if (dot == null && show) {
+                    dot = new View(this);
+                    dot.setId(R.id.notification_dot_overlay);
+                    dot.setBackgroundResource(R.drawable.round_red_shape);
+                    int size = (int) getResources().getDimension(R.dimen.dot_size);
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
+                    params.topMargin = 4;
+                    params.rightMargin = 44;
+                    params.gravity = Gravity.END | Gravity.TOP;
+                    ((ViewGroup) profileItemView).addView(dot, params);
+                } else if (dot != null) {
+                    dot.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        }
+    }
+
+
+    public void showMessageDotOnMessages(boolean show) {
+        BottomNavigationView bottomNav = binding.bottomNavigationView;
+        View messageItemView = bottomNav.findViewById(R.id.nav_msg);
+
+        if (messageItemView != null) {
+            messageItemView.post(() -> {
+                View dot = messageItemView.findViewById(R.id.message_dot_overlay);
+                if (dot == null && show) {
+                    dot = new View(this);
+                    dot.setId(R.id.message_dot_overlay);
+                    dot.setBackgroundResource(R.drawable.round_red_shape);
+                    int size = (int) getResources().getDimension(R.dimen.dot_size);
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
+                    params.topMargin = 4;
+                    params.rightMargin = 44;
+                    params.gravity = Gravity.END | Gravity.TOP;
+                    ((ViewGroup) messageItemView).addView(dot, params);
+                } else if (dot != null) {
+                    dot.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        }
     }
 }

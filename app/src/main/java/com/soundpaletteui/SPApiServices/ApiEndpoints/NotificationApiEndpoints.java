@@ -1,8 +1,7 @@
 package com.soundpaletteui.SPApiServices.ApiEndpoints;
 
-import com.soundpaletteui.Infrastructure.Models.Notification;
-import com.soundpaletteui.Infrastructure.Models.NotificationSetting;
-import com.soundpaletteui.Infrastructure.Models.Post.PostModel;
+import com.soundpaletteui.Infrastructure.Models.Notifications.NotificationModel;
+import com.soundpaletteui.Infrastructure.Models.Notifications.NotificationSettingModel;
 
 import java.util.List;
 
@@ -14,10 +13,14 @@ import retrofit2.http.Query;
 
 public interface NotificationApiEndpoints {
     @GET("api/post/get-notifications")
-    Call<List<Notification>> getNotification(@Query("userId") int userId);
+    Call<List<NotificationModel>> getNotification(@Query("userId") int userId);
+    @GET("api/post/get-notification-flag")
+    Call<Boolean> getNotificationFlag(@Query("userId") int userId);
+    @GET("api/post/get-message-flag")
+    Call<Boolean> getMessageFlag(@Query("userId") int userId);
     @GET("api/post/get-notification-settings")
-    Call<List<NotificationSetting>> getNotificationSettings(@Query("userId") int userId);
+    Call<List<NotificationSettingModel>> getNotificationSettings(@Query("userId") int userId);
     @POST("api/post/set-notification-settings")
-    Call<Void> setNotificationSettings(@Body List<NotificationSetting> settings);
+    Call<Void> setNotificationSettings(@Body List<NotificationSettingModel> settings);
 
 }
