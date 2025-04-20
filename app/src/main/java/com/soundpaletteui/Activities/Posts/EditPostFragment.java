@@ -2,6 +2,7 @@ package com.soundpaletteui.Activities.Posts;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -13,6 +14,7 @@ import android.view.*;
 import android.widget.*;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -213,6 +215,26 @@ public class EditPostFragment extends Fragment {
             fontColourSelector.setOnClickListener(v -> openColourPicker(false));
         } else {
             postContentView = inflater.inflate(R.layout.fragment_post_create_media, postContentContainer, false);
+
+// Disable file selection for audio/image posts
+            TextView mediaContent = postContentView.findViewById(R.id.mediaContent);
+            ImageButton mediaButton = postContentView.findViewById(R.id.mediaButton);
+            LinearLayout linearLayout = postContentView.findViewById(R.id.linearLayout);
+
+            Context context = linearLayout.getContext();
+            linearLayout.setBackground(ContextCompat.getDrawable(context, R.drawable.white_translucency_gradient_create_grey));
+
+            if (mediaContent != null) {
+                mediaContent.setEnabled(false);
+                mediaContent.setFocusable(false);
+                mediaContent.setClickable(false);
+                mediaContent.setText(currentPost.getPostContent().getPostTextContent());
+                mediaContent.setTextColor(ContextCompat.getColor(context, R.color.black));
+            }
+
+            if (mediaButton != null) {
+                mediaButton.setEnabled(false);
+            }
         }
 
         postContentContainer.addView(postContentView);
