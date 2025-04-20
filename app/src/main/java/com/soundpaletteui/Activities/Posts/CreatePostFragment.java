@@ -48,6 +48,7 @@ import com.soundpaletteui.Activities.SearchAdapters.TagSelectedAdapter;
 import com.soundpaletteui.Activities.SearchAdapters.UserSearchAdapter;
 import com.soundpaletteui.Activities.SearchAdapters.UserSelectedAdapter;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
+import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Utilities.FileUtils;
@@ -420,6 +421,8 @@ public class CreatePostFragment extends Fragment {
         fragmentDisplay.removeAllViews();
 
         // Set the username, caption and post context
+        ImageButton profilePic = previewView.findViewById(R.id.postersProfile);
+        ImageUtils.getProfileImageByUsername(AppSettings.getInstance().getUsername(), profilePic, requireContext());
         TextView username = previewView.findViewById(R.id.postUsername);
         TextView caption = previewView.findViewById(R.id.postCaption);
         username.setText(previewPost.getUsername());
