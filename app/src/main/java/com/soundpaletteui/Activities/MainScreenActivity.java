@@ -25,6 +25,7 @@ import com.soundpaletteui.Activities.Home.HomeFragment;
 import com.soundpaletteui.Activities.LoginRegister.LoginActivity;
 import com.soundpaletteui.Activities.Messages.MessageFragment;
 import com.soundpaletteui.Activities.Notifications.NotificationFragment;
+import com.soundpaletteui.Activities.Notifications.NotificationSettingsFragment;
 import com.soundpaletteui.Activities.Posts.CreatePostFragment;
 import com.soundpaletteui.Activities.Profile.ProfileFragment;
 import com.soundpaletteui.Activities.Trending.SearchFragment;
@@ -168,6 +169,10 @@ animateHeaderShadow();
             }
 
             recreate();
+            return true;
+
+        } else if (id == R.id.action_settings) {
+            Navigation.replaceFragment(getSupportFragmentManager(), new NotificationSettingsFragment(), "NOTIFICATION_SETTINGS_FRAGMENT", R.id.mainScreenFrame);
             return true;
 
         } else if (id == R.id.notificationButton) {

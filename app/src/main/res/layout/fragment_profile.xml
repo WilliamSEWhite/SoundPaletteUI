@@ -72,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fontFamily="@font/inriasansregular"
-                android:text="Edit Tags"
+                android:text="Notifications"
                 android:textStyle="bold"
                 android:textSize="7dp"></Button>
         </LinearLayout>
