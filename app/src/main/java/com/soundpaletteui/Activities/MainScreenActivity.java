@@ -211,13 +211,13 @@ animateHeaderShadow();
         textPostButton.setOnClickListener(v -> {
             dialog.dismiss();
             CreatePostFragment createPostFragment = CreatePostFragment.newInstance(1);
-            Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
+            Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "CREATE_POST_FRAGMENT_TEXT", R.id.mainScreenFrame);
             supportInvalidateOptionsMenu();
         });
         mediaPostButton.setOnClickListener(v -> {
             dialog.dismiss();
             CreatePostFragment createPostFragment = CreatePostFragment.newInstance(-1);
-            Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "Create Text Post Fragment", R.id.mainScreenFrame);
+            Navigation.replaceFragment(getSupportFragmentManager(), createPostFragment, "CREATE_POST_FRAGMENT_FILE", R.id.mainScreenFrame);
             supportInvalidateOptionsMenu();
         });
     }

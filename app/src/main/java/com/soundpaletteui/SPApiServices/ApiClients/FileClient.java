@@ -5,7 +5,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.soundpaletteui.Infrastructure.ApiEndpoints.FileApiEndpoints;
+import com.soundpaletteui.SPApiServices.ApiEndpoints.FileApiEndpoints;
 import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Utilities.FileUtils;
 

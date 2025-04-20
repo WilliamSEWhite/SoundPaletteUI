@@ -1,5 +1,6 @@
 package com.soundpaletteui.Activities.Messages;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
+import com.soundpaletteui.Infrastructure.Models.FileModel;
+import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.Chat.ChatMessageModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
@@ -24,6 +27,10 @@ import com.soundpaletteui.R;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.ChatMessageViewHolder> {
 
@@ -99,18 +106,21 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
             holder.textMessageDate.setText("Unknown date");
         }
 
+        // gets the user's profile picture
+        Context context = holder.itemView.getContext();
+        //Log.d("ChatMessageAdapter", "textMessageUsername: " + senderUsername);
+        if(holder.textMessageUsername != null) {
+            ImageUtils.getProfileImageByUsername(senderUsername, holder.senderProfile, context);
+        }
+
         // Open Chat Message Sender's profile page
         holder.senderProfile.setOnClickListener(v -> {
-            Log.d("ProfileViewFragment", "Selected to Load Profile User ID# " + senderUsername);
+            Log.d("ChatMessageAdapter", "Selected to Load Profile User ID# " + senderUsername);
             ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(senderUsername);
 
             // Replace the fragment with the User's Profile
             FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
             Navigation.replaceFragment(fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame);
-            /*FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.mainScreenFrame, profileViewFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();*/
         });
     }
 
@@ -130,6 +140,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
             textMessageUsername = itemView.findViewById(R.id.textMessageUsername);
             textMessageDate = itemView.findViewById(R.id.textMessageDate);
             textMessage = itemView.findViewById(R.id.textMessage);
+
         }
     }
 }

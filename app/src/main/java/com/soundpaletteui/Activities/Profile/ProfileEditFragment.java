@@ -49,7 +49,7 @@ import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 
-import com.soundpaletteui.Infrastructure.ApiEndpoints.FileApiEndpoints;
+import com.soundpaletteui.SPApiServices.ApiEndpoints.FileApiEndpoints;
 import com.soundpaletteui.Infrastructure.Models.FileModel;
 import com.soundpaletteui.Infrastructure.Adapters.TagBasicAdapter;
 import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
@@ -158,6 +158,7 @@ public class ProfileEditFragment extends Fragment {
         refreshTagList();
     }
 
+    /** initialize components for the fragment */
     private void initComponents() throws IOException {
         // Get arguments instead of Intent
         user = AppSettings.getInstance().getUser();
@@ -200,8 +201,11 @@ public class ProfileEditFragment extends Fragment {
 
     /** loads the profile image **/
     private void loadProfileImage() {
-        Call<FileModel> call = fileClient.getProfileImage(userId);
-        ImageUtils.getProfileImage(userId, call, imageView, requireContext());
+//        Call<FileModel> call = fileClient.getProfileImage(userId);
+//        ImageUtils.getProfileImage(userId, call, imageView, requireContext());
+        ImageUtils.getProfileImageByUsername(AppSettings.getInstance().getUsername(),
+                imageView,
+                requireContext());
     }
     /** upload profile image */
     private void uploadProfileImage() {
@@ -345,6 +349,7 @@ public class ProfileEditFragment extends Fragment {
         location.setSelection(i-1);
     }
 
+    /** get locations for the spinner */
     private class GetLocationsAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             try {

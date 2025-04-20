@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
@@ -50,36 +51,21 @@ public class MessageFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_message, container, false);
-
-        noChatroomsDisplay = rootView.findViewById(R.id.noChatroomsDisplay);
-
-        // Get and configure the emoji background
-        EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
-        emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
-        emojiBackground.setAlpha(0.2f);
-        boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
-        UISettings.applyBrightnessGradientBackground(rootView, 240f, isDarkMode);
-
         initComponents(rootView);
-
-        messagesRecyclerView = rootView.findViewById(R.id.recyclerViewMessages);
-        messagesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
-
-        createChatroomButton = rootView.findViewById(R.id.createChatroomButton);
-        createChatroomButton.setOnClickListener(v -> {
-            NewChatroomFragment newChatroomFragment = NewChatroomFragment.newInstance();
-            FragmentActivity activity = (FragmentActivity) v.getContext();
-            FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.mainScreenFrame, newChatroomFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-        });
-        new GetChatroomsTask().execute();
-
         return rootView;
     }
 
+    /** initialize fragment components */
     private void initComponents(View view) {
+        noChatroomsDisplay = view.findViewById(R.id.noChatroomsDisplay);
+
+        // Get and configure the emoji background
+        EmojiBackgroundView emojiBackground = view.findViewById(R.id.emojiBackground);
+        emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
+        emojiBackground.setAlpha(0.2f);
+        boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(view.getContext());
+        UISettings.applyBrightnessGradientBackground(view, 240f, isDarkMode);
+
         user = AppSettings.getInstance().getUser();
         userClient = SPWebApiRepository.getInstance().getUserClient();
         if (user != null) {
@@ -87,8 +73,28 @@ public class MessageFragment extends Fragment {
         } else {
             Log.e("MessageFragment", "User is null. Cannot initialize properly.");
         }
+
+        messagesRecyclerView = view.findViewById(R.id.recyclerViewMessages);
+        messagesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
+
+        createChatroomButton = view.findViewById(R.id.createChatroomButton);
+        createChatroomButton.setOnClickListener(v -> {
+            NewChatroomFragment newChatroomFragment = NewChatroomFragment.newInstance();
+            FragmentActivity activity = (FragmentActivity) v.getContext();
+            FragmentTransaction transaction = activity.getSupportFragmentManager().beginTransaction();
+            Navigation.replaceFragment(requireActivity().getSupportFragmentManager(),
+                    transaction,
+                    newChatroomFragment,
+                    "NEW_CHATROOM_FRAGMENT",
+                    R.id.mainScreenFrame);
+            /*transaction.replace(R.id.mainScreenFrame, newChatroomFragment);
+            transaction.addToBackStack(null);
+            transaction.commit();*/
+        });
+        new GetChatroomsTask().execute();
     }
 
+    /** get the chatroom list */
     private class GetChatroomsTask extends AsyncTask<Void, Void, List<ChatroomModel>> {
         @Override
         protected List<ChatroomModel> doInBackground(Void... voids) {

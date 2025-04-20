@@ -16,22 +16,24 @@ public class NewPostModel {
     public String caption;
     @SerializedName("IsMature")
     public boolean isMature;
-
     @SerializedName("IsPremium")
     public boolean isPremium;
     @SerializedName("CreatedDate")
     public Date createdDate;
     @SerializedName("PublishDate")
     public Date publishDate;
-
     @SerializedName("PostTags")
     public ArrayList<TagModel> postTags;
     @SerializedName("PostUserTags")
     public List<String> postUserTags;
+    @SerializedName(("FileTypeId"))
+    public int fileTypeId;
     @SerializedName("PostContent")
     public PostContentModel postContentModel;
 
-    public NewPostModel(int userId, int postTypeId,String caption, boolean isPremium, boolean isMature, Date createdDate, Date publishDate, ArrayList<TagModel> postTags, PostContentModel postContentModel, List<String> postUserTags) {
+    public NewPostModel(int userId, int postTypeId,String caption, boolean isPremium, boolean isMature,
+                        Date createdDate, Date publishDate, ArrayList<TagModel> postTags,
+                        PostContentModel postContentModel, List<String> postUserTags, int fileTypeId) {
         this.userId = userId;
         this.postTypeId = postTypeId;
         this.caption = caption;
@@ -42,5 +44,6 @@ public class NewPostModel {
         this.postTags = postTags;
         this.postContentModel = postContentModel;
         this.postUserTags = postUserTags;
+        this.fileTypeId = fileTypeId;
     }
 }

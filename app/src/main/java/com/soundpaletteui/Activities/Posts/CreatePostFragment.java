@@ -38,6 +38,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.skydoves.colorpickerview.ColorPickerDialog;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
@@ -48,6 +49,9 @@ import com.soundpaletteui.Activities.SearchAdapters.UserSearchAdapter;
 import com.soundpaletteui.Activities.SearchAdapters.UserSelectedAdapter;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+import com.soundpaletteui.Infrastructure.Models.FileModel;
+import com.soundpaletteui.Infrastructure.Utilities.FileUtils;
+import com.soundpaletteui.Infrastructure.Utilities.PostUtils;
 import com.soundpaletteui.SPApiServices.ApiClients.PostClient;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
@@ -62,10 +66,15 @@ import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 import com.soundpaletteui.Views.EmojiBackgroundView;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class CreatePostFragment extends Fragment {
 
@@ -97,6 +106,10 @@ public class CreatePostFragment extends Fragment {
     private String backgroundColour = "#FFFFFF";
     private String fontColour = "#000000";
     private boolean selectingBackground = true;
+    private Uri selectedUri;
+    private int fileId = 0;
+    private FileModel fileModel;
+
     private ActivityResultLauncher<Intent> mediaPickerLauncher;
     private static final int MEDIA_PERMISSION_REQUEST_CODE = 101;
     private static final int LEGACY_STORAGE_PERMISSION_REQUEST_CODE = 102;
@@ -116,9 +129,11 @@ public class CreatePostFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             postPrompt = getArguments().getInt("postPrompt", -1);
+            Log.d("CreatePostFragment", "postPrompt: " + postPrompt);
         }
 
         if (postPrompt == 1) {
+            Log.d("CreatePostFragment", "Text Post");
             postType = 1;
         } else {
             // Set up the media picker so user can select an image or audio file
@@ -126,7 +141,7 @@ public class CreatePostFragment extends Fragment {
                     new ActivityResultContracts.StartActivityForResult(),
                     result -> {
                         if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
-                            Uri selectedUri = result.getData().getData();
+                            selectedUri = result.getData().getData();
                             if (selectedUri != null) {
                                 String mimeType = requireContext().getContentResolver().getType(selectedUri);
 
@@ -134,13 +149,15 @@ public class CreatePostFragment extends Fragment {
                                 if (mimeType != null) {
                                     if (mimeType.startsWith("image/")) {
                                         postType = 3;
-                                        Log.d("Create Media Post", "Post Type Assigned: "+postType);
+                                        fileId = 3;
+                                        Log.d("CreatePostFragment", "Post Type Assigned: "+postType);
                                     } else if (mimeType.startsWith("audio/")) {
                                         postType = 2;
-                                        Log.d("Create Media Post", "Post Type Assigned: "+postType);
+                                        fileId = 2;
+                                        Log.d("CreatePostFragment", "Post Type Assigned: "+postType);
                                     } else {
                                         // Send alert  dialog, file not allowed
-                                        Log.d("Create Media Post", "There was an error with the file selected.");
+                                        Log.e("CreatePostFragment", "There was an error with the file selected.");
                                         new AlertDialog.Builder(requireContext())
                                                 .setTitle("Invalid Selection")
                                                 .setMessage("The file you selected is not valid.")
@@ -152,7 +169,8 @@ public class CreatePostFragment extends Fragment {
                                 // Assign the file name to the TextView
                                 postContent = getFileNameFromUri(selectedUri);
                                 postMediaContext.setText(postContent);
-                                Log.d("postContent", postContent);
+                                Log.d("CreatePostFragment", "postContent: " + postContent);
+                                Log.d("CreatePostFragment", "postUri: " + selectedUri);
                             }
                         }
                     }
@@ -277,7 +295,9 @@ public class CreatePostFragment extends Fragment {
         previewButton = rootView.findViewById(R.id.previewButton);
         previewButton.setOnClickListener(v -> {
             getNewPostDetails(postType);
-            PostModel newPost = new PostModel(0, caption, new ArrayList<>(selectedTags), postContentModel, new Date(), user.getUsername(), postType, 0, 0, false, false, new ArrayList<>(selectedUsers)
+            PostModel newPost = new PostModel(0, caption, new ArrayList<>(selectedTags), postContentModel,
+                    new Date(), user.getUsername(), postType, 0, 0, false,
+                    false, fileId, new ArrayList<>(selectedUsers)
             );
 
             showPostPreview(newPost);
@@ -415,7 +435,7 @@ public class CreatePostFragment extends Fragment {
                 postContentView.setBackgroundColor(Color.parseColor(backgroundColour));
                 postText.setTextColor(Color.parseColor(fontColour));
             } catch (IllegalArgumentException e) {
-                Log.e("PreviewError", "Invalid colour hex: " + e.getMessage());
+                Log.e("CreatePostFragment", "Invalid colour hex: " + e.getMessage());
             }
             postContentModel = new PostContentModel(postContent, backgroundColour, fontColour);
             fragmentDisplay.addView(postContentView);
@@ -425,11 +445,15 @@ public class CreatePostFragment extends Fragment {
             // Get file name (so it can source it from drawables)
             try {
                 ImageView postImageDisplay = postContentView.findViewById(R.id.postImageDisplay);
+                Log.d("CreatePostFragment", "selectedUri: " + selectedUri);
+                if(selectedUri != null) {
+                    Glide.with(this).load(selectedUri).into(postImageDisplay);
+                }
                 int imageResource = getResources().getIdentifier(postContent, "drawable", getContext().getPackageName());
-                Log.d("PreviewImage", "Going to load "+postContent+ "#" +imageResource);
+                Log.d("CreatePostFragment", "Going to load "+postContent+ "#" +imageResource);
                 postImageDisplay.setImageResource(imageResource);
             } catch (Exception e) {
-                Log.e("PreviewError", "Failed to load image from URI: " + postContent, e);
+                Log.e("CreatePostFragment", "Failed to load image from URI: " + postContent, e);
             }
             postContentModel = new PostContentModel(postContent, null, null);
             fragmentDisplay.addView(postContentView);
@@ -462,9 +486,15 @@ public class CreatePostFragment extends Fragment {
 
         getNewPostDetails(postType);
         NewPostModel newPost = new NewPostModel(
-                userId, postType, caption, isPremium, isMature, new Date(), new Date(), new ArrayList<>(selectedTags), postContentModel, selectedUsers
-        );
-
+                userId, postType, caption, isPremium, isMature, new Date(), new Date(),
+                new ArrayList<>(selectedTags), postContentModel, selectedUsers, fileId);
+        String fileName = null;
+        if(selectedUri != null) {
+            fileName = getFileNameFromUri(selectedUri);
+        }
+        fileModel = new FileModel(AppSettings.getInstance().getUserId(), fileName, fileId);
+        Log.d("CreatePostFragment", "caption: " + caption);
+        Log.d("CreatePostFragment", "fileName: " + fileModel.getFileName());
         new MakePostAsync().execute(newPost);
     }
 
@@ -488,16 +518,33 @@ public class CreatePostFragment extends Fragment {
 
     private class MakePostAsync extends AsyncTask<NewPostModel, Void, Void> {
         protected Void doInBackground(NewPostModel... d) {
-            Log.d("MAKE POST ASYNC", "user wants to make a new post");
-            try {
-                Log.d("MAKE POST ASYNC", "trying to make the new post");
+            //Log.d("MAKE POST ASYNC", "user wants to make a new post");
+            //try {
+            //Log.d("MAKE POST ASYNC", "trying to make the new post");
+            // make post
+            if (postType != 1) {
+                File file = FileUtils.uri2File(requireContext(), selectedUri, fileId, AppSettings.getInstance().getUserId());
+                Log.d("CreatePostFragment", "CPF fileName: " + file.getName());
+                PostUtils.uploadFilePost(file, d[0], fileModel, new Callback<Integer>() {
+                    @Override
+                    public void onResponse(Call<Integer> call, Response<Integer> response) {
+                        Log.d("CreatePostFragment", "Post successful");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Integer> call, Throwable t) {
+                        Log.d("CreatePostFragment", "Post failed ", t);
+                    }
+                });
+            } else {
                 PostClient client = SPWebApiRepository.getInstance().getPostClient();
-                client.makePost(d[0]);
-            } catch (IOException e) {
-                Log.d("MAKE POST ASYNC", "oh noooo!!! there was an error new post");
-                requireActivity().runOnUiThread(() ->
-                        Toast.makeText(requireContext(), "Error making post", Toast.LENGTH_SHORT).show()
-                );
+                try {
+                    client.makePost(d[0]);
+                } catch (IOException e) {
+                    requireActivity().runOnUiThread(() ->
+                            Toast.makeText(requireContext(), "Error making post", Toast.LENGTH_SHORT).show());
+                    throw new RuntimeException(e);
+                }
             }
             return null;
         }

@@ -2,15 +2,24 @@ package com.soundpaletteui.Activities.Profile;
 
 import static java.util.Calendar.getInstance;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -19,28 +28,36 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.bumptech.glide.Glide;
 import com.soundpaletteui.Infrastructure.Adapters.CountrySelectAdapter;
+
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
+import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
+import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
+import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
+import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.LocationModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserInfoModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserProfileModel;
+import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.R;
-import com.soundpaletteui.SPApiServices.ApiClients.FileClient;
-import com.soundpaletteui.SPApiServices.ApiClients.LocationClient;
-import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
-import com.soundpaletteui.SPApiServices.SPWebApiRepository;
-import com.soundpaletteui.Views.EmojiBackgroundView;
-
+import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -50,25 +67,35 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class RegisterActivity extends AppCompatActivity {
 
+//    private static final int PICK_IMAGE_REQUEST = 1;
+    AppSettings appSettings = AppSettings.getInstance();
+//    private EditText txtUsername;           // username
+    private EditText txtEmail;              // email address
+    private EditText txtPhone;              // phone number (optional)
+//    private EditText txtDob;                // date of birth
+//    private ImageButton btnCalendar;        // date of birth button
+//    private Button btnClear;                // clear user data button
+    private Button btnSave;                 // save button
+    private Uri imageUri;                   // image URI from external source
+    private ImageView profileImage;         // object to display the image
+    private String currentPhotoPath;        // current photo path
+    private Spinner locationSpinner;               // country
+    private ArrayList<LocationModel> countries;             // list of countries
+    private Intent intent;
+    private UserModel user;
     private static final int PICK_IMAGE_REQUEST = 1;
-    private final AppSettings appSettings = AppSettings.getInstance();
-
-    private EditText txtEmail;
-    private EditText txtPhone;
     private Date dob;
-    private ImageView profileImage;
-    private Uri imageUri;
-    private Spinner locationSpinner;
-    private ArrayList<LocationModel> countries;
     private UserClient userClient;
     private int userId;
-    private UserModel user;
     private UserProfileModel userProfileModel;
     private FrameLayout frameSave;
     private GifImageView gifSave;
+    private TextView textSave;
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private FileClient fileClient;
-
+    /**
+     * Sets up the layout and calls initialization.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,24 +106,28 @@ public class RegisterActivity extends AppCompatActivity {
         boolean isDark = DarkModePreferences.isDarkModeEnabled(this);
         UISettings.applyBrightnessGradientBackground(root, 280f, isDark);
 
-        EmojiBackgroundView emojiBg = findViewById(R.id.emojiBackground);
-        emojiBg.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
+        com.soundpaletteui.Views.EmojiBackgroundView emojiBg = findViewById(R.id.emojiBackground);
+        emojiBg.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_SPIRAL);
         emojiBg.setAlpha(0.65f);
 
         initComponents();
-
-        // image picker launcher
+        // launches the image picker
         pickImageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                    if(result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         imageUri = result.getData().getData();
-                        displayImage(imageUri);
+                        if(profileImage != null) {
+                            displayImage(imageUri);
+                        } else {
+                            Log.e("ProfileEditFragment", "imageView is null");
+                        }
                     }
                 }
         );
     }
 
+    /** initializes components in the UI */
     private void initComponents() {
         txtEmail       = findViewById(R.id.registerEmail);
         txtPhone       = findViewById(R.id.registerPhone);
@@ -123,94 +154,177 @@ public class RegisterActivity extends AppCompatActivity {
                                 .format(dob));
             }, y, m, d).show();
         });
-
-        profileImage.setOnClickListener(v -> ImageUtils.pickImageFromGallery(this, pickImageLauncher));
-
+        
+        profileImage.setOnClickListener(v -> editProfileImage());
         frameSave.setOnClickListener(v -> {
             try {
-                ((GifDrawable)gifSave.getDrawable()).start();
-                frameSave.postDelayed(() -> ((GifDrawable)gifSave.getDrawable()).stop(), 800);
+                final GifDrawable saveGif = (GifDrawable) gifSave.getDrawable();
+                frameSave.getBackground().mutate().setAlpha(255);
+//                UISettings.applyBrightnessGradientBackground(findViewById(R.id.root_layout), 60f);
+                saveGif.start();
+                new android.os.Handler().postDelayed(() -> saveGif.stop(), 800);
             } catch (ClassCastException e) {
-                Toast.makeText(this, "Save animation error", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+                Toast.makeText(RegisterActivity.this, "Error with Save animation", Toast.LENGTH_SHORT).show();
             }
             saveUserInfo();
-            ImageUtils.uploadProfileImage(imageUri, user.getUserId(), fileClient, this);
+            uploadProfileImage();
         });
 
-        // load countries
+        // get data from previous activity
+        intent = getIntent();
+        userId = intent.getIntExtra("userId", 0);
+        userClient = SPWebApiRepository.getInstance().getUserClient();
+        getCountries();     // load countries from database
+        user = AppSettings.getInstance().getUser();
+        userProfileModel = new UserProfileModel(user.getUserId(), "I haven't updated my bio yet...", "/dev/null");
+    }
+
+    /** upload profile image */
+    private void uploadProfileImage() {
+        ImageUtils.uploadProfileImage(imageUri, user.getUserId(), fileClient, this);
+    }
+
+    /** edit the profile image */
+    private void editProfileImage() {
+        ImageUtils.pickImageFromGallery(this, pickImageLauncher);
+    }
+
+    /** loads the image */
+    private void loadImage() {
+        Glide.with(this).load(imageUri).into(profileImage);
+    }
+
+    /** initialize Spinner with list of countries */
+    private void getCountries() {
         new GetLocationsAsync().execute();
     }
 
-    private void displayImage(Uri uri) {
-        Glide.with(this)
-                .load(uri != null ? uri : R.drawable.baseline_person_150)
-                .placeholder(R.drawable.baseline_person_150)
-                .error(R.drawable.baseline_person_150)
-                .into(profileImage);
+    /** pulls countries from the database for the spinner */
+    private void initCountries(){
+        CountrySelectAdapter adapter = new CountrySelectAdapter(this,
+                android.R.layout.simple_spinner_item,
+                countries);
+        locationSpinner = (Spinner) findViewById(R.id.registerLocation);
+        locationSpinner.setAdapter(adapter); // Set the custom adapter to the spinner
+        // You can create an anonymous listener to handle the event when is selected an spinner item
+        locationSpinner.setSelection(0);                              //retain previously selected value
     }
 
+    /** save information to database */
     private void saveUserInfo() {
+        // write saving code here
         new UpdateUserInfoAsync().execute();
-        Toast.makeText(this, "User profile saved", Toast.LENGTH_SHORT).show();
+        Toast.makeText(RegisterActivity.this, "User profile saved ", Toast.LENGTH_SHORT).show();
     }
 
-    private class GetLocationsAsync extends AsyncTask<Void, Void, List<LocationModel>> {
-        @Override
-        protected List<LocationModel> doInBackground(Void... voids) {
+    /** clear text fields in register activity */
+    private void onRegistrationComplete() {
+        //Intent i = new Intent(RegisterActivity.this, MainScreenActivity.class);
+        Intent i = new Intent(RegisterActivity.this, RegisterTagsActivity.class);
+        startActivity(i);
+        finish();
+
+    }
+
+    /** displays the image in the register screen */
+    private void displayImage(Uri imageUri) {
+        //Log.d("RegisterActivity", "Image Uri: " + imageUri);
+        if (imageUri != null) {
+            Glide.with(this)
+                    .load(imageUri)
+                    .placeholder(R.drawable.baseline_person_150)
+                    .error(R.drawable.baseline_person_150)
+                    .into(profileImage);
+        } else {
+            Glide.with(this)
+                    .load(R.drawable.baseline_person_150)
+                    .into(profileImage);
+        }
+    }
+
+    /** gets user data */
+    private void getUser() {
+        new GetUserAsync().execute();
+    }
+
+    /** asynchronous call to the database for the user data */
+    private class GetUserAsync extends AsyncTask<Void,Void, Void> {
+        protected Void doInBackground(Void... d) {
             try {
-                return SPWebApiRepository.getInstance()
-                        .getLocationClient().getLocations();
+                user = userClient.getUser(userId);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        @Override
-        protected void onPostExecute(List<LocationModel> list) {
-            countries = new ArrayList<>(list);
-            CountrySelectAdapter adapter = new CountrySelectAdapter(
-                    RegisterActivity.this,
-                    android.R.layout.simple_spinner_item,
-                    countries
-            );
-            locationSpinner.setAdapter(adapter);
-            locationSpinner.setSelection(0);
-        }
+            return null;
+        }//end doInBackground
+
+        protected void onPostExecute(Void v) {
+            //populateView();
+        }//end onPostExecute
     }
 
-    private class UpdateUserInfoAsync extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
+    /** async call to pull countries from the database */
+    private class GetLocationsAsync extends AsyncTask<Void,Void, Void> {
+        protected Void doInBackground(Void... d) {
             try {
-                String email = txtEmail.getText().toString();
-                String phone = txtPhone.getText().toString();
-                LocationModel loc = (LocationModel)
-                        locationSpinner.getSelectedItem();
-
-                String created = new SimpleDateFormat(
-                        "yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()
-                ).format(getInstance().getTime());
-
-                UserInfoModel info = new UserInfoModel(
-                        user.getUserId(),
-                        loc.getLocationId(),
-                        email, phone, dob, created
-                );
-                appSettings.setUser(
-                        userClient.updateUserInfo(user.getUserId(), info)
-                );
-                userClient.updateUserProfile(userProfileModel);
+                LocationClient client = SPWebApiRepository.getInstance().getLocationClient();
+                List<LocationModel> locations = client.getLocations();
+                countries = new ArrayList<>(locations);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             return null;
         }
+        /** init country spinner after data retrieval */
         @Override
-        protected void onPostExecute(Void aVoid) {
-            startActivity(new Intent(
-                    RegisterActivity.this,
-                    RegisterTagsActivity.class
-            ));
-            finish();
+        protected void onPostExecute(Void v) {
+            if(countries != null && !countries.isEmpty()) {
+                initCountries();
+            }
+            else {
+                Toast.makeText(RegisterActivity.this, "Failed to load countries!",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }//end onPostExecute
+    }
+
+    /** updates user profile information to the database */
+    private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {
+        @Override
+        protected Void doInBackground(Void... d) {
+            try {
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss",
+                        Locale.getDefault());
+                String dateCreated = sdf.format(calendar.getTime());
+
+                String email = txtEmail.getText().toString();
+                String phone = txtPhone.getText().toString();
+                LocationModel loc = (LocationModel)
+                        locationSpinner.getSelectedItem();
+
+                CountrySelectAdapter adapter = (CountrySelectAdapter) locationSpinner.getAdapter();
+                LocationModel selectedLocation = adapter.getItem(locationSpinner.getSelectedItemPosition());
+                if(selectedLocation != null) {
+                    UserInfoModel newUserInfo = new UserInfoModel(user.getUserId(),
+                            selectedLocation.getLocationId(), email, phone, dob, dateCreated);
+                    appSettings.setUser(userClient.updateUserInfo(appSettings.getUserId(), newUserInfo));
+                    userClient.updateUserProfile(userProfileModel);
+                }
+                else {
+                    Toast.makeText(RegisterActivity.this, "Please select a location.",
+                            Toast.LENGTH_SHORT).show();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return null;
         }
+
+        /** updates UI after user info update */
+        protected void onPostExecute(Void v) {
+            onRegistrationComplete();
+        }//end onPostExecute
     }
 }

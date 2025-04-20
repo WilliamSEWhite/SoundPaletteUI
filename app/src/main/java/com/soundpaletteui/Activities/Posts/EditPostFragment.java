@@ -166,6 +166,7 @@ public class EditPostFragment extends Fragment {
                 currentPost.getLikeCount(),
                 currentPost.getIsLiked(),
                 currentPost.getIsSaved(),
+                currentPost.getFileId(),
                 new ArrayList<>(selectedUsers)
         );
 
@@ -344,7 +345,7 @@ public class EditPostFragment extends Fragment {
                 currentPost.getPostId(), caption, selectedTags, updatedContent,
                 currentPost.getCreatedDate(), currentPost.getUsername(),
                 currentPost.getPostType(), currentPost.getCommentCount(),
-                currentPost.getLikeCount(), isMature, isPremium, selectedUsers
+                currentPost.getLikeCount(), isMature, isPremium, currentPost.getFileId(), selectedUsers
         );
 
         new UpdatePostTask().execute(updatedPost);

@@ -40,6 +40,7 @@ import com.soundpaletteui.Infrastructure.Models.TagModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
+import com.soundpaletteui.Infrastructure.Utilities.UserUtils;
 import com.soundpaletteui.SPApiServices.ApiClients.PostClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
@@ -174,23 +175,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             Navigation.replaceFragment(fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame);
         });
 
-        // Assigns the user's profile picture from S3
-        UserClient client = SPWebApiRepository.getInstance().getUserClient();
-        client.getUserByName(post.getUsername(), new Callback<UserModel>() {
-            @Override
-            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-                UserModel user = response.body();
-                if (user != null) {
-                    ImageUtils.getProfileImage(user.getUserId(),
-                            SPWebApiRepository.getInstance().getFileClient().getProfileImage(user.getUserId()),
-                            holder.postersProfile, context);
-                }
-            }
-            @Override
-            public void onFailure(Call<UserModel> call, Throwable t) {
-                Log.e("PostAdapter", "Error retrieving UserModel object");
-            }
-        });
+        // get user's profile picture
+        Log.d("PostAdapter", "Post Username: " + post.getUsername());
+        if(post.getUsername() != null) {
+            ImageUtils.getProfileImageByUsername(post.getUsername(), holder.postersProfile, context);
+        }
 
         // Like button action
         holder.likeButton.setChecked(post.getIsLiked());

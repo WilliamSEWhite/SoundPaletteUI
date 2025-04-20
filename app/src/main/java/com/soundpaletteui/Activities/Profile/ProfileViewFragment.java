@@ -68,14 +68,14 @@ public class ProfileViewFragment extends Fragment {
 
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
-    private int userId;
-    private UserModel user;
+//    private int userId;
+//    private UserModel user;
     private static int viewUserId;
     UserProfileModelLite profile;
     private UserModel viewUser;
     private UserProfileModelLite viewProfile;
-    private UserClient userClient;
-    private UserClient viewUserClient;
+//    private UserClient userClient;
+//    private UserClient viewUserClient;
     private static String viewUsername;
     /** Tag stuff */
     private LinearLayoutManager linearLayoutManager;
@@ -101,9 +101,9 @@ public class ProfileViewFragment extends Fragment {
     private final int FULL_ALPHA = 255;
     private final int TRANSPARENT_ALPHA = 77;
     private ImageView imageView;
-    private ActivityResultLauncher<Intent> pickImageLauncher;
-    private FileClient fileClient;
-    private Uri imageUri;
+//    private ActivityResultLauncher<Intent> pickImageLauncher;
+//    private FileClient fileClient;
+//    private Uri imageUri;
     private Drawable defaultProfileImage;
     private UserClient client;
 
@@ -115,7 +115,7 @@ public class ProfileViewFragment extends Fragment {
     public static ProfileViewFragment newInstance(int postUserId) {
         ProfileViewFragment fragment = new ProfileViewFragment();
         viewUserId = postUserId;
-        Log.d("ProfileViewFragment", "Loading UserId: " + postUserId);
+        //Log.d("ProfileViewFragment", "Loading UserId: " + postUserId);
         return fragment;
     }
 
@@ -123,7 +123,7 @@ public class ProfileViewFragment extends Fragment {
     public static ProfileViewFragment newInstance(String postUsername) {
         ProfileViewFragment fragment = new ProfileViewFragment();
         viewUsername = postUsername;
-        Log.d("ProfileViewFragment", "Loading Username: " + postUsername);
+        //Log.d("ProfileViewFragment", "Loading Username: " + postUsername);
         return fragment;
     }
 
@@ -156,119 +156,14 @@ public class ProfileViewFragment extends Fragment {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-//        UISettings.applyBrightnessGradientBackground(rootView, 50f);
-//        framePosts = rootView.findViewById(R.id.frame_posts);
-//        gifPosts = rootView.findViewById(R.id.gif_posts);
-//        textPosts = rootView.findViewById(R.id.postsToggle);
-//        frameTagged = rootView.findViewById(R.id.frame_tagged);
-//        gifTagged = rootView.findViewById(R.id.gif_tagged);
-//        textTagged = rootView.findViewById(R.id.taggedToggle);
-//        followButton = rootView.findViewById(R.id.followButton);
-//        messageButton = rootView.findViewById(R.id.messageButton);
-//        profileBioDisplay = rootView.findViewById(R.id.profileBio);
-//        profileFollowersDisplay = rootView.findViewById(R.id.profileFollowersDisplay);
-//        profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
-//        profileUsernameDisplay = rootView.findViewById(R.id.profileUsername);
-//
-//        // Follow Button Actions
-//        followButton.setOnClickListener(v -> {
-//            toggleFollow(viewProfile, followButton.isChecked());
-//        });
-//        // Message Button Actions
-//        messageButton.setOnClickListener(v -> {
-//            openPrivateMessage();
-//        });
-//
-//        // Post Button Actions
-//        framePosts.setOnClickListener(v -> {
-//            // Setting the Post Fragment with viewProfile's post algorithm
-//            Log.d("ProfileFragment", "Posts selected for User ID# " + viewUserId);
-//            replacePostFragment("username", viewUsername);
-//
-//            try {
-//                final GifDrawable postsGifDrawable = (GifDrawable) gifPosts.getDrawable();
-//                framePosts.getBackground().mutate().setAlpha(FULL_ALPHA);
-//                frameTagged.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-////                UISettings.applyBrightnessGradientBackground(rootView, 50f);
-//                postsGifDrawable.start();
-//                gifHandler.postDelayed(() -> postsGifDrawable.stop(), 800);
-//            } catch (ClassCastException e) {
-//                e.printStackTrace();
-//                Toast.makeText(requireContext(),
-//                        "Error casting Posts GIF to GifDrawable",
-//                        Toast.LENGTH_SHORT).show();
-//            }
-//            try {
-//                if (gifTagged.getDrawable() instanceof GifDrawable) {
-//                    ((GifDrawable) gifTagged.getDrawable()).stop();
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            gifPosts.setAlpha(1.0f);
-//            gifTagged.setAlpha(0.3f);
-//            setButtonTextSelected(textPosts, true);
-//            setButtonTextSelected(textTagged, false);
-//        });
-//
-//        // Tags Button Actions
-//        frameTagged.setOnClickListener(v -> {
-//            // Setting the PostFragment with User's Tagged posts
-//            Log.d("ProfileFragment", "Tags selected for User ID# "+viewUserId);
-//            replacePostFragment("postusertags", viewUsername);
-//
-//            try {
-//                final GifDrawable savedGifDrawable = (GifDrawable) gifTagged.getDrawable();
-//                frameTagged.getBackground().mutate().setAlpha(FULL_ALPHA);
-//                framePosts.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-////                UISettings.applyBrightnessGradientBackground(rootView, 60f);
-//                savedGifDrawable.start();
-//                gifHandler.postDelayed(() -> savedGifDrawable.stop(), 800);
-//            } catch (ClassCastException e) {
-//                e.printStackTrace();
-//                Toast.makeText(requireContext(),
-//                        "Error casting Saved GIF to GifDrawable",
-//                        Toast.LENGTH_SHORT).show();
-//            }
-//            try {
-//                if (gifPosts.getDrawable() instanceof GifDrawable) {
-//                    ((GifDrawable) gifPosts.getDrawable()).stop();
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//            gifTagged.setAlpha(1.0f);
-//            gifPosts.setAlpha(0.3f);
-//            setButtonTextSelected(textTagged, true);
-//            setButtonTextSelected(textPosts, false);
-//        });
-//
-//        framePosts.performClick();
         return rootView;
     }
 
     // Initializes views and loads user data and viewUser
     private void initComponents(View view) throws IOException {
-        Log.d("ProfileViewFragment", "viewUserName: " + viewUsername);
+//        Log.d("ProfileViewFragment", "viewUserName: " + viewUsername);
         client = SPWebApiRepository.getInstance().getUserClient();
-        //user = client.getUserByName(viewUsername);
-//        client.getUserByName(viewUsername, new Callback<UserModel>() {
-//            @Override
-//            public void onResponse(Call<UserModel> call, Response<UserModel> response) {
-//                user = response.body();
-//                userId = user.getUserId();
-//                Log.d("ProfileViewFragment", "UserId from body: " + userId);
-//                loadProfileImage();
-//            }
-//
-//            @Override
-//            public void onFailure(Call<UserModel> call, Throwable t) {
-//                Log.e("ProfileViewFragment", "Error retrieving UserModel object");
-//            }
-//        });
 
-        fileClient = SPWebApiRepository.getInstance().getFileClient();
         imageView = view.findViewById(R.id.profilePicture);
         defaultProfileImage = ContextCompat.getDrawable(requireContext(), R.drawable.baseline_person_100);
 
@@ -372,13 +267,14 @@ public class ProfileViewFragment extends Fragment {
 
         framePosts.performClick();
 
-        //loadProfileImage();
+        loadProfileImage();
     }
 
     /** loads the profile image **/
     private void loadProfileImage() {
-        Call<FileModel> call = fileClient.getProfileImage(userId);
-        ImageUtils.getProfileImage(userId, call, imageView, requireContext());
+        if(viewUsername != null) {
+            ImageUtils.getProfileImageByUsername(viewUsername, imageView, requireContext());
+        }
     }
 
     // Replaces the Main Screen Fragment in Main Activity
@@ -393,8 +289,6 @@ public class ProfileViewFragment extends Fragment {
         PostFragment postFragment = PostFragment.newInstance(algoType, userId);
         Navigation.replaceFragment(requireActivity().getSupportFragmentManager(), transaction,
                 postFragment, "POST_FRAGMENT", R.id.postFragment);
-        /*transaction.replace(R.id.postFragment, postFragment, "POST_FRAGMENT");
-        transaction.commit();*/
     }
 
     // Sets the style of a TextView to selected or unselected.

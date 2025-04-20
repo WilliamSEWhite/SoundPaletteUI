@@ -35,10 +35,16 @@ public class FileUtils {
             ContentResolver contentResolver = context.getContentResolver();
             switch(fileId) {
                 case 1:
-                    fileName = nameImageFile(userId);
+                    fileName = "null.jpg";
                     break;
                 case 2:
                     fileName = nameSoundFile(userId);
+                    break;
+                case 3:
+                    fileName = nameImageFile(userId);
+                    break;
+                case 4:
+                    fileName = nameImageFile(userId);
                     break;
             }
             File tempFile = new File(context.getCacheDir(), fileName);

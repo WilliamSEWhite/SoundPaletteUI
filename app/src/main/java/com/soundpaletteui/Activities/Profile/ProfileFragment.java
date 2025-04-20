@@ -119,6 +119,7 @@ public class ProfileFragment extends Fragment {
         // Register dark mode listener
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getContext());
         sp.registerOnSharedPreferenceChangeListener(darkModeListener);
+        loadProfileImage();
     }
 
     @Override
@@ -133,8 +134,6 @@ public class ProfileFragment extends Fragment {
     public void onResume() {
         super.onResume();
         user = AppSettings.getInstance().getUser();
-//        Call<FileModel> call = fileClient.getProfileImage(user.getUserId());
-//        ImageUtils.getProfileImage(user.getUserId(), call, imageView, requireContext());
         updateUI();
         new Handler(Looper.getMainLooper()).postDelayed(() -> getProfileBio(), 500);
         loadProfileImage();
@@ -184,7 +183,7 @@ public class ProfileFragment extends Fragment {
         tagClient = SPWebApiRepository.getInstance().getTagClient();
         tagList = new ArrayList<>();
 
-        fileClient = SPWebApiRepository.getInstance().getFileClient();
+        //fileClient = SPWebApiRepository.getInstance().getFileClient();
 
         viewNotificationButton = rootView.findViewById(R.id.viewNotificationButton);
         btnEditSaved = rootView.findViewById(R.id.editSavedButton);
@@ -304,13 +303,14 @@ public class ProfileFragment extends Fragment {
 
     /** loads the profile image **/
     private void loadProfileImage() {
-//        new Thread(() -> {
-//            // update UI on main thread
-//            new Handler(Looper.getMainLooper()).post(() -> {
-//                Call<FileModel> call = fileClient.getProfileImage(user.getUserId());
-//                ImageUtils.getProfileImage(user.getUserId(), call, imageView, requireContext());
-//            });
-//        }).start();
+        new Thread(() -> {
+            // update UI on main thread
+            new Handler(Looper.getMainLooper()).post(() -> {
+                ImageUtils.getProfileImageByUsername(AppSettings.getInstance().getUsername(),
+                        imageView,
+                        requireContext());
+            });
+        }).start();
     }
 
     /** move to edit profile fragment */
