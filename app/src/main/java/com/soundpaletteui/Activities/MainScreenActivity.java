@@ -1,10 +1,18 @@
-// MainScreenActivity.java with notification dot overlay on Profile icon
 package com.soundpaletteui.Activities;
 
+import android.Manifest;
 import android.animation.ValueAnimator;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,17 +23,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-import android.widget.Button;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.soundpaletteui.Activities.Home.HomeFragment;
 import com.soundpaletteui.Activities.LoginRegister.LoginActivity;
@@ -40,8 +52,8 @@ import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
-import com.soundpaletteui.R;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
+import com.soundpaletteui.R;
 import com.soundpaletteui.SPApiServices.ApiClients.NotificationClient;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.databinding.ActivityMainBinding;
@@ -67,23 +79,36 @@ public class MainScreenActivity extends AppCompatActivity {
     private Handler messagePollingHandler = new Handler(Looper.getMainLooper());
     private Runnable messagePollingRunnable;
     private boolean isPollingMessages = false;
-
+    private Handler deviceNotificationPollingHandler = new Handler(Looper.getMainLooper());
+    private Runnable deviceNotificationPollingRunnable;
+    private boolean isPollingDeviceNotifications = false;
     private final NotificationClient notificationClient = SPWebApiRepository.getInstance().getNotificationClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Apply dark mode setting before setting content view.
-        if (DarkModePreferences.isDarkModeEnabled(this)) {
-        } else {
+        if (!DarkModePreferences.isDarkModeEnabled(this)) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
+
         super.onCreate(savedInstanceState);
         setTitle("");
         user = AppSettings.getInstance().getUser();
+
+        // Request permissions for notifications on device
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1001);
+            }
+        }
+
+        // Run thread for notification checking
         if (user != null) {
             startNotificationPolling(user.getUserId());
             startMessagePolling(user.getUserId());
+            startDeviceNotificationPolling(user.getUserId()); // Start device notifications polling
         }
+
         initComponents();
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -323,15 +348,20 @@ public class MainScreenActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             showNotificationDotOnProfile(hasNewNotification);
 
-                            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
-                            if (currentFragment instanceof ProfileFragment) {
-                                ((ProfileFragment) currentFragment).setNotificationDotVisible(hasNewNotification);
-                            }
+                            if (hasNewNotification) {
+                                showNotificationDotOnProfile(true);
 
-                            if (!hasNewNotification) {
-                                notificationPollingHandler.postDelayed(this, 5000);
-                            } else {
+                                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
+                                currentFragment = getSupportFragmentManager().findFragmentById(R.id.mainScreenFrame);
+                                if (currentFragment instanceof ProfileFragment) {
+                                    ((ProfileFragment) currentFragment).setNotificationDotVisible(true);
+                                }
+
+                                showDeviceNotification("SoundPalette", "Your work sparked a response!");
+
                                 stopNotificationPolling();
+                            } else {
+                                notificationPollingHandler.postDelayed(this, 5000);
                             }
                         });
                     } catch (IOException e) {
@@ -434,4 +464,77 @@ public class MainScreenActivity extends AppCompatActivity {
             });
         }
     }
+
+    public void startDeviceNotificationPolling(int userId) {
+        if (isPollingDeviceNotifications) return;
+        isPollingDeviceNotifications = true;
+
+        deviceNotificationPollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                new Thread(() -> {
+                    try {
+                        boolean shouldNotify = notificationClient.getDeviceNotificationFlag(userId);
+                        runOnUiThread(() -> {
+                            if (shouldNotify) {
+                                showDeviceNotification("SoundPalette", "Your work sparked a response!");
+                                stopDeviceNotificationPolling();
+                            } else {
+                                deviceNotificationPollingHandler.postDelayed(this, 5000);
+                            }
+                        });
+                    } catch (IOException e) {
+                        deviceNotificationPollingHandler.postDelayed(this, 5000);
+                    }
+                }).start();
+            }
+        };
+
+        deviceNotificationPollingHandler.post(deviceNotificationPollingRunnable);
+    }
+
+    public void stopDeviceNotificationPolling() {
+        isPollingDeviceNotifications = false;
+        deviceNotificationPollingHandler.removeCallbacks(deviceNotificationPollingRunnable);
+    }
+
+
+    private void showDeviceNotification(String title, String message) {
+        String channelId = "default_channel";
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    "SoundPalette Notifications",
+                    NotificationManager.IMPORTANCE_HIGH
+            );
+            channel.setDescription("Channel for SoundPalette app notifications");
+            channel.enableVibration(true);
+            channel.enableLights(true);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            if (manager != null) {
+                manager.createNotificationChannel(channel);
+            }
+        }
+
+        Intent intent = new Intent(this, MainScreenActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+
+        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.sp_logo_notification);
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.baseline_music_note_48)
+                .setLargeIcon(largeIcon)
+                .setContentTitle(title)
+                .setContentText(message)
+                .setAutoCancel(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
+                .setContentIntent(pendingIntent);
+
+        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
+    }
+
 }

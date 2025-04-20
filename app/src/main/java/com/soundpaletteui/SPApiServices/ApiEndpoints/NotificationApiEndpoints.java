@@ -16,6 +16,8 @@ public interface NotificationApiEndpoints {
     Call<List<NotificationModel>> getNotification(@Query("userId") int userId);
     @GET("api/post/get-notification-flag")
     Call<Boolean> getNotificationFlag(@Query("userId") int userId);
+    @GET("api/post/get-device-notification-flag")
+    Call<Boolean> getDeviceNotificationFlag(@Query("userId") int userId);
     @GET("api/post/get-message-flag")
     Call<Boolean> getMessageFlag(@Query("userId") int userId);
     @GET("api/post/get-notification-settings")

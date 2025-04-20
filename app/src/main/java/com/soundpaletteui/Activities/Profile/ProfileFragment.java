@@ -67,9 +67,7 @@ public class ProfileFragment extends Fragment {
     private UserClient userClient;
     private View framePosts;
     private GifImageView gifPosts;
-    private TextView usernameDisplay;
-    private TextView profileBio;
-    private TextView textPosts;
+    private TextView usernameDisplay, profileBio, textPosts;
     private View frameSaved;
     private GifImageView gifSaved;
     private TextView textSaved;
@@ -86,8 +84,7 @@ public class ProfileFragment extends Fragment {
     private List<TagModel> tagList;
     private Handler tagScrollHandler;
     private int scrollPosition;
-    private TextView profileFollowersDisplay;
-    private TextView profileFollowingDisplay;
+    private TextView profileFollowersDisplay, profileFollowingDisplay;
     private FileClient fileClient;
     private ImageView imageView;
     private boolean darkMode;
