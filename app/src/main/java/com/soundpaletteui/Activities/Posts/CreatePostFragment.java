@@ -442,7 +442,27 @@ public class CreatePostFragment extends Fragment {
             }
             postContentModel = new PostContentModel(postContent, backgroundColour, fontColour);
             fragmentDisplay.addView(postContentView);
-        } else if (postType == 3) {
+        }
+        else if( postType == 2) {
+            View postContentView = inflater.inflate(R.layout.adapter_posts_image, fragmentDisplay, false);
+
+            // Get file name (so it can source it from drawables)
+            try {
+                ImageView postImageDisplay = postContentView.findViewById(R.id.postImageDisplay);
+                Log.d("CreatePostFragment", "selectedUri: " + selectedUri);
+                if(selectedUri != null) {
+                    Glide.with(this).load(R.drawable.baseline_music_note_48).into(postImageDisplay);
+                }
+                int imageResource = getResources().getIdentifier(postContent, "drawable", getContext().getPackageName());
+                Log.d("CreatePostFragment", "Going to load "+postContent+ "#" +imageResource);
+                postImageDisplay.setImageResource(imageResource);
+            } catch (Exception e) {
+                Log.e("CreatePostFragment", "Failed to load image from URI: " + postContent, e);
+            }
+            postContentModel = new PostContentModel(postContent, null, null);
+            fragmentDisplay.addView(postContentView);
+        }
+        else if (postType == 3) {
             View postContentView = inflater.inflate(R.layout.adapter_posts_image, fragmentDisplay, false);
 
             // Get file name (so it can source it from drawables)
