@@ -64,6 +64,10 @@ public class MainScreenActivity extends AppCompatActivity {
     private Handler notificationPollingHandler = new Handler(Looper.getMainLooper());
     private Runnable notificationPollingRunnable;
     private boolean isPollingNotifications = false;
+    private Handler messagePollingHandler = new Handler(Looper.getMainLooper());
+    private Runnable messagePollingRunnable;
+    private boolean isPollingMessages = false;
+
     private final NotificationClient notificationClient = SPWebApiRepository.getInstance().getNotificationClient();
 
     @Override
@@ -78,6 +82,7 @@ public class MainScreenActivity extends AppCompatActivity {
         user = AppSettings.getInstance().getUser();
         if (user != null) {
             startNotificationPolling(user.getUserId());
+            startMessagePolling(user.getUserId());
         }
         initComponents();
 
@@ -138,31 +143,6 @@ public class MainScreenActivity extends AppCompatActivity {
             return true;
         });
     }
-
-    public void showNotificationDotOnProfile(boolean show) {
-        BottomNavigationView bottomNav = binding.bottomNavigationView;
-        View profileItemView = bottomNav.findViewById(R.id.nav_profile);
-
-        if (profileItemView != null) {
-            profileItemView.post(() -> {
-                View dot = profileItemView.findViewById(R.id.notification_dot_overlay);
-                if (dot == null && show) {
-                    dot = new View(this);
-                    dot.setId(R.id.notification_dot_overlay);
-                    dot.setBackgroundResource(R.drawable.round_red_shape);
-                    int size = (int) getResources().getDimension(R.dimen.dot_size);
-                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
-                    params.topMargin = 4;
-                    params.rightMargin = 44;
-                    params.gravity = Gravity.END | Gravity.TOP;
-                    ((ViewGroup) profileItemView).addView(dot, params);
-                } else if (dot != null) {
-                    dot.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        }
-    }
-
 
     public void viewPostsByTags(String tagId) {
         searchFragment.viewPostsByTag(tagId);
@@ -329,7 +309,7 @@ public class MainScreenActivity extends AppCompatActivity {
     }
 
 
-    // Start to check if the user has any notifications
+    // Start to check if the user has any notifications (follows, likes, comments, tags)
     public void startNotificationPolling(int userId) {
         if (isPollingNotifications) return;
         isPollingNotifications = true;
@@ -367,6 +347,92 @@ public class MainScreenActivity extends AppCompatActivity {
     public void stopNotificationPolling() {
         isPollingNotifications = false;
         notificationPollingHandler.removeCallbacks(notificationPollingRunnable);
+    }
+
+
+    // Start to check if the user has any message notifications
+    public void startMessagePolling(int userId) {
+        if (isPollingMessages) return;
+        isPollingMessages = true;
+
+        messagePollingRunnable = new Runnable() {
+            @Override
+            public void run() {
+                new Thread(() -> {
+                    try {
+                        boolean hasNewMessages = notificationClient.getMessageFlag(userId);
+                        runOnUiThread(() -> {
+                            showMessageDotOnMessages(hasNewMessages);
+
+                            if (!hasNewMessages) {
+                                messagePollingHandler.postDelayed(this, 5000);
+                            } else {
+                                stopMessagePolling(); // You can decide whether to stop or keep polling
+                            }
+                        });
+                    } catch (IOException e) {
+                        messagePollingHandler.postDelayed(this, 5000);
+                    }
+                }).start();
+            }
+        };
+
+        messagePollingHandler.post(messagePollingRunnable);
+    }
+
+    public void stopMessagePolling() {
+        isPollingMessages = false;
+        messagePollingHandler.removeCallbacks(messagePollingRunnable);
+    }
+
+
+    public void showNotificationDotOnProfile(boolean show) {
+        BottomNavigationView bottomNav = binding.bottomNavigationView;
+        View profileItemView = bottomNav.findViewById(R.id.nav_profile);
+
+        if (profileItemView != null) {
+            profileItemView.post(() -> {
+                View dot = profileItemView.findViewById(R.id.notification_dot_overlay);
+                if (dot == null && show) {
+                    dot = new View(this);
+                    dot.setId(R.id.notification_dot_overlay);
+                    dot.setBackgroundResource(R.drawable.round_red_shape);
+                    int size = (int) getResources().getDimension(R.dimen.dot_size);
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
+                    params.topMargin = 4;
+                    params.rightMargin = 44;
+                    params.gravity = Gravity.END | Gravity.TOP;
+                    ((ViewGroup) profileItemView).addView(dot, params);
+                } else if (dot != null) {
+                    dot.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        }
+    }
+
+
+    public void showMessageDotOnMessages(boolean show) {
+        BottomNavigationView bottomNav = binding.bottomNavigationView;
+        View messageItemView = bottomNav.findViewById(R.id.nav_msg);
+
+        if (messageItemView != null) {
+            messageItemView.post(() -> {
+                View dot = messageItemView.findViewById(R.id.message_dot_overlay);
+                if (dot == null && show) {
+                    dot = new View(this);
+                    dot.setId(R.id.message_dot_overlay);
+                    dot.setBackgroundResource(R.drawable.round_red_shape);
+                    int size = (int) getResources().getDimension(R.dimen.dot_size);
+                    FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(size, size);
+                    params.topMargin = 4;
+                    params.rightMargin = 44;
+                    params.gravity = Gravity.END | Gravity.TOP;
+                    ((ViewGroup) messageItemView).addView(dot, params);
+                } else if (dot != null) {
+                    dot.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        }
     }
 
 

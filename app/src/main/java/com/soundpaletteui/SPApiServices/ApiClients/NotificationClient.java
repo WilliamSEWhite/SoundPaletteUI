@@ -73,7 +73,14 @@ public class NotificationClient {
     public boolean getNotificationFlag(int userId) throws IOException {
         //Call<Boolean> call = apiEndpoints.getNotificationFlag(userId);
         //Response<Boolean> response = call.execute();
+        //return response.body();
+        return false;
+    }
 
+
+    public boolean getMessageFlag(int userId) throws IOException {
+        //Call<Boolean> call = apiEndpoints.getMessageFlag(userId);
+        //Response<Boolean> response = call.execute();
         //return response.body();
         return true;
     }
