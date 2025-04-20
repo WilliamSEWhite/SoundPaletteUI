@@ -32,10 +32,13 @@ public class PostModel {
     private boolean isLiked;
     @SerializedName("IsSaved")
     private boolean isSaved;
+    @SerializedName("FileId")
+    private int fileId;
 
     // Parameterized constructor
     public PostModel(int postId, String postCaption, List<TagModel> postTags, PostContentModel postContent,
-                     Date createdDate, String createdByUsername, int postType, int commentCount, int likeCount, boolean isLiked, boolean isSaved, List<String> postUserTags) {
+                     Date createdDate, String createdByUsername, int postType, int commentCount, int likeCount,
+                     boolean isLiked, boolean isSaved, int fileId, List<String> postUserTags) {
         this.postId = postId;
         this.postCaption = postCaption;
         this.postTags = postTags;
@@ -48,6 +51,7 @@ public class PostModel {
         this.isLiked = isLiked;
         this.isSaved = isSaved;
         this.postUserTags = postUserTags;
+        this.fileId = fileId;
     }
 
     // Getters
@@ -97,10 +101,12 @@ public class PostModel {
     public boolean getIsSaved() {
         return isSaved;
     }
+    public int getFileId() { return fileId; }
     public void setIsSaved(boolean isSaved) {
         this.isSaved = isSaved;
     }
     public void setLikeCount(int likeCount) {this.likeCount = likeCount;}
     public void setCommentCount(int count) {this.commentCount = count;}
+    public void setFileId(int fileId) { this.fileId = fileId; }
 
 }

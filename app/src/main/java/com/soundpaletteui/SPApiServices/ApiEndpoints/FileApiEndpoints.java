@@ -1,4 +1,4 @@
-package com.soundpaletteui.Infrastructure.ApiEndpoints;
+package com.soundpaletteui.SPApiServices.ApiEndpoints;
 
 import com.soundpaletteui.Infrastructure.Models.FileModel;
 

@@ -64,14 +64,14 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private static final int PICK_IMAGE_REQUEST = 1;
+//    private static final int PICK_IMAGE_REQUEST = 1;
     AppSettings appSettings = AppSettings.getInstance();
-    private EditText txtUsername;           // username
+//    private EditText txtUsername;           // username
     private EditText txtEmail;              // email address
     private EditText txtPhone;              // phone number (optional)
-    private EditText txtDob;                // date of birth
-    private ImageButton btnCalendar;        // date of birth button
-    private Button btnClear;                // clear user data button
+//    private EditText txtDob;                // date of birth
+//    private ImageButton btnCalendar;        // date of birth button
+//    private Button btnClear;                // clear user data button
     private Button btnSave;                 // save button
     private Uri imageUri;                   // image URI from external source
     private ImageView profileImage;         // object to display the image
@@ -84,8 +84,8 @@ public class RegisterActivity extends AppCompatActivity {
     private int userId;
     //    private Date dob, dateCreated;
     private Date dob, dateCreated;
-    private String Dob;
-    private GifImageView gifClear;
+//    private String Dob;
+//    private GifImageView gifClear;
     private FrameLayout frameSave;
     private GifImageView gifSave;
     private TextView textSave;
@@ -100,7 +100,6 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         View rootView = findViewById(R.id.root_layout);
-//        UISettings.applyBrightnessGradientBackground(rootView, 50f);
         initComponents();
         // launches the image picker
         pickImageLauncher = registerForActivityResult(
@@ -109,7 +108,6 @@ public class RegisterActivity extends AppCompatActivity {
                     if(result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                         imageUri = result.getData().getData();
                         if(profileImage != null) {
-                            //profileImage.setImageURI(imageUri);
                             displayImage(imageUri);
                         } else {
                             Log.e("ProfileEditFragment", "imageView is null");
@@ -167,7 +165,6 @@ public class RegisterActivity extends AppCompatActivity {
             try {
                 final GifDrawable saveGif = (GifDrawable) gifSave.getDrawable();
                 frameSave.getBackground().mutate().setAlpha(255);
-//                UISettings.applyBrightnessGradientBackground(findViewById(R.id.root_layout), 60f);
                 saveGif.start();
                 new android.os.Handler().postDelayed(() -> saveGif.stop(), 800);
             } catch (ClassCastException e) {
@@ -214,7 +211,6 @@ public class RegisterActivity extends AppCompatActivity {
                 countries);
         location = (Spinner) findViewById(R.id.registerLocation);
         location.setAdapter(adapter); // Set the custom adapter to the spinner
-        // You can create an anonymous listener to handle the event when is selected an spinner item
         location.setSelection(0);                              //retain previously selected value
     }
 
@@ -231,7 +227,6 @@ public class RegisterActivity extends AppCompatActivity {
         Intent i = new Intent(RegisterActivity.this, RegisterTagsActivity.class);
         startActivity(i);
         finish();
-
     }
 
     /** displays the image in the register screen */

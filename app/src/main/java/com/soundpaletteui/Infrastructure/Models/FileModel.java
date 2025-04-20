@@ -39,10 +39,9 @@ public class FileModel {
     }
     public FileModel(int userId, String fileName, int fileTypeId)
     {
-        FileTypeId = fileTypeId;
         UserId = userId;
         FileName = fileName;
-        IsActive = true;
+        FileTypeId = fileTypeId;
     }
     public FileModel(int fileTypeId, int userId, String fileName, String fileUrl, Date createdDate, Date publishDate, boolean isActive)
     {

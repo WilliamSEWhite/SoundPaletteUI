@@ -40,8 +40,8 @@ public class ImageUtils {
             new Thread(() -> {
                 Log.d("uploadProfileImage", "uploadProfileImage - userId: " + userId);
                 //fileClient.uploadImage(requireContext(), imageUri, user.getUserId());
-                File file = FileUtils.uri2File(context, imageUri, 1, userId);
-                FileModel fileModel = new FileModel(userId, file.getName(), 1, "https://my.fake.file");
+                File file = FileUtils.uri2File(context, imageUri, 4, userId);
+                FileModel fileModel = new FileModel(userId, file.getName(), 4, "https://my.fake.file");
 
                 fileClient.uploadImage(file, userId, fileModel.getFileTypeId(), fileModel.getFileUrl()).enqueue(new Callback<Integer>() {
                     @Override

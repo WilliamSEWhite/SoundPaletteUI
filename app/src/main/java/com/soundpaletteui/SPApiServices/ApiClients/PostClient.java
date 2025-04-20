@@ -10,7 +10,11 @@ import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
@@ -19,6 +23,11 @@ public class PostClient {
 
     public PostClient(Retrofit retrofit) {
         postApiEndpoints = retrofit.create(PostApiEndpoints.class);
+    }
+
+    public void createFilePost(MultipartBody.Part filePart, RequestBody metaData, Callback<Integer> callback) {
+        Call<Integer> call = postApiEndpoints.createFilePost(filePart, metaData);
+        call.enqueue(callback);
     }
 
     public Void makePost(NewPostModel newPost) throws IOException {
