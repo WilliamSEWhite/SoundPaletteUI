@@ -7,14 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.soundpaletteui.Activities.Messages.ChatroomFragment;
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
 import com.soundpaletteui.Infrastructure.Models.Notifications.NotificationModel;
+import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
 import java.util.List;
@@ -45,15 +49,19 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         String referenceName = notificationModel.getReferenceName();
         holder.usernameDisplay.setText(referenceName);
 
-        holder.userProfilePicture.setOnClickListener(v -> {
+        holder.notificationAdapter.setOnClickListener(v -> {
             if (notificationIdType == 1) {
                 Log.d("NOTIFICATION ADAPTER", "go to chatroom #" + referenceName);
                 ChatroomFragment chatroomFragment = ChatroomFragment.newInstance(referenceId, referenceName);
-                // Navigation logic here
+                FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
+                Navigation.replaceFragment(fragmentManager, chatroomFragment, "CHATROOM_FRAGMENT", R.id.mainScreenFrame);
+
             } else {
                 Log.d("NOTIFICATION ADAPTER", "go to profile " + referenceName);
                 ProfileViewFragment profileViewFragment = ProfileViewFragment.newInstance(referenceName);
-                // Navigation logic here
+                FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
+                Navigation.replaceFragment(fragmentManager, profileViewFragment, "PROFILE_VIEW_FRAGMENT", R.id.mainScreenFrame);
+
             }
         });
     }
@@ -65,13 +73,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
     public static class NotificationViewHolder extends RecyclerView.ViewHolder {
         TextView usernameDisplay, notificationMessage;
-        ImageView userProfilePicture;
+        LinearLayout notificationAdapter;
 
         public NotificationViewHolder(@NonNull View itemView) {
             super(itemView);
             usernameDisplay = itemView.findViewById(R.id.usernameDisplay);
             notificationMessage = itemView.findViewById(R.id.notificationMessage);
-            userProfilePicture = itemView.findViewById(R.id.userProfilePicture);
+            notificationAdapter = itemView.findViewById(R.id.notificationAdapter);
         }
     }
 }
