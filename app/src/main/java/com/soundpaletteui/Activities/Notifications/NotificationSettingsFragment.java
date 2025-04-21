@@ -84,7 +84,7 @@ public class NotificationSettingsFragment extends Fragment {
         emojiBackground.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_GRID);
         emojiBackground.setAlpha(0.2f);
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(view.getContext());
-        UISettings.applyBrightnessGradientBackground(view, 160f, isDarkMode);
+        UISettings.applyBrightnessGradientBackground(view, 165f, isDarkMode);
 
         recyclerViewNotifications = view.findViewById(R.id.recyclerViewNotifications);
         recyclerViewNotifications.setLayoutManager(new GridLayoutManager(getContext(), 1));

@@ -29,7 +29,7 @@
             android:textAlignment="center"
             android:textColor="#23384C"
             android:textSize="36sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/lobstertwobold"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewNotifications"

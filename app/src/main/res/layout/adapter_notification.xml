@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="90dp"
         android:padding="5dp"
-        android:background="@drawable/background_transparent_round3"
+        android:background="@drawable/white_translucency_gradient_horizontal_button4"
         android:orientation="horizontal">
 
         <!-- Poster's Profile -->

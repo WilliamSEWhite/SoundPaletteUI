@@ -94,7 +94,7 @@ public class SearchFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
 
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
-        UISettings.applyBrightnessGradientBackground(rootView, 305f, isDarkMode);
+        UISettings.applyBrightnessGradientBackground(rootView, 330f, isDarkMode);
         final View rootLayout = rootView.findViewById(R.id.root_layout);
 
         EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
@@ -162,7 +162,7 @@ public class SearchFragment extends Fragment {
 
 
             setPostFragment();
-            UISettings.applyBrightnessGradientBackground(rootLayout, 305f, isDarkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
         });
         frameTags.setOnClickListener(v -> {
             trendingRange.setVisibility(GONE);
@@ -208,7 +208,7 @@ public class SearchFragment extends Fragment {
 
 
             setTagsFragment();
-            UISettings.applyBrightnessGradientBackground(rootLayout, 305f, isDarkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
         });
         frameUsers.setOnClickListener(v -> {
             trendingRange.setVisibility(GONE);
@@ -254,7 +254,7 @@ public class SearchFragment extends Fragment {
 
 
             setUsersFragment();
-            UISettings.applyBrightnessGradientBackground(rootLayout, 315f, isDarkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
         });
         inputSearch.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}

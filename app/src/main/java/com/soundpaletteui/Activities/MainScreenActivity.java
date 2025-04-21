@@ -153,11 +153,11 @@ public class MainScreenActivity extends AppCompatActivity {
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), new MessageFragment(), "MESSAGE_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_search) {
-                hue = 300f;
+                hue = 330f;
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), searchFragment, "SEARCH_FRAGMENT", R.id.mainScreenFrame);
             } else {
-                hue = 315f;
+                hue = 0f;
             }
             animateHeaderShadow();
             tint = createColorStateList(toolbarView, hue);
