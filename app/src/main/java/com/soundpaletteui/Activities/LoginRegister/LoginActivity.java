@@ -78,22 +78,18 @@ public class LoginActivity extends AppCompatActivity {
         frameRegister = findViewById(R.id.frame_register);
         registerText = findViewById(R.id.register_text);
 
-
         frameLogin = findViewById(R.id.frame_login);
         loginText = findViewById(R.id.login_text);
-
 
         frameRegister.setOnClickListener(v -> register());
         frameLogin.setOnClickListener(v -> login());
 
         loadingMessage = findViewById(R.id.loadingMessage);
-
     }
 
     /**
-     * Locks the UI while the app processes data
-     * */
-
+     * Locks the UI while the app processes data.
+     */
     private void lockUI() {
         loadingMessage.setVisibility(View.VISIBLE);
         loadingMessage.setAlpha(0f);
@@ -115,7 +111,6 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 })
                 .start();
-
 
         frameLogin.setEnabled(false);
         frameRegister.setEnabled(false);
@@ -158,12 +153,9 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-
-
     /**
-     * Unlocks the UI
-     * */
-
+     * Unlocks the UI.
+     */
     private void unlockUI() {
         loadingMessage.animate().cancel();
         loadingMessage.setRotation(0f);
@@ -211,9 +203,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-
-
-
     /**
      * Registers a new user after input validation.
      */
@@ -221,26 +210,26 @@ public class LoginActivity extends AppCompatActivity {
         String username = usernameBox.getText().toString();
         String password = passwordBox.getText().toString();
 
+        // Edge case validation: Empty username/password
         if (username.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Username and Password cannot be empty", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Edge case validation: Username length check
         if (username.length() > 20) {
             Toast.makeText(this, "Username should be less than 20 characters", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (!password.matches(".*[0-9].*") ||
-                !password.matches(".*[!@#$%^&*()].*") ||
-                password.length() < 8 || password.length() > 20) {
-            Toast.makeText(this, "Password must be 6-20 characters, contain numbers and a special character", Toast.LENGTH_SHORT).show();
+        // Edge case validation: Password strength check
+        if (!password.matches(".*[0-9].*") || !password.matches(".*[!@#$%^&*()].*") || password.length() < 8 || password.length() > 20) {
+            Toast.makeText(this, "Password must be 8-20 characters, contain numbers and a special character", Toast.LENGTH_SHORT).show();
             return;
         }
 
         lockUI();
         new LoginUserAsync("register").execute(username, password);
-
     }
 
     /**
@@ -250,11 +239,13 @@ public class LoginActivity extends AppCompatActivity {
         String username = usernameBox.getText().toString();
         String password = passwordBox.getText().toString();
 
+        // Edge case validation: Empty username/password
         if (username.isEmpty() || password.isEmpty()) {
             Toast.makeText(this, "Username and Password cannot be empty", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        // Proceed with login if inputs are valid
         lockUI();
         new LoginUserAsync("login").execute(username, password);
     }
@@ -366,9 +357,4 @@ public class LoginActivity extends AppCompatActivity {
         super.onDestroy();
         patternHandler.removeCallbacks(patternRunnable);
     }
-
-    /**
-     * AsyncTask for registering a user.
-     */
-
 }
