@@ -71,18 +71,16 @@ public class NotificationClient {
     }
 
     public boolean getNotificationFlag(int userId) throws IOException {
-        //Call<Boolean> call = apiEndpoints.getNotificationFlag(userId);
-        //Response<Boolean> response = call.execute();
-        //return response.body();
-        return true;
+        Call<Boolean> call = apiEndpoints.hasNotification(userId);
+        Response<Boolean> response = call.execute();
+        return response.body();
     }
 
 
     public boolean getMessageFlag(int userId) throws IOException {
-        //Call<Boolean> call = apiEndpoints.getMessageFlag(userId);
-        //Response<Boolean> response = call.execute();
-        //return response.body();
-        return true;
+        Call<Boolean> call = apiEndpoints.hasMessage(userId);
+        Response<Boolean> response = call.execute();
+        return response.body();
     }
 
     public boolean getDeviceNotificationFlag(int userId) throws IOException {

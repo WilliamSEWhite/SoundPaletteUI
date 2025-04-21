@@ -12,17 +12,22 @@ import retrofit2.http.POST;
 import retrofit2.http.Query;
 
 public interface NotificationApiEndpoints {
-    @GET("api/post/get-notifications")
+    @GET("api/notification/get-notifications")
     Call<List<NotificationModel>> getNotifications(@Query("userId") int userId);
-    @GET("api/post/get-notification-flag")
+    @GET("api/notification/get-notification-flag")
     Call<Boolean> getNotificationFlag(@Query("userId") int userId);
-    @GET("api/post/get-device-notification-flag")
+    @GET("api/notification/get-device-notification-flag")
     Call<Boolean> getDeviceNotificationFlag(@Query("userId") int userId);
-    @GET("api/post/get-message-flag")
+    @GET("api/notification/get-message-flag")
     Call<Boolean> getMessageFlag(@Query("userId") int userId);
-    @GET("api/post/get-notification-settings")
+    @GET("api/notification/get-notification-settings")
     Call<List<NotificationSettingModel>> getNotificationSettings(@Query("userId") int userId);
-    @POST("api/post/set-notification-settings")
+    @POST("api/notification/set-notification-settings")
     Call<Void> setNotificationSettings(@Body List<NotificationSettingModel> settings);
+
+    @GET("api/notification/has-notification")
+    Call<Boolean> hasNotification(@Query("userId") int userId);
+    @GET("api/notification/has-message")
+    Call<Boolean> hasMessage(@Query("userId") int userId);
 
 }
