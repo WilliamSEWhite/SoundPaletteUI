@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.button.MaterialButton;
 import com.skydoves.colorpickerview.ColorPickerDialog;
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener;
@@ -35,6 +36,7 @@ import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserSearchModel;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
+import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.R;
@@ -193,6 +195,23 @@ public class EditPostFragment extends Fragment {
             }
             fragmentDisplay.addView(postTextView);
         }
+        else if(previewPost.getPostType() == 3) {
+            View postContentView = inflater.inflate(R.layout.adapter_posts_image, fragmentDisplay, false);
+
+            // Get file name (so it can source it from drawables)
+            try {
+                ImageView postImageDisplay = postContentView.findViewById(R.id.postImageDisplay);
+                //Log.d("CreatePostFragment", "selectedUri: " + selectedUri);
+                ImageUtils.getPostImage(SPWebApiRepository.getInstance().getFileClient().getPostFile(previewPost.getFileId()), postImageDisplay, requireContext());
+                //int imageResource = getResources().getIdentifier(postContent, "drawable", getContext().getPackageName());
+                //Log.d("CreatePostFragment", "Going to load "+postContent+ "#" +imageResource);
+                //postImageDisplay.setImageResource(imageResource);
+            } catch (Exception e) {
+                //Log.e("CreatePostFragment", "Failed to load image from URI: " + postContent, e);
+            }
+            //postContentModel = new PostContentModel(postContent, null, null);
+            fragmentDisplay.addView(postContentView);
+        }
 
         FrameLayout previewContainer = requireView().findViewById(R.id.postPreviewContainer);
         previewContainer.removeAllViews();
@@ -204,7 +223,7 @@ public class EditPostFragment extends Fragment {
         FrameLayout postContentContainer = rootView.findViewById(R.id.postContentContainer);
         postContentContainer.removeAllViews();
 
-        View postContentView;
+        View postContentView = null;
         if (postType == 1) {
             postContentView = inflater.inflate(R.layout.fragment_post_create_text, postContentContainer, false);
             backgroundColourDisplay = postContentView.findViewById(R.id.backgroundColourDisplay);
@@ -214,7 +233,17 @@ public class EditPostFragment extends Fragment {
 
             backgroundColourSelector.setOnClickListener(v -> openColourPicker(true));
             fontColourSelector.setOnClickListener(v -> openColourPicker(false));
-        } else {
+        }
+        else if (postType == 3) {
+            postContentView = inflater.inflate(R.layout.adapter_posts_image, postContentContainer, false);
+            ImageView postImageDisplay = postContentView.findViewById(R.id.postImageDisplay);
+            int fileId = currentPost.getFileId();
+            Log.d("EditPostFragment", "currentPost: " + fileId);
+            ImageUtils.getPostImage(fileId, SPWebApiRepository.getInstance().getFileClient().getPostFile(fileId),
+                    postImageDisplay,
+                    requireContext());
+        }
+        else {
             postContentView = inflater.inflate(R.layout.fragment_post_create_media, postContentContainer, false);
 
 // Disable file selection for audio/image posts
@@ -261,6 +290,9 @@ public class EditPostFragment extends Fragment {
             fontHex = currentPost.getPostContent().getFontColour();
             if (backgroundColourDisplay != null) backgroundColourDisplay.setBackgroundColor(Color.parseColor(backgroundHex));
             if (fontColourDisplay != null) fontColourDisplay.setBackgroundColor(Color.parseColor(fontHex));
+        }
+        else {
+            currentPost.setPostCaption(captionInput.getText().toString());
         }
 
         selectedTags = new ArrayList<>(currentPost.getPostTags());
@@ -331,7 +363,8 @@ public class EditPostFragment extends Fragment {
         boolean isMature = isMatureCheckbox.isChecked();
         boolean isPremium = followerOnlyCheckbox.isChecked();
 
-        if (caption.isEmpty() || content.isEmpty()) {
+        Log.d("EditPostFragment", "content: " + content);
+        if (currentPost.getPostCaption().isEmpty() || (currentPost.getPostType() == 1 && content.isEmpty())) {
             new AlertDialog.Builder(requireContext())
                     .setTitle("Invalid Input")
                     .setMessage("Caption and content cannot be empty.")
@@ -341,6 +374,7 @@ public class EditPostFragment extends Fragment {
         }
 
         PostContentModel updatedContent = new PostContentModel(content, backgroundHex, fontHex);
+        Log.d("EditPostFragment", "caption: " + caption);
         PostModel updatedPost = new PostModel(
                 currentPost.getPostId(), caption, selectedTags, updatedContent,
                 currentPost.getCreatedDate(), currentPost.getUsername(),

@@ -62,6 +62,9 @@ public class PostModel {
     public String getPostCaption() {
         return postCaption;
     }
+    public void setPostCaption(String postCaption) {
+        this.postCaption = postCaption;
+    }
 
     public List<TagModel> getPostTags() {
         return postTags;

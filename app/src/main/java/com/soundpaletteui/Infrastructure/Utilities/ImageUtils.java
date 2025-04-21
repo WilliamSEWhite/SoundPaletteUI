@@ -83,7 +83,7 @@ public class ImageUtils {
     }
 
     /** get profile image */
-    public static void getProfileImage(int fileId, Call<FileModel> fileCall, ImageView imageView, Context context) {
+    public static void getProfileImage(int userId, Call<FileModel> fileCall, ImageView imageView, Context context) {
         fileCall.enqueue(new Callback<FileModel>() {
             @Override
             public void onResponse(Call<FileModel> call, Response<FileModel> response) {
@@ -118,8 +118,12 @@ public class ImageUtils {
         });
     }
 
+    public static void getPostImage(Call<FileModel> fileCall, ImageView imageView, Context context) {
+        getPostImage(0, fileCall, imageView, context);
+    }
+
     /** gets post image */
-    public static void getPostImage(int userId, Call<FileModel> fileCall, ImageView imageView, Context context) {
+    public static void getPostImage(int postId, Call<FileModel> fileCall, ImageView imageView, Context context) {
         fileCall.enqueue(new Callback<FileModel>() {
             @Override
             public void onResponse(Call<FileModel> call, Response<FileModel> response) {

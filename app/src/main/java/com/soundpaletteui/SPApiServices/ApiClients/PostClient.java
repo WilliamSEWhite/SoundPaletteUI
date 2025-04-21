@@ -2,6 +2,7 @@ package com.soundpaletteui.SPApiServices.ApiClients;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
 import com.soundpaletteui.Infrastructure.Models.Post.NewPostModel;
 import com.soundpaletteui.Infrastructure.Models.Post.PostModel;
 import com.soundpaletteui.SPApiServices.ApiEndpoints.PostApiEndpoints;
@@ -240,7 +241,10 @@ public class PostClient {
     }
 
     public Void updatePost(PostModel updatedPost) throws IOException {
+        Log.d("PostClient", "caption: " + updatedPost.getPostCaption());
         Call<Void> call = postApiEndpoints.updatePost(updatedPost);
+        Gson gson = new Gson();
+        Log.d("PostClient", "Sending PostModel JSON: " + gson.toJson(updatedPost));
         Response<Void> response = call.execute();
         return response.body();
     }
