@@ -139,7 +139,20 @@ public class EditPostFragment extends Fragment {
                 populateFields(rootView);
                 showPostPreview(); // Show preview on load
             } else {
-                Toast.makeText(getContext(), "Failed to load post", Toast.LENGTH_SHORT).show();
+                if (getContext() != null) {
+                    new AlertDialog.Builder(getContext())
+                            .setTitle("Post Deleted")
+                            .setMessage("This post no longer exists or has been deleted.")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", (dialog, which) -> {
+                                if (getFragmentManager() != null) {
+                                    getFragmentManager().popBackStack(); // navigate back safely
+                                }
+                            })
+                            .show();
+                } else {
+                    Log.e("EditPostFragment", "Context is null, can't show dialog.");
+                }
             }
         }
     }
