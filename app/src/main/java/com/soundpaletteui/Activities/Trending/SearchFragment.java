@@ -115,7 +115,6 @@ public class SearchFragment extends Fragment {
         trendingRange = rootView.findViewById(R.id.trending_range_select);
         trendingSpinner = rootView.findViewById(R.id.trending_range);
 
-
         inputSearch = rootView.findViewById(R.id.inputSearch);
         ImageButton buttonSearch = rootView.findViewById(R.id.buttonSearch);
 
