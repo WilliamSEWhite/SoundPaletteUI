@@ -207,7 +207,7 @@ public class CreatePostFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_post_create, container, false);
         LinearLayout rootLayout = rootView.findViewById(R.id.root_layout);
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
-        UISettings.applyBrightnessGradientBackground(rootLayout, 200f, isDarkMode);
+        UISettings.applyBrightnessGradientBackground(rootLayout, 260f, isDarkMode);
 
         com.soundpaletteui.Views.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
         emojiBg.setPatternType(EmojiBackgroundView.PATTERN_RADIAL);

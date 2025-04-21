@@ -44,20 +44,24 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:gravity="center"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
+            android:background="@drawable/white_translucency_gradient_horizontal_button3"
             android:layout_weight="2">
 
             <Button
                 android:id="@+id/editSavedButton"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="35dp"
                 android:fontFamily="@font/inriasansregular"
+                android:text="Edit Profile"
                 android:textStyle="bold"
-                android:text="Profile"
-                android:textSize="9dp"></Button>
+                android:background="@android:color/transparent"
+                android:paddingHorizontal="4dp"
+                android:textColor="@color/white"
+                android:textSize="12dp" />
         </LinearLayout>
-
 
         <LinearLayout
             android:layout_width="0dp"
@@ -68,19 +72,26 @@
             android:layout_weight="2">
 
             <FrameLayout
-                android:id="@+id/notificationButtonWrapper"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:background="@drawable/white_translucency_gradient_horizontal_button3"
+                android:layout_weight="2">
 
                 <Button
                     android:id="@+id/viewNotificationButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
                     android:fontFamily="@font/inriasansregular"
+                    android:text="Notifications"
                     android:textStyle="bold"
-                    android:textSize="8dp"
-                    android:padding="0dp"
-                    android:text="Notifications" />
+                    android:background="@android:color/transparent"
+                    android:paddingHorizontal="4dp"
+                    android:textColor="@color/white"
+                    android:textSize="12dp" />
+
 
                 <View
                     android:id="@+id/notificationDot"

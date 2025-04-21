@@ -94,7 +94,7 @@ public class EditChatroomFragment extends Fragment {
         // — Apply emoji + gradient just like Search screen —
         View rootLayout = rootView.findViewById(R.id.root_layout);
         boolean isDark = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
-        UISettings.applyBrightnessGradientBackground(rootLayout, 240f, isDark);
+        UISettings.applyBrightnessGradientBackground(rootLayout, 200f, isDark);
 
         EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
         emojiBg.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);

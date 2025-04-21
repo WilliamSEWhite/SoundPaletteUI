@@ -143,21 +143,21 @@ public class MainScreenActivity extends AppCompatActivity {
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), homeFragment, "HOME_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_profile) {
-                hue = 55f;
+                hue = 40f;
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), profileFragment, "PROFILE_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_create) {
                 selectPostType();
             } else if (selected == R.id.nav_msg) {
-                hue = 240f;
+                hue = 200f;
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), new MessageFragment(), "MESSAGE_FRAGMENT", R.id.mainScreenFrame);
             } else if (selected == R.id.nav_search) {
-                hue = 280f;
+                hue = 300f;
                 UISettings.applyFlippedBrightnessGradientBackground(toolbarView, hue, isDarkMode);
                 Navigation.replaceFragment(getSupportFragmentManager(), searchFragment, "SEARCH_FRAGMENT", R.id.mainScreenFrame);
             } else {
-                hue = 30f;
+                hue = 315f;
             }
             animateHeaderShadow();
             tint = createColorStateList(toolbarView, hue);

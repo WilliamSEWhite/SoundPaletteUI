@@ -158,9 +158,9 @@ public class ProfileFragment extends Fragment {
         View rootLayout = getView().findViewById(R.id.root_layout);
         darkMode = DarkModePreferences.isDarkModeEnabled(getContext());
         if ("posts".equals(selectedTab)) {
-            UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 40, darkMode);
         } else {
-            UISettings.applyBrightnessGradientBackground(rootLayout, 60f, darkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
         }
     }
 
@@ -173,7 +173,7 @@ public class ProfileFragment extends Fragment {
     private void initComponents(View rootView) {
         final View rootLayout = rootView.findViewById(R.id.root_layout);
         darkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
-        UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
+        UISettings.applyBrightnessGradientBackground(rootLayout, 40f, darkMode);
         emojiBackground = rootView.findViewById(R.id.emojiBackground);
         emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
 
@@ -228,8 +228,8 @@ public class ProfileFragment extends Fragment {
         profileFollowersDisplay = rootView.findViewById(R.id.profileFollowersDisplay);
         profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
 
-        viewNotificationButton.setBackgroundColor(Color.parseColor("#FFD700"));
-        btnEditSaved.setBackgroundColor(Color.parseColor("#FFD700"));
+        //viewNotificationButton.setBackgroundColor(Color.parseColor("#FFD700"));
+        //btnEditSaved.setBackgroundColor(Color.parseColor("#FFD700"));
 
         // Post Button Actions
         framePosts.setOnClickListener(v -> {
@@ -262,7 +262,7 @@ public class ProfileFragment extends Fragment {
 
             Log.d("ProfileFragment", "Posts selected for User ID# " + userId);
             replaceFragment("user", String.valueOf(userId), true);
-            UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 40f, darkMode);
         });
 
         // Saved Button Actions
@@ -297,7 +297,7 @@ public class ProfileFragment extends Fragment {
             Log.d("ProfileFragment", "Saved clicked for User ID# " + userId);
             replaceFragment("saved", userId, false);
             // Re-apply the UI background for saved
-            UISettings.applyBrightnessGradientBackground(rootLayout, 60f, darkMode);
+            UISettings.applyBrightnessGradientBackground(rootLayout, 50f, darkMode);
         });
 
         // Default view is the "posts" tab

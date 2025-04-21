@@ -23,13 +23,12 @@
         android:id="@+id/chatroomName"
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:background="@drawable/white_translucency_gradient_horizontal_chattab"
-        android:fontFamily="@font/monoton"
+        android:background="@drawable/white_translucency_gradient_horizontal_chat_title"
+        android:fontFamily="@font/lobstertwobold"
         android:gravity="center"
         android:text="\@USERNAME"
         android:textColor="#F6F6FD"
-
-        android:textSize="20dp" />
+        android:textSize="24dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -50,18 +49,20 @@
             android:layout_height="match_parent"
             android:paddingStart="5dp"
             android:paddingEnd="5dp"
-
+            android:background="@drawable/white_translucency_gradient_horizontal_button"
             android:layout_weight="2">
 
             <Button
                 android:id="@+id/editChatroomButton"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="35dp"
                 android:fontFamily="@font/inriasansregular"
-                android:backgroundTint="#7E91DB"
-                android:text="Edit"
-
-                android:textSize="9dp"></Button>
+                android:text="Edit Chatroom"
+                android:textStyle="bold"
+                android:background="@android:color/transparent"
+                android:paddingHorizontal="4dp"
+                android:textColor="@color/white"
+                android:textSize="12dp" />
         </LinearLayout>
 
     </LinearLayout>

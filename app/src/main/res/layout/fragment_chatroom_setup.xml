@@ -132,7 +132,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="50dp"
                             android:layout_gravity="end"
-                            android:backgroundTint="#3A39F4"
+                            android:backgroundTint="#023B56"
                             android:fontFamily="@font/inriasansregular"
                             android:text="Save"
                             android:textColor="@android:color/white" />

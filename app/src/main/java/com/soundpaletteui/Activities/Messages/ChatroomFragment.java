@@ -87,7 +87,7 @@ public class ChatroomFragment extends Fragment {
         emojiBackground.setAlpha(0.25f);
 
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
-        UISettings.applyBrightnessGradientBackground(rootView, 225f, isDarkMode);
+        UISettings.applyBrightnessGradientBackground(rootView, 190f, isDarkMode);
 
         initComponents(rootView);
 

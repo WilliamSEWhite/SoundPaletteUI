@@ -64,7 +64,7 @@ public class MessageFragment extends Fragment {
         emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
         emojiBackground.setAlpha(0.2f);
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(view.getContext());
-        UISettings.applyBrightnessGradientBackground(view, 240f, isDarkMode);
+        UISettings.applyBrightnessGradientBackground(view, 200f, isDarkMode);
 
         user = AppSettings.getInstance().getUser();
         userClient = SPWebApiRepository.getInstance().getUserClient();

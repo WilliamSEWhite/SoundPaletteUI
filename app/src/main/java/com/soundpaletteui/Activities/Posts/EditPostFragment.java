@@ -101,7 +101,7 @@ public class EditPostFragment extends Fragment {
         // 2) apply emoji + hue gradient
         View rootLayout = rootView.findViewById(R.id.root_layout);
         boolean isDark = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
-        UISettings.applyBrightnessGradientBackground(rootLayout, 50f, isDark);
+        UISettings.applyBrightnessGradientBackground(rootLayout, 260f, isDark);
 
         com.soundpaletteui.Views.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
         emojiBg.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_SPIRAL);
