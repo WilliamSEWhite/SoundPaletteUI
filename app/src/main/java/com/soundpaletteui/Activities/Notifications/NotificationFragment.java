@@ -73,7 +73,7 @@ public class NotificationFragment  extends Fragment {
         @Override
         protected List<NotificationModel> doInBackground(Void... voids) {
             try {
-                return notificationClient.getNotification();
+                return notificationClient.getNotifications();
             } catch (IOException e) {
                 Log.e("NOTIFICATION", "Error fetching Notifications", e);
                 return new ArrayList<>();

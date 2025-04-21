@@ -13,7 +13,7 @@ import retrofit2.http.Query;
 
 public interface NotificationApiEndpoints {
     @GET("api/post/get-notifications")
-    Call<List<NotificationModel>> getNotification(@Query("userId") int userId);
+    Call<List<NotificationModel>> getNotifications(@Query("userId") int userId);
     @GET("api/post/get-notification-flag")
     Call<Boolean> getNotificationFlag(@Query("userId") int userId);
     @GET("api/post/get-device-notification-flag")
