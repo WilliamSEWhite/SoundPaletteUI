@@ -44,7 +44,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         NotificationModel notificationModel = notificationList.get(position);
         holder.notificationMessage.setText(notificationModel.getMessage());
 
-        int notificationIdType = notificationModel.getNotificationIdType();
+        int notificationIdType = notificationModel.getNotificationTypeId();
         int referenceId = notificationModel.getReferenceId();
         String referenceName = notificationModel.getReferenceName();
         holder.usernameDisplay.setText(referenceName);

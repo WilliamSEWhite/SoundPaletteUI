@@ -24,9 +24,9 @@ public class NotificationClient {
         apiEndpoints = retrofit.create(NotificationApiEndpoints.class);
 
     }
-    public List<NotificationModel> getNotification() throws IOException {
+    public List<NotificationModel> getNotifications() throws IOException {
         int userId = AppSettings.getInstance().getUserId();
-        Call<List<NotificationModel>> call = apiEndpoints.getNotification(userId);
+        Call<List<NotificationModel>> call = apiEndpoints.getNotifications(userId);
         Response<List<NotificationModel>> response = call.execute();
 
         if (!response.isSuccessful()) {

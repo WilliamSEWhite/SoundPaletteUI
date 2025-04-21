@@ -118,12 +118,6 @@ public class NotificationSettingsFragment extends Fragment {
     private void getAllNotificationSettings() {
         allNotificationSettings.clear();
 
-        allNotificationSettings.add(new NotificationSettingModel(1, true, "Follows"));
-        allNotificationSettings.add(new NotificationSettingModel(2, true, "Likes"));
-        allNotificationSettings.add(new NotificationSettingModel(3, true, "Comments"));
-        allNotificationSettings.add(new NotificationSettingModel(4, true, "Tags"));
-        allNotificationSettings.add(new NotificationSettingModel(5, true, "Messages"));
-
         setupRecyclerView();
     }
 
