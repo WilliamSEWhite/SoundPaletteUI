@@ -106,7 +106,7 @@ public class MainScreenActivity extends AppCompatActivity {
         if (user != null) {
             startNotificationPolling(user.getUserId());
             startMessagePolling(user.getUserId());
-            startDeviceNotificationPolling(user.getUserId()); // Start device notifications polling
+            //startDeviceNotificationPolling(user.getUserId());
         }
 
         initComponents();
@@ -357,7 +357,7 @@ public class MainScreenActivity extends AppCompatActivity {
                                     ((ProfileFragment) currentFragment).setNotificationDotVisible(true);
                                 }
 
-                                showDeviceNotification("SoundPalette", "Your work sparked a response!");
+                                //showDeviceNotification("SoundPalette", "Your work sparked a response!");
 
                                 stopNotificationPolling();
                             } else {
@@ -464,7 +464,7 @@ public class MainScreenActivity extends AppCompatActivity {
             });
         }
     }
-
+/*
     public void startDeviceNotificationPolling(int userId) {
         if (isPollingDeviceNotifications) return;
         isPollingDeviceNotifications = true;
@@ -536,5 +536,5 @@ public class MainScreenActivity extends AppCompatActivity {
 
         notificationManager.notify((int) System.currentTimeMillis(), builder.build());
     }
-
+*/
 }
