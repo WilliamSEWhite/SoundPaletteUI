@@ -85,4 +85,11 @@ public class NotificationClient {
         return true;
     }
 
+    public boolean getDeviceNotificationFlag(int userId) throws IOException {
+        //Call<Boolean> call = apiEndpoints.getDeviceNotificationFlag(userId);
+        //Response<Boolean> response = call.execute();
+        //return response.body();
+        return true;
+    }
+
 }
