@@ -48,8 +48,6 @@ public class Navigation {
     }
 
     public static void replaceFragment(FragmentManager fragmentManager, FragmentTransaction fragmentTransaction, Fragment fragment, String tag, int containerId) {
-        if (!isNavigationAllowed()) return;
-
         System.out.println("Fragment Tag: " + tag);
         if(tag == null) {
             System.out.println("Fragment Tag was null");
