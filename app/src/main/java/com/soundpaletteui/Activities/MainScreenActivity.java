@@ -344,7 +344,7 @@ public class MainScreenActivity extends AppCompatActivity {
             public void run() {
                 new Thread(() -> {
                     try {
-                        boolean hasNewNotification = notificationClient.getNotificationFlag(userId);
+                        boolean hasNewNotification = notificationClient.getNotificationFlag();
                         runOnUiThread(() -> {
                             showNotificationDotOnProfile(hasNewNotification);
 
@@ -390,7 +390,7 @@ public class MainScreenActivity extends AppCompatActivity {
             public void run() {
                 new Thread(() -> {
                     try {
-                        boolean hasNewMessages = notificationClient.getMessageFlag(userId);
+                        boolean hasNewMessages = notificationClient.getMessageFlag();
                         runOnUiThread(() -> {
                             showMessageDotOnMessages(hasNewMessages);
 

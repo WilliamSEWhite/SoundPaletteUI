@@ -70,19 +70,21 @@ public class NotificationClient {
         return null;
     }
 
-    public boolean getNotificationFlag(int userId) throws IOException {
-        //Call<Boolean> call = apiEndpoints.hasNotification(userId);
-        //Response<Boolean> response = call.execute();
-        //return response.body();
-        return true;
+    public boolean getNotificationFlag() throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+
+        Call<Boolean> call = apiEndpoints.hasNotification(userId);
+        Response<Boolean> response = call.execute();
+        return Boolean.TRUE.equals(response.body());
     }
 
 
-    public boolean getMessageFlag(int userId) throws IOException {
-        //Call<Boolean> call = apiEndpoints.hasMessage(userId);
-        //Response<Boolean> response = call.execute();
-        //return response.body();
-        return true;
+    public boolean getMessageFlag() throws IOException {
+        int userId = AppSettings.getInstance().getUserId();
+        Call<Boolean> call = apiEndpoints.hasMessage(userId);
+        Response<Boolean> response = call.execute();
+        boolean t = Boolean.TRUE.equals(response.body());
+        return t;
     }
 
     public boolean getDeviceNotificationFlag(int userId) throws IOException {

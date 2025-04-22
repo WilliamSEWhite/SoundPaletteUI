@@ -63,7 +63,7 @@ public class NotificationFragment  extends Fragment {
         recyclerViewNotifications = view.findViewById(R.id.recyclerViewNotifications);
         recyclerViewNotifications.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
-        getAllNotifications();
+        new GetNotificationsTask().execute();
         //new GetNotificationsTask().execute();
     }
 
