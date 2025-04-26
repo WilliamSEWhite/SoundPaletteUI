@@ -1,4 +1,4 @@
-# SoundPalette
+# SoundPalette [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 SoundPalette is a social media Android app for artists and musicians to connect, collaborate, and showcase their work. Users can share audio, images, and text, interact through likes, comments, and messages, and monetize their content with premium subscriptions, creating a vibrant, collaborative creative community.
 
 ## COSC 4P02 - Software Engineering II
