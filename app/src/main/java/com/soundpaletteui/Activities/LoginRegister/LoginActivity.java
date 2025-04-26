@@ -31,7 +31,6 @@ import pl.droidsonroids.gif.GifImageView;
 
 import java.util.Objects;
 
-// Manages user login and registration actions within the app.
 public class LoginActivity extends AppCompatActivity {
 
     // UI components
@@ -50,7 +49,6 @@ public class LoginActivity extends AppCompatActivity {
     private final Handler patternHandler = new Handler();
     private Runnable patternRunnable;
 
-    // Activity lifecycle: onCreate
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +62,6 @@ public class LoginActivity extends AppCompatActivity {
         startPatternLoop();
     }
 
-    // Initializes UI components and listeners for login/registration.
     private void initComponents() {
         usernameBox = findViewById(R.id.username);
         passwordBox = findViewById(R.id.password);
@@ -81,13 +78,11 @@ public class LoginActivity extends AppCompatActivity {
         loadingMessage = findViewById(R.id.loadingMessage);
     }
 
-    // Locks the UI while the app processes data.
     private void lockUI() {
         loadingMessage.setVisibility(View.VISIBLE);
         loadingMessage.setAlpha(0f);
         loadingMessage.animate().alpha(1f).setDuration(300).start();
 
-        // Rotate animation
         loadingMessage.animate()
                 .rotationBy(360f)
                 .setDuration(1500)
@@ -98,7 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                         loadingMessage.animate().rotationBy(360f)
                                 .setDuration(1500)
                                 .setInterpolator(new LinearInterpolator())
-                                .withEndAction(this::lockUI)  // or create a separate loop method
+                                .withEndAction(this::lockUI)
                                 .start();
                     }
                 })
@@ -110,43 +105,6 @@ public class LoginActivity extends AppCompatActivity {
         passwordBox.setEnabled(false);
     }
 
-    // Start a circular animation in the background
-    private void startCircleAnimation() {
-        if (isAnimating) return;
-
-        float radius = 200f; // Adjust as needed
-        long duration = 8000;
-
-        circleAnimator = (ObjectAnimator) ObjectAnimator.ofFloat(0f, 360f);
-        circleAnimator.setDuration(duration);
-        circleAnimator.setRepeatCount(ValueAnimator.INFINITE);
-        circleAnimator.setInterpolator(new LinearInterpolator());
-
-        circleAnimator.addUpdateListener(animation -> {
-            float angle = (float) animation.getAnimatedValue();
-            double radians = Math.toRadians(angle);
-
-            View layout = findViewById(R.id.root_layout); // fallback parent view
-
-            if (layout == null || loadingMessage == null) return;
-
-            float centerX = layout.getWidth() / 2f;
-            float centerY = layout.getHeight() / 2f;
-
-            float x = centerX + (float)(radius * Math.cos(radians)) - loadingMessage.getWidth() / 2f;
-            float y = centerY + (float)(radius * Math.sin(radians)) - loadingMessage.getHeight() / 2f;
-
-            loadingMessage.setX(x);
-            loadingMessage.setY(y);
-        });
-
-        loadingMessage.post(() -> {
-            isAnimating = true;
-            circleAnimator.start();
-        });
-    }
-
-    // Unlocks the UI.
     private void unlockUI() {
         loadingMessage.animate().cancel();
         loadingMessage.setRotation(0f);
@@ -158,7 +116,6 @@ public class LoginActivity extends AppCompatActivity {
         passwordBox.setEnabled(true);
     }
 
-    // Connect to API Server to approve the user's login
     private class LoginUserAsync extends AsyncTask<String, Void, Void> {
         private String action;
 
@@ -195,7 +152,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // Registers a new user after input validation.
     private void register() {
         String username = usernameBox.getText().toString();
         String password = passwordBox.getText().toString();
@@ -222,7 +178,6 @@ public class LoginActivity extends AppCompatActivity {
         new LoginUserAsync("register").execute(username, password);
     }
 
-    // Logs in an existing user after input validation.
     private void login() {
         String username = usernameBox.getText().toString();
         String password = passwordBox.getText().toString();
@@ -238,7 +193,6 @@ public class LoginActivity extends AppCompatActivity {
         new LoginUserAsync("login").execute(username, password);
     }
 
-    // Called after successful login.
     void loginUser() {
         UserModel user = appSettings.getUser();
         if (user != null) {
@@ -257,7 +211,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // Called after successful registration.
     void registerUser() {
         UserModel user = appSettings.getUser();
         if (user != null) {
@@ -270,7 +223,6 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // Navigates to the appropriate next screen.
     private void nextActivity(int userId, int action) {
         Intent intent = (action == 1)
                 ? new Intent(this, RegisterActivity.class)
@@ -280,7 +232,6 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 
-    // Animates the shadow of the main logo text.
     private void animateShadow() {
         final TextView appTitle = findViewById(R.id.textLogo);
         final int shadowColor = getResources().getColor(R.color.white);
@@ -312,12 +263,9 @@ public class LoginActivity extends AppCompatActivity {
         offsetAnimator.start();
     }
 
-    // Starts emoji background pattern loop.
     private void startPatternLoop() {
         patternRunnable = () -> {
-            int[] patterns = {
-                    EmojiBackgroundView.PATTERN_GRID
-            };
+            int[] patterns = { EmojiBackgroundView.PATTERN_GRID };
             int randomPattern = patterns[(int)(Math.random() * patterns.length)];
             if (emojiBackground != null) {
                 emojiBackground.setPatternType(randomPattern);
