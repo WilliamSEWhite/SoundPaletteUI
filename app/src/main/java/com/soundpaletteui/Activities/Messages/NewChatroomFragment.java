@@ -111,7 +111,7 @@ public class NewChatroomFragment extends Fragment {
         userSearchInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
-                if (s.length() > 3) searchUsersAsync(s.toString());
+                if (s.length() > 2) searchUsersAsync(s.toString());
             }
             @Override public void afterTextChanged(Editable s) {}
         });
@@ -141,7 +141,7 @@ public class NewChatroomFragment extends Fragment {
                 List<String> users = new ArrayList<>(selectedUsers);
                 users.add(currentUser.getUsername());
                 return chatClient.createChatroom(
-                        new NewChatroomModel(name, users)
+                        new NewChatroomModel(name, users, AppSettings.getInstance().getUserId())
                 );
             } catch (IOException e) {
                 return null;

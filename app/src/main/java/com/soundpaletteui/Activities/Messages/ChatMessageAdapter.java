@@ -36,9 +36,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 
     private final List<ChatMessageModel> messageList;
     private final UserModel user;
-    private final UserClient userClient;
     private final String username;
-
     private static final int VIEW_TYPE_USER = 1;
     private static final int VIEW_TYPE_ACTIVE = 2;
     private static final int VIEW_TYPE_INACTIVE = 3;
@@ -46,7 +44,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     public ChatMessageAdapter(List<ChatMessageModel> messageList) {
         this.messageList = messageList;
         this.user = AppSettings.getInstance().getUser();
-        this.userClient = SPWebApiRepository.getInstance().getUserClient();
         this.username = (user != null) ? user.getUsername() : null;
     }
 

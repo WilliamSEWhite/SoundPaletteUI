@@ -17,7 +17,11 @@ public class AppSettings {
     public AppSettings() { }
 
     public int getUserId() {
-        return user.getUserId();
+
+        if(user != null)
+            return user.getUserId();
+        else
+            return 0;
     }
 
     public String getUsername() {
