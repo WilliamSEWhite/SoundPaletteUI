@@ -1,4 +1,4 @@
-# SoundPalette
+# SoundPalette [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 SoundPalette is a social media Android app for artists and musicians to connect, collaborate, and showcase their work. Users can share audio, images, and text, interact through likes, comments, and messages, and monetize their content with premium subscriptions, creating a vibrant, collaborative creative community.
 
 ## COSC 4P02 - Software Engineering II
@@ -18,3 +18,7 @@ This is the GitHub repo for SoundPalette's UI (Front-End). Please see the main S
 | [Kaija Sproxton](mailto:ks21lk@brocku.ca) | Documentation Specialist | Front End Developer  |
 | [William White](mailto:ww18fj@brocku.ca)  | Lead Developer           | Full Stack Developer |
 | [James Windjack](mailto:jw17rm@brocku.ca) | Assistant Developer      | Full Stack Developer |
+
+
+## License
+SoundPalette is licensed under the [Apache 2.0 License](LICENSE).
