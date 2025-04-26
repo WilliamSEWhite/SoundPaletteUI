@@ -19,7 +19,11 @@ public class AppSettings {
 
     // Gets the user's Id
     public int getUserId() {
-        return user.getUserId();
+
+        if(user != null)
+            return user.getUserId();
+        else
+            return 0;
     }
 
     // Gets the user's username

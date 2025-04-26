@@ -117,7 +117,6 @@
             android:maxHeight="96dp"
             android:minHeight="28dp"
             android:padding="8dp"
-            android:textColor="@android:color/white"
             android:textColorHint="@android:color/darker_gray" />
 
         <Button

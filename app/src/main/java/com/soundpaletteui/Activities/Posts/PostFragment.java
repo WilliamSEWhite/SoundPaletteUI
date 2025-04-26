@@ -226,7 +226,6 @@ public class PostFragment extends Fragment {
         MediaPlayerManager.getInstance().release();
     }
 
-
     // Sets the RecyclerView by sending through a List of all PostModels
     private void setupRecyclerView() {
         if(allPosts.isEmpty()){
