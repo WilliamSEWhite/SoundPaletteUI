@@ -177,7 +177,7 @@ public class RegisterActivity extends AppCompatActivity {
         userClient = SPWebApiRepository.getInstance().getUserClient();
         getCountries();     // load countries from database
         user = AppSettings.getInstance().getUser();
-        userProfileModel = new UserProfileModel(user.getUserId(), "I haven't updated my bio yet...", "/dev/null");
+        userProfileModel = new UserProfileModel(user.getUserId(), "", "/dev/null");
     }
 
     /** upload profile image */

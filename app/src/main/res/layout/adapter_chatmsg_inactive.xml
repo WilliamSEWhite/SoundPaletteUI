@@ -21,7 +21,6 @@
         android:alpha="0.8"
         android:scaleY="1.3"
         android:src="@drawable/navigation_profile_24"
-        android:tint="@color/white"
         />
 
     <LinearLayout
