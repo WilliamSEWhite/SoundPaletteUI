@@ -2,12 +2,15 @@ package com.soundpaletteui.Activities.Trending;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,9 +19,12 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.imageview.ShapeableImageView;
 import com.soundpaletteui.Activities.Messages.ChatroomFragment;
 import com.soundpaletteui.Activities.Profile.ProfileViewFragment;
 import com.soundpaletteui.Infrastructure.Models.User.UserSearchModel;
+import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
+import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModelLite;
@@ -76,6 +82,15 @@ public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdap
         holder.messageButton.setOnClickListener(v -> {
             new OpenPrivateMessageAsync(username).execute();
         });
+
+        new Thread(() -> {
+            // update UI on main thread
+            new Handler(Looper.getMainLooper()).post(() -> {
+                ImageUtils.getProfileImageByUsername(username,
+                        holder.imageView,
+                        context);
+            });
+        }).start();
     }
 
     @Override
@@ -87,6 +102,7 @@ public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdap
         TextView usernameDisplay, followerDisplay;
         Button profileButton, messageButton;
         CheckBox followButton;
+        ImageView imageView;
 
         public ProfileViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -95,6 +111,7 @@ public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdap
             profileButton = itemView.findViewById(R.id.profileButton);
             followButton = itemView.findViewById(R.id.followButton);
             messageButton = itemView.findViewById(R.id.messageButton);
+            imageView = itemView.findViewById(R.id.profilePicture);
         }
     }
 
