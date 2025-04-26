@@ -19,7 +19,8 @@
             android:layout_height="match_parent"
             android:padding="7dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/navigation_profile_24" />
+            android:src="@drawable/navigation_profile_24"
+            android:id="@+id/profilePicture"/>
 
         <!-- Poster's Username and Comments -->
         <LinearLayout
