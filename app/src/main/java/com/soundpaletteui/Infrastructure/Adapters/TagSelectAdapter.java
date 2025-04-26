@@ -18,6 +18,7 @@ import org.w3c.dom.Text;
 import java.util.ArrayList;
 import java.util.List;
 
+// Adapter class for selecting tags with checkboxes
 public class TagSelectAdapter extends RecyclerView.Adapter {
 
     private List<TagModel> tagList;
@@ -49,36 +50,30 @@ public class TagSelectAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        // allow access to tagName and checkBox
+        // Allow access to tagName and checkBox
         ViewHolder viewHolder = (ViewHolder)holder;
 
         TagModel tag = tagList.get(position);
         viewHolder.tagName.setText(tag.getTagName());
         viewHolder.checkBox.setChecked(tag.isSelected());
 
-        // toggle checkbox
+        // Toggle checkbox
         viewHolder.itemView.setOnClickListener(v -> {
             boolean newState = !viewHolder.checkBox.isChecked();
             viewHolder.checkBox.setChecked(newState);
             tag.setSelected(newState);
         });
-        // update TagModel when checkbox is clicked
+        // Update TagModel when checkbox is clicked
         viewHolder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) ->
                 tag.setSelected(isChecked));
     }
 
-    /*public void onBindViewHolder(ViewHolder holder, int position) {
-        TagModel tag = tagList.get(position);
-        holder.tagName.setText(tag.getTagName());
-        holder.checkBox.setChecked(tag.isSelected());
-    }*/
-
-    /** gets the size of the tag list */
+    // Gets the size of the tag list
     public int getItemCount() {
         return tagList != null ? tagList.size() : 0;
     }
 
-    /** returns the selected tags */
+    // Returns the selected tags
     public ArrayList<TagModel> getSelectedTags() {
         ArrayList<TagModel> selected = new ArrayList<>();
         for(TagModel tag : tagList) {

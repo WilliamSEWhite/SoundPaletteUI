@@ -63,8 +63,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Main activity managing the primary navigation among fragments.
+// Handles the main app screen, bottom navigation, and notification polling
 public class MainScreenActivity extends AppCompatActivity {
-
     private RecyclerView recyclerView;
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
@@ -121,6 +121,7 @@ public class MainScreenActivity extends AppCompatActivity {
 
         Navigation.replaceFragment(getSupportFragmentManager(), homeFragment, "HOME_FRAGMENT", R.id.mainScreenFrame);
         setInitialHomeButtonColor();
+
         // Invalidate the menu so the three dots become visible (since HomeFragment is active)
         supportInvalidateOptionsMenu();
 
@@ -356,9 +357,6 @@ public class MainScreenActivity extends AppCompatActivity {
                                 if (currentFragment instanceof ProfileFragment) {
                                     ((ProfileFragment) currentFragment).setNotificationDotVisible(true);
                                 }
-
-                                //showDeviceNotification("SoundPalette", "Your work sparked a response!");
-
                                 stopNotificationPolling();
                             } else {
                                 notificationPollingHandler.postDelayed(this, 5000);
@@ -416,6 +414,7 @@ public class MainScreenActivity extends AppCompatActivity {
     }
 
 
+    // Updates the Profile icon in navigation bar icon to show a red dot if new notifications exist
     public void showNotificationDotOnProfile(boolean show) {
         BottomNavigationView bottomNav = binding.bottomNavigationView;
         View profileItemView = bottomNav.findViewById(R.id.nav_profile);
@@ -441,6 +440,7 @@ public class MainScreenActivity extends AppCompatActivity {
     }
 
 
+    // Updates the Messages icon in navigation bar to show a red dot if new notifications exist
     public void showMessageDotOnMessages(boolean show) {
         BottomNavigationView bottomNav = binding.bottomNavigationView;
         View messageItemView = bottomNav.findViewById(R.id.nav_msg);
@@ -464,77 +464,4 @@ public class MainScreenActivity extends AppCompatActivity {
             });
         }
     }
-/*
-    public void startDeviceNotificationPolling(int userId) {
-        if (isPollingDeviceNotifications) return;
-        isPollingDeviceNotifications = true;
-
-        deviceNotificationPollingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                new Thread(() -> {
-                    try {
-                        boolean shouldNotify = notificationClient.getDeviceNotificationFlag(userId);
-                        runOnUiThread(() -> {
-                            if (shouldNotify) {
-                                showDeviceNotification("SoundPalette", "Your work sparked a response!");
-                                stopDeviceNotificationPolling();
-                            } else {
-                                deviceNotificationPollingHandler.postDelayed(this, 5000);
-                            }
-                        });
-                    } catch (IOException e) {
-                        deviceNotificationPollingHandler.postDelayed(this, 5000);
-                    }
-                }).start();
-            }
-        };
-
-        deviceNotificationPollingHandler.post(deviceNotificationPollingRunnable);
-    }
-
-    public void stopDeviceNotificationPolling() {
-        isPollingDeviceNotifications = false;
-        deviceNotificationPollingHandler.removeCallbacks(deviceNotificationPollingRunnable);
-    }
-
-
-    private void showDeviceNotification(String title, String message) {
-        String channelId = "default_channel";
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    channelId,
-                    "SoundPalette Notifications",
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-            channel.setDescription("Channel for SoundPalette app notifications");
-            channel.enableVibration(true);
-            channel.enableLights(true);
-            NotificationManager manager = getSystemService(NotificationManager.class);
-            if (manager != null) {
-                manager.createNotificationChannel(channel);
-            }
-        }
-
-        Intent intent = new Intent(this, MainScreenActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
-
-        Bitmap largeIcon = BitmapFactory.decodeResource(getResources(), R.drawable.sp_logo_notification);
-
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
-                .setSmallIcon(R.drawable.baseline_music_note_48)
-                .setLargeIcon(largeIcon)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setAutoCancel(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setDefaults(NotificationCompat.DEFAULT_ALL)
-                .setContentIntent(pendingIntent);
-
-        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
-    }
-*/
 }

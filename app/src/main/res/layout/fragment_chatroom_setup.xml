@@ -9,7 +9,7 @@
     tools:context=".Activities.Messages.EditChatroomFragment">
 
     <!-- 1) Emoji background layer -->
-    <com.soundpaletteui.Views.EmojiBackgroundView
+    <com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView
         android:id="@+id/emojiBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

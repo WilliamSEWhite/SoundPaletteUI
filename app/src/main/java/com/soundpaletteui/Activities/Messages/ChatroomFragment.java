@@ -30,12 +30,13 @@ import com.soundpaletteui.Infrastructure.Models.Chat.ChatMessageModel;
 import com.soundpaletteui.Infrastructure.Models.Chat.NewMessageModel;
 import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
-import com.soundpaletteui.Views.EmojiBackgroundView;
+import com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Fragment that handles displaying and sending messages inside a chatroom
 public class ChatroomFragment extends Fragment {
 
     private static final String ARG_CHATROOM_ID = "chatRoomId";
@@ -86,11 +87,14 @@ public class ChatroomFragment extends Fragment {
         emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
         emojiBackground.setAlpha(0.25f);
 
+        // Apply gradient background depending on dark mode
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
         UISettings.applyBrightnessGradientBackground(rootView, 190f, isDarkMode);
 
+        // Initialize components
         initComponents(rootView);
 
+        // Set up RecyclerView
         recyclerView = rootView.findViewById(R.id.recyclerViewMessages);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -100,6 +104,7 @@ public class ChatroomFragment extends Fragment {
         adapter = new ChatMessageAdapter(messageList);
         recyclerView.setAdapter(adapter);
 
+        // Set up sending messages
         editTextMessage = rootView.findViewById(R.id.editTextMessage);
         btnSend = rootView.findViewById(R.id.btnSend);
         btnSend.setOnClickListener(v -> {
@@ -110,6 +115,7 @@ public class ChatroomFragment extends Fragment {
             }
         });
 
+        // Set up edit chatroom button
         editChatroomButton = rootView.findViewById(R.id.editChatroomButton);
         editChatroomButton.setOnClickListener(v -> {
             EditChatroomFragment editChatroomFragment = EditChatroomFragment.newInstance(chatRoomId);
@@ -117,11 +123,13 @@ public class ChatroomFragment extends Fragment {
             Navigation.replaceFragment(fragmentManager, editChatroomFragment, "EDIT_CHATROOM_FRAGMENT", R.id.mainScreenFrame);
         });
 
+        // Load messages for the chatroom
         new LoadMessagesTask().execute();
 
         return rootView;
     }
 
+    // Initializes user information and clients
     private void initComponents(View view) {
         user = AppSettings.getInstance().getUser();
         userClient = SPWebApiRepository.getInstance().getUserClient();
@@ -132,6 +140,7 @@ public class ChatroomFragment extends Fragment {
         }
     }
 
+    // Loads all messages for the current chatroom
     private class LoadMessagesTask extends AsyncTask<Void, Void, List<ChatMessageModel>> {
         @Override
         protected List<ChatMessageModel> doInBackground(Void... voids) {
@@ -152,6 +161,7 @@ public class ChatroomFragment extends Fragment {
         }
     }
 
+    // Sends a new message to the chatroom
     private class SendMessageTask extends AsyncTask<String, Void, Boolean> {
         @Override
         protected Boolean doInBackground(String... params) {

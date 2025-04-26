@@ -106,8 +106,8 @@ public class RegisterActivity extends AppCompatActivity {
         boolean isDark = DarkModePreferences.isDarkModeEnabled(this);
         UISettings.applyBrightnessGradientBackground(root, 280f, isDark);
 
-        com.soundpaletteui.Views.EmojiBackgroundView emojiBg = findViewById(R.id.emojiBackground);
-        emojiBg.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_SPIRAL);
+        com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView emojiBg = findViewById(R.id.emojiBackground);
+        emojiBg.setPatternType(com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView.PATTERN_SPIRAL);
         emojiBg.setAlpha(0.65f);
 
         initComponents();

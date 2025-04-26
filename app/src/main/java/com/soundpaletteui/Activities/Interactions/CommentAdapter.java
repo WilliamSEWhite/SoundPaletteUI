@@ -20,6 +20,7 @@ import com.soundpaletteui.R;
 
 import java.util.List;
 
+// Individual comments that get displayed in the CommentBottomSheet
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentViewHolder> {
     private List<CommentModel> commentList;
     private final FragmentActivity activity;
@@ -31,6 +32,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         this.profileClickListener = listener;
     }
 
+    // Requires a list of CommentModel
     public CommentAdapter(List<CommentModel> commentList, FragmentActivity activity) {
         this.commentList = commentList;
         this.activity = activity;
@@ -47,13 +49,16 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
     @Override
     public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
         CommentModel comment = commentList.get(position);
-
+        // Get the username and comment content from the CommentModel
         String username = comment.getCommentUsername();
         String commentContent = comment.getCommentText();
 
+        // Set the username and message in the CommentAdapter
         holder.username.setText(username);
         holder.message.setText(commentContent);
 
+        // ImageButton listener for Profile Picture
+        // Redirects the user to the commenter's profile page
         holder.commenterProfile.setOnClickListener(v -> {
             Log.d("ProfileViewFragment", "Username clicked: " + username);
 
@@ -81,6 +86,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
         return commentList.size();
     }
 
+    // Get the views for the CommentAdapter
     static class CommentViewHolder extends RecyclerView.ViewHolder {
         ImageButton commenterProfile;
         TextView username, message;

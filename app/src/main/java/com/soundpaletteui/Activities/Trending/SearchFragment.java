@@ -39,7 +39,7 @@ import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.UISettings;
 import com.soundpaletteui.Infrastructure.Utilities.DarkModePreferences;
 import com.soundpaletteui.R;
-import com.soundpaletteui.Views.EmojiBackgroundView;
+import com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView;
 
 import java.util.ArrayList;
 import java.util.List;

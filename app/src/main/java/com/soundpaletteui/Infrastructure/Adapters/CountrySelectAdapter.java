@@ -12,9 +12,9 @@ import com.soundpaletteui.R;
 
 import java.util.ArrayList;
 
+// Displays location options in the spinner (when user creates/edits their account)
 public class CountrySelectAdapter extends ArrayAdapter<LocationModel> {
     private Context context;
-    // Your custom values for the spinner (User)
     private ArrayList<LocationModel> values;
 
     public CountrySelectAdapter(Context context, int textViewResourceId,

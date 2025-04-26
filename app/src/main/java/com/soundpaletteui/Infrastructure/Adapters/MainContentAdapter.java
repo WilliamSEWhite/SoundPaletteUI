@@ -14,7 +14,7 @@ import com.soundpaletteui.R;
 
 import java.util.List;
 
-/** Adapter Class for the main content */
+// Adapter Class for the main content
 public class MainContentAdapter extends RecyclerView.Adapter<MainContentAdapter.ViewHolder> {
 
     private List<UserModel> userList;

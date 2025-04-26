@@ -17,6 +17,9 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+// Handles notification-related API calls for the SoundPalette app, including retrieving
+// notifications, managing notification settings, and checking for new activity
+
 public class NotificationClient {
     private NotificationApiEndpoints apiEndpoints;
 
@@ -24,6 +27,8 @@ public class NotificationClient {
         apiEndpoints = retrofit.create(NotificationApiEndpoints.class);
 
     }
+
+    // Retrieves a list of notifications for the current user.
     public List<NotificationModel> getNotifications() throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<List<NotificationModel>> call = apiEndpoints.getNotifications(userId);
@@ -44,6 +49,7 @@ public class NotificationClient {
         return posts;
     }
 
+    // Retrieves the user's notification settings (enabled/disabled types).
     public List<NotificationSettingModel> getNotificationSettings() throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<List<NotificationSettingModel>> call = apiEndpoints.getNotificationSettings(userId);
@@ -64,12 +70,14 @@ public class NotificationClient {
         return settings;
     }
 
+    // Updates the user's notification settings.
     public Void setNotificationSettings(List<NotificationSettingModel> settings) throws IOException {
         Call<Void> call = apiEndpoints.setNotificationSettings(settings);
         Response<Void> response = call.execute();
         return null;
     }
 
+    // Checks if the user has any new unread notifications.
     public boolean getNotificationFlag() throws IOException {
         int userId = AppSettings.getInstance().getUserId();
 
@@ -78,20 +86,13 @@ public class NotificationClient {
         return Boolean.TRUE.equals(response.body());
     }
 
-
+    // Checks if the user has any new unread messages.
     public boolean getMessageFlag() throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<Boolean> call = apiEndpoints.hasMessage(userId);
         Response<Boolean> response = call.execute();
         boolean t = Boolean.TRUE.equals(response.body());
         return t;
-    }
-
-    public boolean getDeviceNotificationFlag(int userId) throws IOException {
-        //Call<Boolean> call = apiEndpoints.getDeviceNotificationFlag(userId);
-        //Response<Boolean> response = call.execute();
-        //return response.body();
-        return true;
     }
 
 }

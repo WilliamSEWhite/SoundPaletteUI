@@ -31,14 +31,14 @@ import com.soundpaletteui.R;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
-import com.soundpaletteui.Views.EmojiBackgroundView;
+import com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Displays the New Chatroom screen to create a new chatroom and add users
 public class NewChatroomFragment extends Fragment {
-
     private EditText chatroomNameEdit, userSearchInput;
     private RecyclerView userSearchResults, selectedUsersView;
     private Button saveButton;
@@ -67,7 +67,7 @@ public class NewChatroomFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_chatroom_setup, container, false);
 
-        // 1) Apply the same brightness-gradient & emoji background as Search
+        // Apply the same brightness-gradient & emoji background as Search
         View rootLayout = rootView.findViewById(R.id.root_layout);
         boolean isDark = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
         UISettings.applyBrightnessGradientBackground(rootLayout, 200f, isDark);
@@ -76,23 +76,26 @@ public class NewChatroomFragment extends Fragment {
         emojiBg.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
         emojiBg.setAlpha(0.65f);
 
-        // 2) Your existing initialization
+        // Your existing initialization
         chatroomNameEdit   = rootView.findViewById(R.id.chatroomNameEdit);
         userSearchInput    = rootView.findViewById(R.id.userSearchInput);
         userSearchResults  = rootView.findViewById(R.id.userSearchResults);
         selectedUsersView  = rootView.findViewById(R.id.selectedUsersView);
         saveButton         = rootView.findViewById(R.id.saveButton);
 
+        // Load user and clients
         currentUser = AppSettings.getInstance().getUser();
         userClient  = SPWebApiRepository.getInstance().getUserClient();
         chatClient  = SPWebApiRepository.getInstance().getChatClient();
 
+        // Set up adapters for searching and selecting users
         userSearchAdapter = new UserSearchAdapter(searchResults, username -> {
             if (!selectedUsers.contains(username)) {
                 selectedUsers.add(username);
                 selectedUsersAdapter.notifyDataSetChanged();
             }
         });
+
         selectedUsersAdapter = new UserSelectedAdapter(selectedUsers, username -> {
             selectedUsers.remove(username);
             selectedUsersAdapter.notifyDataSetChanged();
@@ -108,6 +111,7 @@ public class NewChatroomFragment extends Fragment {
         );
         selectedUsersView.setAdapter(selectedUsersAdapter);
 
+        // Search users when typing
         userSearchInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
@@ -116,6 +120,7 @@ public class NewChatroomFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) {}
         });
 
+        // Handle Save button click
         saveButton.setOnClickListener(v -> {
             String roomName = chatroomNameEdit.getText().toString().trim();
             if (selectedUsers.isEmpty()) {
@@ -132,6 +137,7 @@ public class NewChatroomFragment extends Fragment {
         return rootView;
     }
 
+    // AsyncTask to create a new chatroom
     private class CreateChatroomTaskAsync
             extends AsyncTask<String, Void, ChatroomModelLite> {
         @Override
@@ -167,6 +173,7 @@ public class NewChatroomFragment extends Fragment {
         }
     }
 
+    // Searches for users based on search input
     private void searchUsersAsync(String searchTerm) {
         new Thread(() -> {
             try {

@@ -25,7 +25,7 @@ import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
-import com.soundpaletteui.Views.EmojiBackgroundView;
+import com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +36,7 @@ import androidx.fragment.app.FragmentTransaction;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
-/**
- * Represents the Home screen fragment for exploring and following content.
- */
+// Represents the Home screen fragment for exploring and following content.
 public class HomeFragment extends Fragment {
 
     private MainContentAdapter mainContentAdapter;
@@ -57,8 +55,8 @@ public class HomeFragment extends Fragment {
     private final int PINK_COLOR = Color.parseColor("#FFC0CB");
     private final int TRANSPARENT_ALPHA = 77;
     private final int FULL_ALPHA = 255;
-
     public boolean darkMode;
+
     // Track currently selected tab; default to "explore"
     private String selectedTab = "explore";
 
@@ -96,15 +94,15 @@ public class HomeFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         initComponents(rootView);
         userId = String.valueOf(user.getUserId());
-        com.soundpaletteui.Views.EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
+        com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
 
-
-
+        // Sets the background gradient colour
         final View rootLayout = rootView.findViewById(R.id.root_layout);
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
         darkMode = isDarkMode;
         UISettings.applyBrightnessGradientBackground(rootLayout, 120f, isDarkMode);
 
+        // Get the views
         frameExplore = rootView.findViewById(R.id.frame_explore);
         gifExplore = rootView.findViewById(R.id.gif_explore);
         textExplore = rootView.findViewById(R.id.explore_text);
@@ -112,8 +110,10 @@ public class HomeFragment extends Fragment {
         gifFollower = rootView.findViewById(R.id.gif_follower);
         textFollower = rootView.findViewById(R.id.follower_text);
 
+        // Explore button listener
+        // Displays a mix of posts: 6 from followed users and 4 based on the user's preferred tags
         frameExplore.setOnClickListener(v -> {
-            emojiBackground.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_SPIRAL);
+            emojiBackground.setPatternType(com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView.PATTERN_SPIRAL);
 
             selectedTab = "explore";
             Log.d("HomeFragment", "Explore Selected");
@@ -150,6 +150,8 @@ public class HomeFragment extends Fragment {
             UISettings.applyFlippedBrightnessGradientBackground(toolbar, 5f, isDarkMode);
         });
 
+        // Follower button listener
+        // Show posts exclusively from followed users
         frameFollower.setOnClickListener(v -> {
             emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_RADIAL);
 
@@ -220,6 +222,7 @@ public class HomeFragment extends Fragment {
         return super.getView();
     }
 
+    // Set Dark-mode
     public void setTheme(boolean darkM){
         updateTabUI();
     }
@@ -232,6 +235,7 @@ public class HomeFragment extends Fragment {
         userClient = SPWebApiRepository.getInstance().getUserClient();
     }
 
+    // Replaces the Post Fragment (Fragment in  Fragment)
     private void replacePostFragment(String algoType, String userId) {
         PostFragment postFragment = PostFragment.newInstance(algoType, userId, false);
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();

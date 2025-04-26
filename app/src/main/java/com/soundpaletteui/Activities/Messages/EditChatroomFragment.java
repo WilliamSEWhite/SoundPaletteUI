@@ -32,23 +32,18 @@ import com.soundpaletteui.R;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
-import com.soundpaletteui.Views.EmojiBackgroundView;
+import com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+// Displays the Edit Chatroom screen where user can update name, members, or leave chatroom
 public class EditChatroomFragment extends Fragment {
 
     private static final String ARG_CHATROOM_ID = "chatRoomId";
-
     private int chatRoomId;
-    private String newChatroomName;
-    private EditText chatroomNameEdit, userSearchInput;
-    private RecyclerView userSearchResults, selectedUsersView;
-    private Button saveButton, leaveButton;
-
     private UserClient userClient;
     private ChatClient chatClient;
     private UserModel currentUser;
@@ -62,8 +57,14 @@ public class EditChatroomFragment extends Fragment {
     private UserSearchAdapter userSearchAdapter;
     private UserSelectedAdapter selectedUsersAdapter;
 
+    private String newChatroomName;
+    private EditText chatroomNameEdit, userSearchInput;
+    private RecyclerView userSearchResults, selectedUsersView;
+    private Button saveButton, leaveButton;
+
     public EditChatroomFragment() {}
 
+    // Creates a new instance with the chatroom ID
     public static EditChatroomFragment newInstance(int chatroomId) {
         EditChatroomFragment fragment = new EditChatroomFragment();
         Bundle args = new Bundle();
@@ -75,6 +76,8 @@ public class EditChatroomFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Load arguments and initialize clients
         if (getArguments() != null) {
             chatRoomId = getArguments().getInt(ARG_CHATROOM_ID);
         }
@@ -91,7 +94,7 @@ public class EditChatroomFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_chatroom_setup, container, false);
 
-        // — Apply emoji + gradient just like Search screen —
+        // Apply emoji + gradient just like Search screen
         View rootLayout = rootView.findViewById(R.id.root_layout);
         boolean isDark = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
         UISettings.applyBrightnessGradientBackground(rootLayout, 200f, isDark);
@@ -100,7 +103,7 @@ public class EditChatroomFragment extends Fragment {
         emojiBg.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
         emojiBg.setAlpha(0.65f);
 
-        // — Bind views —
+        // Bind views
         chatroomNameEdit   = rootView.findViewById(R.id.chatroomNameEdit);
         userSearchInput    = rootView.findViewById(R.id.userSearchInput);
         userSearchResults  = rootView.findViewById(R.id.userSearchResults);
@@ -108,7 +111,7 @@ public class EditChatroomFragment extends Fragment {
         saveButton         = rootView.findViewById(R.id.saveButton);
         leaveButton        = rootView.findViewById(R.id.leaveChatroomButton);
 
-        // — Adapters —
+        // Adapters
         userSearchAdapter = new UserSearchAdapter(searchResults, username -> {
             List<String> currentMembers = chatroomInfo.getChatroomMembers();
             if (!currentMembers.contains(username)) membersToAdd.add(username);
@@ -119,6 +122,7 @@ public class EditChatroomFragment extends Fragment {
                 selectedUsersAdapter.notifyDataSetChanged();
             }
         });
+
         selectedUsersAdapter = new UserSelectedAdapter(selectedUsers, username -> {
             List<String> currentMembers = chatroomInfo.getChatroomMembers();
             if (currentMembers.contains(username)) membersToRemove.add(username);
@@ -138,7 +142,7 @@ public class EditChatroomFragment extends Fragment {
         );
         selectedUsersView.setAdapter(selectedUsersAdapter);
 
-        // — Search TextWatcher —
+        // Search TextWatcher
         userSearchInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
             @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
@@ -147,7 +151,7 @@ public class EditChatroomFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        // — Save & Leave buttons —
+        // Save & Leave buttons
         saveButton.setOnClickListener(v -> {
             newChatroomName = chatroomNameEdit.getText().toString().trim();
             new UpdateChatroomAsync().execute();
@@ -155,12 +159,13 @@ public class EditChatroomFragment extends Fragment {
         leaveButton.setVisibility(View.VISIBLE);
         leaveButton.setOnClickListener(v -> new LeaveChatroomAsync().execute());
 
-        // — Load existing chatroom info —
+        // Load existing chatroom info
         new GetChatroomInfoAsync().execute();
 
         return rootView;
     }
 
+    // Populates views after loading chatroom info
     private void populateView() {
         selectedUsers.clear();
         selectedUsers.addAll(chatroomInfo.getChatroomMembers());
@@ -168,6 +173,7 @@ public class EditChatroomFragment extends Fragment {
         chatroomNameEdit.setText(chatroomInfo.getChatroomName());
     }
 
+    // Searches users asynchronously based on search term
     private void searchUsersAsync(String term) {
         new Thread(() -> {
             try {
@@ -184,6 +190,7 @@ public class EditChatroomFragment extends Fragment {
         }).start();
     }
 
+    // AsyncTask to get chatroom info
     private class GetChatroomInfoAsync extends AsyncTask<Void,Void,Void> {
         @Override
         protected Void doInBackground(Void... v) {
@@ -200,6 +207,7 @@ public class EditChatroomFragment extends Fragment {
         }
     }
 
+    // AsyncTask to update chatroom details
     private class UpdateChatroomAsync extends AsyncTask<Void,Void,Void> {
         @Override
         protected Void doInBackground(Void... v) {
@@ -234,6 +242,7 @@ public class EditChatroomFragment extends Fragment {
         }
     }
 
+    // AsyncTask to leave the chatroom
     private class LeaveChatroomAsync extends AsyncTask<Void,Void,Boolean> {
         @Override
         protected Boolean doInBackground(Void... v) {

@@ -54,8 +54,8 @@ public class NotificationFragment  extends Fragment {
 
     private void initComponents(View view) {
         // Get and configure the emoji background
-        com.soundpaletteui.Views.EmojiBackgroundView emojiBackground = view.findViewById(R.id.emojiBackground);
-        emojiBackground.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_GRID);
+        com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView emojiBackground = view.findViewById(R.id.emojiBackground);
+        emojiBackground.setPatternType(com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView.PATTERN_GRID);
         emojiBackground.setAlpha(0.2f);
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(view.getContext());
         UISettings.applyBrightnessGradientBackground(view, 165f, isDarkMode);

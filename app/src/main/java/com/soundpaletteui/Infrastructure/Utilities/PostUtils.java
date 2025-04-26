@@ -20,6 +20,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 
+// Handles utilities related to creating and uploading posts
 public class PostUtils {
     private static final Gson gson = new GsonBuilder()
             .setLenient()
@@ -27,6 +28,7 @@ public class PostUtils {
             .create();
     private static final PostClient postClient = SPWebApiRepository.getInstance().getPostClient();
 
+    // Uploads a file-based post (image or audio) to the server
     public static void uploadFilePost(File file,
                                       NewPostModel postModel,
                                       FileModel fileModel,
@@ -34,21 +36,24 @@ public class PostUtils {
         // prepare the file part
         RequestBody fileBody;
         MultipartBody.Part filePart = null;
-        // check if image or audio file
+
+        // Check if image or audio file
         switch(postModel.postTypeId) {
-            case 2:
+            case 2:         // Handle image file
                 fileBody = RequestBody.create(file, MediaType.parse("image/*"));
                 filePart = MultipartBody.Part.createFormData("File", file.getName(), fileBody);
                 break;
-            case 3:
+            case 3:         // Handle audio file
                 fileBody = RequestBody.create(file, MediaType.parse("audio/*"));
                 filePart = MultipartBody.Part.createFormData("File", file.getName(), fileBody);
                 break;
             default:
+                // Log if the post type is not supported
                 Log.d("PostUtils", "Neither image nor sound file");
                 break;
         }
-        // combine post and file models with wrapper class
+
+        // Combine post and file models with wrapper class
         PostFileModel combinedModel = new PostFileModel(postModel, fileModel);
         String json = gson.toJson(combinedModel);
         RequestBody metaDataJson = RequestBody.create(json, MediaType.parse("text/plain"));

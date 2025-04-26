@@ -17,6 +17,7 @@ import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 
 import java.util.List;
 
+// Adapter class for displaying tagged users
 public class TagUserAdapter extends RecyclerView.Adapter<TagUserAdapter.ViewHolder> {
     private List<String> tagList;
     private FragmentManager fragmentManager;
@@ -57,6 +58,7 @@ public class TagUserAdapter extends RecyclerView.Adapter<TagUserAdapter.ViewHold
     }
 
     @Override
+    // Return the number of tagged users
     public int getItemCount() {
         return tagList != null ? tagList.size() : 0;
     }

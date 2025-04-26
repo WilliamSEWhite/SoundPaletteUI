@@ -65,7 +65,7 @@ import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
-import com.soundpaletteui.Views.EmojiBackgroundView;
+import com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView;
 
 import java.io.File;
 import java.io.IOException;
@@ -209,7 +209,7 @@ public class CreatePostFragment extends Fragment {
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
         UISettings.applyBrightnessGradientBackground(rootLayout, 275f, isDarkMode);
 
-        com.soundpaletteui.Views.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
+        com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
         emojiBg.setPatternType(EmojiBackgroundView.PATTERN_RADIAL);
         emojiBg.setAlpha(0.65f);
         user = AppSettings.getInstance().getUser();

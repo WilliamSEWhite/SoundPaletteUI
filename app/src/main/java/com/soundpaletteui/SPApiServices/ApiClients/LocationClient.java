@@ -10,6 +10,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+// Supplies a list of LocationModel options for users when creating or editing their profile.
 public class LocationClient {
     private static LocationApiEndpoints apiEndpoints;
     public LocationClient(Retrofit retrofit) {

@@ -6,9 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
-/**
- * Provides helper methods for applying various animated gradient backgrounds.
- */
+// Provides helper methods for applying various animated gradient backgrounds.
 public class UISettings {
 
     private static final int ANIMATION_DURATION = 8000;
@@ -16,9 +14,7 @@ public class UISettings {
     private static final float MAX_BRIGHTNESS = 1.0f;
     private static final float LIGHT_SATURATION = 0.2f;
 
-    /**
-     * Applies an animated gradient background that changes brightness over time.
-     */
+    // Applies an animated gradient background that changes brightness over time.
     public static void applyBrightnessGradientBackground(View rootView, float baseHue, boolean isDarkMode) {
         if (rootView == null) {
             return;
@@ -53,9 +49,7 @@ public class UISettings {
         brightnessAnimator.start();
     }
 
-    /**
-     * Applies an animated flipped gradient from the bottom to the top.
-     */
+    // Applies an animated flipped gradient from the bottom to the top.
     public static void applyFlippedBrightnessGradientBackground(View rootView, float baseHue, boolean isDarkMode) {
         if (rootView == null) {
             return;
@@ -75,24 +69,9 @@ public class UISettings {
         );
         animatedGradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
         rootView.setBackground(animatedGradientDrawable);
-//
-//        ValueAnimator brightnessAnimator = ValueAnimator.ofFloat(MAX_BRIGHTNESS, MIN_BRIGHTNESS);
-//        brightnessAnimator.setDuration(ANIMATION_DURATION);
-//        brightnessAnimator.setRepeatCount(ValueAnimator.INFINITE);
-//        brightnessAnimator.setRepeatMode(ValueAnimator.REVERSE);
-//        brightnessAnimator.setInterpolator(new LinearInterpolator());
-//        brightnessAnimator.addUpdateListener(animation -> {
-//            float brightness = (float) animation.getAnimatedValue();
-//            int animatedColor = Color.HSVToColor(alpha, new float[]{baseHue, 1f, brightness});
-//            animatedGradientDrawable.setColors(new int[]{startingColor, animatedColor});
-//            rootView.setBackground(animatedGradientDrawable);
-//        });
-//        brightnessAnimator.start();
     }
 
-    /**
-     * Applies a gradient with white on top and a changing hue at the bottom.
-     */
+    // Applies a gradient with white on top and a changing hue at the bottom.
     public static void applyWhiteTopHueGradientBackground(View rootView, float baseHue) {
         if (rootView == null) {
             return;
@@ -121,9 +100,7 @@ public class UISettings {
         hueAnimator.start();
     }
 
-    /**
-     * Applies a gradient with a light version of the hue at the top and full saturation at the bottom.
-     */
+    // Applies a gradient with a light version of the hue at the top and full saturation at the bottom.
     public static void applyHueGradientBackground(View rootView, float baseHue) {
         if (rootView == null) {
             return;

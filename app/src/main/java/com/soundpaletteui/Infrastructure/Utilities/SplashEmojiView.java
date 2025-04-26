@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+// Displays a moving animated background of emojis for the splash screen
 public class SplashEmojiView extends View {
 
     private final String[] emojiArray = {
@@ -50,15 +51,17 @@ public class SplashEmojiView extends View {
         init();
     }
 
+    // Initializes the paint settings and generates the emoji layout
+
     private void init() {
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextSize(80);
         textPaint.setTextAlign(Paint.Align.CENTER);
         setLayerType(View.LAYER_TYPE_SOFTWARE, textPaint);
-//        textPaint.setMaskFilter(new BlurMaskFilter(2, BlurMaskFilter.Blur.NORMAL));
         generateEmojiLayout();
     }
 
+    // Creates the initial set of emojis to display
     private void generateEmojiLayout() {
         emojiDrawList.clear();
         int numEmojis = 70;
@@ -80,12 +83,14 @@ public class SplashEmojiView extends View {
     }
 
     @Override
+    // Regenerates emoji layout when view size changes
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         generateEmojiLayout();
         super.onSizeChanged(w, h, oldw, oldh);
     }
 
     @Override
+    // Draws the animated emojis and gradient overlay
     protected void onDraw(Canvas canvas) {
         int width = getWidth();
         int height = getHeight();
@@ -133,19 +138,23 @@ public class SplashEmojiView extends View {
         invalidate();
     }
 
+    // Picks a random emoji from the array
     private String getRandomEmoji() {
         return emojiArray[random.nextInt(emojiArray.length)];
     }
 
+    // Returns a random vertical speed
     private float randomSpeed() {
         return 8f + random.nextFloat() * 18f;
     }
 
+    // Returns a random semi-transparent black color
     private int randomColor() {
         int alpha = random.nextInt(156) + 100;
         return android.graphics.Color.argb(alpha, 0, 0, 0); // black w/ transparency
     }
 
+    // Holds information about each emoji's position, size, speed, etc.
     private static class EmojiDrawInfo {
         String emoji;
         float x, y;

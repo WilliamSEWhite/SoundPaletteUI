@@ -32,13 +32,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+// Adapter for displaying chat messages
 public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.ChatMessageViewHolder> {
-
     private final List<ChatMessageModel> messageList;
     private final UserModel user;
     private final UserClient userClient;
     private final String username;
 
+    // View types for different message layouts
     private static final int VIEW_TYPE_USER = 1;
     private static final int VIEW_TYPE_ACTIVE = 2;
     private static final int VIEW_TYPE_INACTIVE = 3;
@@ -51,8 +52,8 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
     }
 
     // If the sender == user, then set VIEW_TYPE_USER
-    // Else if the sender is active and assign VIEW_TYPE_ACTIVE
-    // Else assign VIEW_TYPE_INACTIVE
+    // else if the sender is active and assign VIEW_TYPE_ACTIVE
+    // else assign VIEW_TYPE_INACTIVE
     @Override
     public int getItemViewType(int position) {
         ChatMessageModel message = messageList.get(position);
@@ -108,7 +109,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.
 
         // gets the user's profile picture
         Context context = holder.itemView.getContext();
-        //Log.d("ChatMessageAdapter", "textMessageUsername: " + senderUsername);
+
         if(holder.textMessageUsername != null) {
             ImageUtils.getProfileImageByUsername(senderUsername, holder.senderProfile, context);
         }

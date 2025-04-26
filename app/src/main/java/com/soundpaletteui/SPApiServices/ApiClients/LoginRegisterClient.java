@@ -9,6 +9,8 @@ import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+// Handles user login and registration API calls for the SoundPalette app using Retrofit.
+
 public class LoginRegisterClient {
     private static LoginRegisterApiEndpoints loginRegisterApiEndpoint;
 
@@ -16,13 +18,13 @@ public class LoginRegisterClient {
         loginRegisterApiEndpoint = retrofit.create(LoginRegisterApiEndpoints.class);
     }
 
-    /** retrieves login info from api server and returns to UI */
+    // Retrieves login info from api server and returns to UI
     public UserModel loginUser(String username, String password) throws IOException {
         Call<UserModel> call = loginRegisterApiEndpoint.loginUser(username, password);
         Response<UserModel> response = call.execute();
         return response.body();
     }
-    /** registers user login info to api server */
+    // Registers user login info to api server
     public UserModel registerUser(String username, String password) throws IOException {
         Call<UserModel> call = loginRegisterApiEndpoint.registerUser(username, password);
         Response<UserModel> response = call.execute();

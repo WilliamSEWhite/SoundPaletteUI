@@ -103,8 +103,8 @@ public class EditPostFragment extends Fragment {
         boolean isDark = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
         UISettings.applyBrightnessGradientBackground(rootLayout, 260f, isDark);
 
-        com.soundpaletteui.Views.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
-        emojiBg.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_SPIRAL);
+        com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
+        emojiBg.setPatternType(com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView.PATTERN_SPIRAL);
         emojiBg.setAlpha(0.65f);
 
         // 3) wire up preview button & start loading the post

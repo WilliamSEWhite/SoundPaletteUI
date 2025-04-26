@@ -147,8 +147,8 @@ public class ProfileViewFragment extends Fragment {
         boolean isDark = DarkModePreferences.isDarkModeEnabled(root.getContext());
         UISettings.applyBrightnessGradientBackground(root, 20f, isDark);
 
-        com.soundpaletteui.Views.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
-        emojiBg.setPatternType(com.soundpaletteui.Views.EmojiBackgroundView.PATTERN_GRID);
+        com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
+        emojiBg.setPatternType(com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView.PATTERN_GRID);
         emojiBg.setAlpha(0.65f);
 
         try {

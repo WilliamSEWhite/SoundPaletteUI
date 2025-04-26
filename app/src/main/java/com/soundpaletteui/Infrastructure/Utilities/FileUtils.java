@@ -22,43 +22,51 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+// Handles file-related utilities like file naming, conversion, and audio downloads
+
 public class FileUtils {
 
     private static final Date now = new Date();
 
-    /** returns the filename based on the date and user Id */
+    // Returns the filename based on the date and user Id */
     private static String nameImageFile(int userId) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         String formattedDate = dateFormat.format(now);
         return userId + "-" + formattedDate + ".jpg";
     }
 
-    /** returns the filename based on the date and user Id */
+    // Returns the filename based on the date and user Id */
     private static String nameSoundFile(int userId) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
         String formattedDate = dateFormat.format(now);
         return userId + "-" + formattedDate + ".mp3";
     }
 
+    // Converts a URI to a local File object and renames it based on file type
     public static File uri2File(Context context, Uri uri, int fileId, int userId) {
         String fileName = null;
         try{
             ContentResolver contentResolver = context.getContentResolver();
+
+            // Set the filename based on the file type
             switch(fileId) {
                 case 1:
-                    fileName = "null.jpg";
+                    fileName = "null.jpg";              // Default image
                     break;
                 case 2:
-                    fileName = nameSoundFile(userId);
+                    fileName = nameSoundFile(userId);   // New audio file name
                     break;
                 case 3:
-                    fileName = nameImageFile(userId);
+                    fileName = nameImageFile(userId);   // New image file name (posts)
                     break;
                 case 4:
-                    fileName = nameImageFile(userId);
+                    fileName = nameImageFile(userId);   // New image file name (profile)
                     break;
             }
+            // Create a temporary file in the app's cache directory
             File tempFile = new File(context.getCacheDir(), fileName);
+
+            // Copy the file data from the Uri into the temporary file
             try(InputStream inputStream = contentResolver.openInputStream(uri);
                 FileOutputStream outputStream = new FileOutputStream(tempFile)) {
                 byte[] buffer = new byte[1024];
@@ -67,6 +75,7 @@ public class FileUtils {
                     outputStream.write(buffer, 0, len);
                 }
             }
+            // Return the newly created file
             return tempFile;
         }
         catch(Exception e) {
@@ -75,6 +84,7 @@ public class FileUtils {
         }
     }
 
+    // Downloads an audio file from the API, saves it locally, and prepares it for playback
     public static void getPostAudio(int fileId, Call<FileModel> fileCall, Context context, ImageButton playButton, SeekBar seekBar) {
         fileCall.enqueue(new Callback<FileModel>() {
             @Override

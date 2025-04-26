@@ -17,8 +17,9 @@ import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
 
 import java.util.List;
-public class ChatroomAdapter extends RecyclerView.Adapter<ChatroomAdapter.ChatroomViewHolder> {
 
+// Adapter class for displaying chatrooms
+public class ChatroomAdapter extends RecyclerView.Adapter<ChatroomAdapter.ChatroomViewHolder> {
     private List<ChatroomModel> chatroomList;
     private Context context;
 
@@ -36,6 +37,7 @@ public class ChatroomAdapter extends RecyclerView.Adapter<ChatroomAdapter.Chatro
 
 
     @Override
+    // Bind chatroom data to the ViewHolder
     public void onBindViewHolder(@NonNull ChatroomViewHolder holder, int position) {
         ChatroomModel chatroom = chatroomList.get(position);
         holder.chatroomName.setText(chatroom.getChatRoomName());
@@ -53,18 +55,16 @@ public class ChatroomAdapter extends RecyclerView.Adapter<ChatroomAdapter.Chatro
             // Replace the fragment with the chatroomFragment
             FragmentManager fragmentManager = ((FragmentActivity) v.getContext()).getSupportFragmentManager();
             Navigation.replaceFragment(fragmentManager, chatroomFragment, "CHATROOM_FRAGMENT", R.id.mainScreenFrame);
-            /*FragmentTransaction transaction = fragmentManager.beginTransaction();
-            transaction.replace(R.id.mainScreenFrame, chatroomFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();*/
         });
     }
 
     @Override
+    // Return the number of chatrooms
     public int getItemCount() {
         return chatroomList != null ? chatroomList.size() : 0;
     }
 
+    // ViewHolder class that holds references to the chatroom item views
     public static class ChatroomViewHolder extends RecyclerView.ViewHolder {
         TextView chatroomName, lastMessage, lastMessageDate;
 

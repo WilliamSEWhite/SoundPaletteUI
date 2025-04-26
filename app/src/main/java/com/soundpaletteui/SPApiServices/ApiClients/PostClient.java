@@ -19,6 +19,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+// Handles API requests for creating, retrieving, updating, deleting, and searching posts in SoundPalette.
+
 public class PostClient {
     private static PostApiEndpoints postApiEndpoints;
 
@@ -26,11 +28,13 @@ public class PostClient {
         postApiEndpoints = retrofit.create(PostApiEndpoints.class);
     }
 
+    // Creates and sends a post with a file (image/audio) to API Server
     public void createFilePost(MultipartBody.Part filePart, RequestBody metaData, Callback<Integer> callback) {
         Call<Integer> call = postApiEndpoints.createFilePost(filePart, metaData);
         call.enqueue(callback);
     }
 
+    // Creates a text post and sends it to API Server
     public Void makePost(NewPostModel newPost) throws IOException {
 
         Call<Void> call = postApiEndpoints.createPost(newPost);
@@ -39,6 +43,7 @@ public class PostClient {
         return response.body();
     }
 
+    // Gets a list of PostModels
     public List<PostModel> getPosts(int page) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<List<PostModel>> call = postApiEndpoints.getPosts(userId, page);
@@ -58,6 +63,8 @@ public class PostClient {
         Log.d("PostClient", "Fetched " + posts.size() + " posts.");
         return posts;
     }
+
+    // Loads one specific PostModel
     public PostModel getPost(int postId) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<PostModel> call = postApiEndpoints.getPost(userId, postId);
@@ -77,6 +84,7 @@ public class PostClient {
         return post;
     }
 
+    // Gets a list of PostModels based on the user
     public List<PostModel> getPostsForUser(int page) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<List<PostModel>> call = postApiEndpoints.getPostsForUser(userId, page);
@@ -96,6 +104,8 @@ public class PostClient {
         Log.d("PostClient", "Fetched " + posts.size() + " posts.");
         return posts;
     }
+
+    // Gets a list of saved posts based on the user
     public List<PostModel> getSavedPostsForUser(int page) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<List<PostModel>> call = postApiEndpoints.getUserSavedPosts(userId, page);
@@ -115,6 +125,8 @@ public class PostClient {
         Log.d("PostClient", "Fetched " + posts.size() + " posts.");
         return posts;
     }
+
+    // Gets a list of PostModels based on the username
     public List<PostModel> getPostsForUsername(String username, int page) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<List<PostModel>> call = postApiEndpoints.getPostsForUsername(userId, username, page);
@@ -134,6 +146,8 @@ public class PostClient {
         Log.d("PostClient", "Fetched " + posts.size() + " posts.");
         return posts;
     }
+
+    // Gets a list of all tagged posts based on the username
     public List<PostModel> getTaggedPostsForUsername(String username, int page) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<List<PostModel>> call = postApiEndpoints.getTaggedPostsForUsername(userId, username, page);
@@ -153,6 +167,8 @@ public class PostClient {
         Log.d("PostClient", "Fetched " + posts.size() + " posts.");
         return posts;
     }
+
+    // Gets a list of PostModels based on the followed users
     public List<PostModel> getFollowingPosts(int page) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<List<PostModel>> call = postApiEndpoints.getFollowingPosts(userId, page);
@@ -173,6 +189,7 @@ public class PostClient {
         return posts;
     }
 
+    // Gets a list of the most liked posts based on a time period
     public List<PostModel> getTrendingPosts(String range, int page) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<List<PostModel>> call = postApiEndpoints.getTrendingPosts(userId, range, page);
@@ -193,6 +210,7 @@ public class PostClient {
         return posts;
     }
 
+    // Gets a list of PostModels based on PostTags
     public List<PostModel> getPostsByTag(int tagId, int page) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<List<PostModel>> call = postApiEndpoints.getPostsByTag(userId, tagId, page);
@@ -213,6 +231,7 @@ public class PostClient {
         return posts;
     }
 
+    // Gets a list of PostModels based on a search Term
     public List<PostModel> searchPosts(String searchTerm, int page) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<List<PostModel>> call = postApiEndpoints.searchPosts(userId, searchTerm, page);
@@ -232,6 +251,8 @@ public class PostClient {
         Log.d("PostClient", "Fetched " + posts.size() + " posts.");
         return posts;
     }
+
+    // Delete a specific Post
     public Void deletePost(int postId, int userId) throws IOException {
 
         Call<Void> call = postApiEndpoints.deletePost(postId, userId);
@@ -240,6 +261,7 @@ public class PostClient {
         return response.body();
     }
 
+    // Update the details of a specific post
     public Void updatePost(PostModel updatedPost) throws IOException {
         Log.d("PostClient", "caption: " + updatedPost.getPostCaption());
         Call<Void> call = postApiEndpoints.updatePost(updatedPost);

@@ -27,45 +27,56 @@ public class UserClient {
         userEndpoints = retrofit.create(UserEndpoints.class);
     }
 
+    // Gets the UserModel for a user by Id
     public UserModel getUser(int id) throws IOException {
         Call<UserModel> call = userEndpoints.getUser(id);
         Response<UserModel> response = call.execute();
         return response.body();
     }
 
+    // Gets the UserModel for a user by username
     public void getUserByName(String userName, Callback<UserModel> callback) {
         Call<UserModel> call = userEndpoints.getUserByName(userName);
         call.enqueue(callback);
     }
 
+    // Updates the user's information
     public UserModel updateUserInfo(int id, UserInfoModel userInfo) throws IOException {
         Call<UserModel> call = userEndpoints.updateUserInfo(id, userInfo);
         Response<UserModel> response = call.execute();
         return response.body();
     }
 
+    // Gets the user's information details
     public UserInfoModel getUserInfo(int id) throws IOException {
         Call<UserInfoModel> call = userEndpoints.getUserInfo(id);
         Response<UserInfoModel> response = call.execute();
         return response.body();
     }
 
+    // Gets the full user profile for a user by Id
     public UserProfileModel getUserProfile(int id) throws IOException {
         Call<UserProfileModel> call = userEndpoints.getUserProfile(id);
         Response<UserProfileModel> response = call.execute();
         return response.body();
     }
+
+    // Gets a simplified user profile based on username
     public UserProfileModelLite getUserProfileByUsername(String username) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
         Call<UserProfileModelLite> call = userEndpoints.getUserProfileByUsername(username, userId);
         Response<UserProfileModelLite> response = call.execute();
         return response.body();
     }
+
+    // Updates a user's profile details
     public UserProfileModel updateUserProfile(UserProfileModel userProfile) throws IOException {
         Call<UserProfileModel> call = userEndpoints.updateUserProfile(userProfile);
         Response<UserProfileModel> response = call.execute();
         return response.body();
     }
+
+    // Follows a user
     public Void followUser(String followingUsername) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
 
@@ -74,6 +85,8 @@ public class UserClient {
 
         return response.body();
     }
+
+    // Unfollows a user
     public Void unfollowUser(String followingUsername) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
 
@@ -83,6 +96,7 @@ public class UserClient {
         return response.body();
     }
 
+    // Provides a list of users based on a search term (returns usernames only)
     public List<String> searchUsersLite(String searchTerm) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
 
@@ -104,7 +118,7 @@ public class UserClient {
         return users;
     }
 
-
+    // Provides a list of users based on a search term (returns a UserSearchModel)
     public List<UserSearchModel> searchUsers(String searchTerm) throws IOException {
         int userId = AppSettings.getInstance().getUserId();
 

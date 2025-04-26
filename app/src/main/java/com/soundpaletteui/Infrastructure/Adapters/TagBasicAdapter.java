@@ -16,6 +16,7 @@ import com.soundpaletteui.R;
 import java.util.ArrayList;
 import java.util.List;
 
+// Adapter class for displaying a basic list of tags
 public class TagBasicAdapter extends RecyclerView.Adapter {
 
     private List<TagModel> tagList;

@@ -26,17 +26,16 @@ import com.soundpaletteui.Infrastructure.Models.User.UserModel;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.AppSettings;
 import com.soundpaletteui.R;
-import com.soundpaletteui.Views.EmojiBackgroundView;
+import com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Displays the list of user's chatrooms and lets them create a new one
 public class MessageFragment extends Fragment {
-    private List<UserModel> userList;
     private UserModel user;
     private UserClient userClient;
-    private int userId;
     private String username;
     private RecyclerView messagesRecyclerView;
     private View createChatroomButton;
@@ -55,7 +54,7 @@ public class MessageFragment extends Fragment {
         return rootView;
     }
 
-    /** initialize fragment components */
+    // Initialize fragment components
     private void initComponents(View view) {
         noChatroomsDisplay = view.findViewById(R.id.noChatroomsDisplay);
 
@@ -66,6 +65,7 @@ public class MessageFragment extends Fragment {
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(view.getContext());
         UISettings.applyBrightnessGradientBackground(view, 200f, isDarkMode);
 
+        // Set up emoji background and brightness effect
         user = AppSettings.getInstance().getUser();
         userClient = SPWebApiRepository.getInstance().getUserClient();
         if (user != null) {
@@ -74,9 +74,11 @@ public class MessageFragment extends Fragment {
             Log.e("MessageFragment", "User is null. Cannot initialize properly.");
         }
 
+        // Set up the RecyclerView
         messagesRecyclerView = view.findViewById(R.id.recyclerViewMessages);
         messagesRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
+        // Set up "Create Chatroom" button to open new chatroom when select
         createChatroomButton = view.findViewById(R.id.createChatroomButton);
         createChatroomButton.setOnClickListener(v -> {
             NewChatroomFragment newChatroomFragment = NewChatroomFragment.newInstance();
@@ -87,14 +89,11 @@ public class MessageFragment extends Fragment {
                     newChatroomFragment,
                     "NEW_CHATROOM_FRAGMENT",
                     R.id.mainScreenFrame);
-            /*transaction.replace(R.id.mainScreenFrame, newChatroomFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();*/
         });
         new GetChatroomsTask().execute();
     }
 
-    /** get the chatroom list */
+    // Get the chatroom list
     private class GetChatroomsTask extends AsyncTask<Void, Void, List<ChatroomModel>> {
         @Override
         protected List<ChatroomModel> doInBackground(Void... voids) {
@@ -116,7 +115,9 @@ public class MessageFragment extends Fragment {
         }
     }
 
+    // Configures the RecyclerView based on whether there are chatrooms
     private void setupRecyclerView() {
+        // if no chatrooms, then display message
         if (allChatrooms.isEmpty()) {
             messagesRecyclerView.setVisibility(View.GONE);
             noChatroomsDisplay.setVisibility(View.VISIBLE);
@@ -124,6 +125,7 @@ public class MessageFragment extends Fragment {
                     .alpha(1f)
                     .setDuration(300)
                     .start();
+        // else display available chatrooms
         } else {
             messagesRecyclerView.setVisibility(View.VISIBLE);
             noChatroomsDisplay.animate()
@@ -132,6 +134,7 @@ public class MessageFragment extends Fragment {
                     .withEndAction(() -> noChatroomsDisplay.setVisibility(View.GONE))
                     .start();
 
+            // Set adapter if not already set
             if (messagesRecyclerView.getAdapter() == null) {
                 messagesRecyclerView.setAdapter(new ChatroomAdapter(allChatrooms));
             } else {

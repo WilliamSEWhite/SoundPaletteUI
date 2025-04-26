@@ -21,6 +21,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
+// Handles API calls for file operations (e.g., uploading images, retrieving profile and post files) using Retrofit.
 public class FileClient {
 
     private static FileApiEndpoints fileApiEndpoints;
@@ -32,15 +33,15 @@ public class FileClient {
         fileApiEndpoints = retrofit.create(FileApiEndpoints.class);
     }
 
-    /** upload profile image to API server */
+    // Upload profile image to API server
     public Call<Integer> uploadImage(File file, int userId, int fileTypeId, String fileUrl) {
-        // wrap for text fields
+        // Wrap for text fields
         RequestBody userIdBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(userId));
         RequestBody fileNameBody = RequestBody.create(MediaType.parse("text/plain"), file.getName());
         RequestBody fileTypeIdBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(fileTypeId));
         RequestBody fileUrlBody = RequestBody.create(MediaType.parse("text/plain"), fileUrl);
 
-        // wrap file part
+        // Wrap file part
         RequestBody fileRequestBody = RequestBody.create(MediaType.parse("image/*"), file);
         MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", file.getName(), fileRequestBody);
 
@@ -48,17 +49,17 @@ public class FileClient {
         return fileApiEndpoints.uploadImage(filePart, userIdBody, fileNameBody, fileTypeIdBody, fileUrlBody);
     }
 
-    /** get profile image from API server */
+    // Get profile image from API server
     public void getProfileImage(int userId, Callback<FileModel> callback) {
         Call<FileModel> call = fileApiEndpoints.getProfileImage(userId);
         call.enqueue(callback);
     }
-    /** get profile image from API server */
+    // Get profile image from API server
     public Call<FileModel> getProfileImage(int userId) {
         return fileApiEndpoints.getProfileImage(userId);
     }
 
-    /** get post file from API server */
+    // Get post file from API server
     public Call<FileModel> getPostFile(int fileId) {
         return fileApiEndpoints.getPostFile(fileId);
     }

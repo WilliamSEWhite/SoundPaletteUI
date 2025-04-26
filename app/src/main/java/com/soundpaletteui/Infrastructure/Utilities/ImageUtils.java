@@ -31,18 +31,21 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+// Handles uploading, fetching, and displaying images in the app
+
 public class ImageUtils {
 
-    /** upload profile image */
+    // Upload profile image
     public static void uploadProfileImage(Uri imageUri, int userId, FileClient fileClient, Context context) {
         if(imageUri != null) {
-            // upload to API server
+            // Upload to API server
             new Thread(() -> {
                 Log.d("uploadProfileImage", "uploadProfileImage - userId: " + userId);
                 //fileClient.uploadImage(requireContext(), imageUri, user.getUserId());
                 File file = FileUtils.uri2File(context, imageUri, 4, userId);
                 FileModel fileModel = new FileModel(userId, file.getName(), 4, "https://my.fake.file");
 
+                // Send the file to the server
                 fileClient.uploadImage(file, userId, fileModel.getFileTypeId(), fileModel.getFileUrl()).enqueue(new Callback<Integer>() {
                     @Override
                     public void onResponse(Call<Integer> call, Response<Integer> response) {
@@ -62,10 +65,11 @@ public class ImageUtils {
         }
     }
 
-    /** get profile image by username */
+    // Get profile image by username
     public static void getProfileImageByUsername(String username, ImageView imageView, Context context) {
         UserUtils.getUserId(username, new UserUtils.UserIdCallback() {
             @Override
+            // Once we have userId, fetch their profile image
             public void onUserIdReceived(int userId) {
                 ImageUtils.getProfileImage(
                         userId,
@@ -82,8 +86,9 @@ public class ImageUtils {
         });
     }
 
-    /** get profile image */
+    // Get profile image
     public static void getProfileImage(int userId, Call<FileModel> fileCall, ImageView imageView, Context context) {
+        // Fetches the profile image based on the userId
         fileCall.enqueue(new Callback<FileModel>() {
             @Override
             public void onResponse(Call<FileModel> call, Response<FileModel> response) {
@@ -92,6 +97,8 @@ public class ImageUtils {
                     String base64Image = response.body().getByteArrayContent();
                     byte[] decodedImage = Base64.decode(base64Image, Base64.DEFAULT);
                     Bitmap image = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
+
+                    // Load decoded image into ImageView
                     if(image != null) {
                         Log.d("getProfileImage", "API call was successful: " + imageUrl);
                         Glide.with(context)
@@ -99,8 +106,8 @@ public class ImageUtils {
                                 .placeholder(R.drawable.baseline_person_100)
                                 .error(R.drawable.baseline_person_100)
                                 .into(imageView);
-                    }
-                    else {
+                    // else show placeholder
+                    } else {
                         Log.e("getProfileImage", "Bitmap decoding failed");
                         Toast.makeText(context, "Image decoding failed", Toast.LENGTH_SHORT).show();
                         Glide.with(context)
@@ -118,11 +125,12 @@ public class ImageUtils {
         });
     }
 
+    // Get a post image (without needing postId)
     public static void getPostImage(Call<FileModel> fileCall, ImageView imageView, Context context) {
         getPostImage(0, fileCall, imageView, context);
     }
 
-    /** gets post image */
+    // Gets post image
     public static void getPostImage(int postId, Call<FileModel> fileCall, ImageView imageView, Context context) {
         fileCall.enqueue(new Callback<FileModel>() {
             @Override
@@ -133,6 +141,8 @@ public class ImageUtils {
                     //byte[] decodedImage = Base64.getDecoder().decode(base64Image);
                     byte[] decodedImage = Base64.decode(base64Image, Base64.DEFAULT);
                     Bitmap image = BitmapFactory.decodeByteArray(decodedImage, 0, decodedImage.length);
+
+                    // Load decoded image into ImageView
                     if(image != null) {
                         Log.d("getPostImage", "API call was successful: " + imageUrl);
                         Glide.with(context)
@@ -140,8 +150,8 @@ public class ImageUtils {
                                 .placeholder(R.drawable.baseline_broken_image_400)
                                 .error(R.drawable.baseline_broken_image_400)
                                 .into(imageView);
-                    }
-                    else {
+                    // else show placeholder
+                    } else {
                         Log.e("getPostImage", "Bitmap decoding failed");
                         Toast.makeText(context, "Image decoding failed", Toast.LENGTH_SHORT).show();
                         Glide.with(context)
@@ -152,6 +162,7 @@ public class ImageUtils {
             }
 
             @Override
+            // API call failed
             public void onFailure(Call<FileModel> call, Throwable t) {
                 Log.e("getPostImage", "Error loading profile image", t);
                 Glide.with(context)
@@ -161,7 +172,7 @@ public class ImageUtils {
         });
     }
 
-    /** opens the gallery picker after checking storage permissions */
+    // Opens the gallery picker after checking storage permissions
     public static void pickImageFromGallery(Context context, ActivityResultLauncher<Intent> pickImageLauncher) {
         // checks Android version then requests permissions accordingly
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -177,12 +188,14 @@ public class ImageUtils {
                 return;
             }
         }
+
+        // Launch the gallery picker
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         pickImageLauncher.launch(intent);
     }
 
-    /** requests permissions to the internal storage */
+    // Requests permissions to the internal storage
     private static void requestStoragePermission(Context context) {
         if (context instanceof Activity) {
             Activity activity = (Activity) context;

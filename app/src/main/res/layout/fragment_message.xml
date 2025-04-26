@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <!-- Emoji Background Layer -->
-    <com.soundpaletteui.Views.EmojiBackgroundView
+    <com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView
         android:id="@+id/emojiBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

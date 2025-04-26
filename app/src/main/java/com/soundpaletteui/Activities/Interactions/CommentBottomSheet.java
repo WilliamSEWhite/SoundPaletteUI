@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Displays all of the comments in a post
 public class CommentBottomSheet extends BottomSheetDialogFragment {
 
     private MainContentAdapter mainContentAdapter;
@@ -60,23 +61,30 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
         View view = inflater.inflate(R.layout.bottom_sheet_comments, container, false);
         initComponents(view);
 
+        // Set the PostId to global variable
         postId = getArguments().getInt("postId", -1);
 
+        // Find the recyclerView
         recyclerView = view.findViewById(R.id.comment_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        // TextView for displaying if there are no comments
         noCommentsMessage = view.findViewById(R.id.noCommentsDisplay);
 
+        // Create and get a list of all the comments based on the PostId
         commentList = new ArrayList<>();
         adapter = new CommentAdapter(requireActivity(), commentList, () -> dismiss());
         recyclerView.setAdapter(adapter);
 
+        // Find the comment input box and send button
         commentInput = view.findViewById(R.id.comment_textbox);
         sendButton = view.findViewById(R.id.comment_send);
 
         // Fetch comments from API
         new FetchCommentsAsync().execute();
 
+        // Send button listener
+        // Gets the comment message and pushes a new comment record to the database.
         sendButton.setOnClickListener(v -> {
             String text = commentInput.getText().toString().trim();
             commentInput.clearFocus();
@@ -93,6 +101,7 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
         return view;
     }
 
+    // Makes a call to the API server to get the list of comments based on PostId
     private class FetchCommentsAsync extends AsyncTask<Void, Void, List<CommentModel>> {
         @Override
         protected List<CommentModel> doInBackground(Void... voids) {
@@ -106,12 +115,14 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
             return fetchedComments;
         }
 
+        // After fetching the list of comments, display them in a CommentAdapter
         @Override
         protected void onPostExecute(List<CommentModel> comments) {
             commentList.clear();
             commentList.addAll(comments);
             adapter.notifyDataSetChanged();
 
+            // If there are no comments, then display the "no comments" message
             if (comments.isEmpty()) {
                 recyclerView.setVisibility(View.GONE);
                 noCommentsMessage.setVisibility(View.VISIBLE);
@@ -119,6 +130,7 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
                         .alpha(1f)
                         .setDuration(300)
                         .start();
+            // else, display the comment(s)
             } else {
                 recyclerView.setVisibility(View.VISIBLE);
                 noCommentsMessage.animate()
@@ -130,6 +142,7 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
         }
     }
 
+    // Create a NewPostCommentModel and send the information to API Server
     private class PostCommentAsync extends AsyncTask<NewPostCommentModel, Void, Void> {
         @Override
         protected Void doInBackground(NewPostCommentModel... newComment) {
@@ -142,12 +155,14 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
             return null;
         }
 
+        // Increment post counter
         @Override
         protected void onPostExecute(Void v) {
             new FetchUpdatedCommentCountTask().execute(postId);
         }
     }
 
+    // Get a user client
     private void initComponents(View view) {
         user = AppSettings.getInstance().getUser();
         userList = new ArrayList<>();
@@ -155,14 +170,17 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
         userClient = SPWebApiRepository.getInstance().getUserClient();
     }
 
+    // Sets the display for comment count
     public interface OnCommentAddedListener {
         void onCommentCountUpdated(int newCount);
     }
 
+    // Creates a listen for when a new comment is added
     public void setOnCommentAddedListener(OnCommentAddedListener listener) {
         this.commentAddedListener = listener;
     }
 
+    // Get the initial comment count
     private class FetchUpdatedCommentCountTask extends AsyncTask<Integer, Void, Integer> {
         @Override
         protected Integer doInBackground(Integer... params) {
@@ -175,6 +193,7 @@ public class CommentBottomSheet extends BottomSheetDialogFragment {
             }
         }
 
+        // Update the counter when a new comment is created
         @Override
         protected void onPostExecute(Integer updatedCount) {
             if (commentAddedListener != null && updatedCount >= 0) {
