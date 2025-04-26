@@ -7,13 +7,18 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.material.imageview.ShapeableImageView;
 import com.soundpaletteui.Infrastructure.Adapters.TagSelectAdapter;
+import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.SPApiServices.ApiClients.TagClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.TagModel;
@@ -41,6 +46,7 @@ public class ProfileEditTagsFragment extends Fragment {
     private int userId;
     private Button btnDone;
     private int fragId;     // from which fragment did I come from?
+    private ShapeableImageView imageView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -51,6 +57,7 @@ public class ProfileEditTagsFragment extends Fragment {
         // Apply dark mode gradient background
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(view.getContext());
         UISettings.applyBrightnessGradientBackground(view, 50f, isDarkMode);
+        loadProfileImage();
 
         initComponents(view);
         return view;
@@ -65,11 +72,23 @@ public class ProfileEditTagsFragment extends Fragment {
 
         btnDone = view.findViewById(R.id.btnDone);
         btnDone.setOnClickListener(v -> done());
+        imageView = view.findViewById(R.id.profile_picture);
 
         globalTags = new ArrayList<>();
         userTags = new ArrayList<>();
 
         getTags();
+    }
+
+    private void loadProfileImage() {
+        new Thread(() -> {
+            // update UI on main thread
+            new Handler(Looper.getMainLooper()).post(() -> {
+                ImageUtils.getProfileImageByUsername(AppSettings.getInstance().getUsername(),
+                        imageView,
+                        requireContext());
+            });
+        }).start();
     }
 
     private void done() {
