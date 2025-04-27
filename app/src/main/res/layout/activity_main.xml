@@ -45,6 +45,5 @@
         app:menu="@menu/menu_navigation"
         app:itemTextAppearanceActive="@style/BottomNavTextActive"
         app:itemTextAppearanceInactive="@style/BottomNavTextInactive"/>
-        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
