@@ -1,6 +1,5 @@
 package com.soundpaletteui.Infrastructure.Adapters;
 
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,9 +13,8 @@ import com.soundpaletteui.R;
 
 import java.util.List;
 
-// Adapter Class for the main content
+// Adapter for displaying a list of users in a RecyclerView, showing their usernames and passwords (for testing purposes).
 public class MainContentAdapter extends RecyclerView.Adapter<MainContentAdapter.ViewHolder> {
-
     private List<UserModel> userList;
 
     public MainContentAdapter(List<UserModel> userList) {
@@ -25,6 +23,7 @@ public class MainContentAdapter extends RecyclerView.Adapter<MainContentAdapter.
 
     @NonNull
     @Override
+    // Creates a new ViewHolder for a user item
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.adapter_home_test,parent,false);
@@ -32,6 +31,7 @@ public class MainContentAdapter extends RecyclerView.Adapter<MainContentAdapter.
     }
 
     @Override
+    // Binds the user information to the ViewHolder
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         UserModel user = userList.get(position);
         holder.username.setText(user.getUsername());
@@ -39,12 +39,13 @@ public class MainContentAdapter extends RecyclerView.Adapter<MainContentAdapter.
     }
 
     @Override
+    // Returns the number of users in the list
     public int getItemCount() {
         return userList.size();
     }
 
+    // ViewHolder class to hold the view for each user
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         TextView username;
         TextView password;
 
@@ -54,5 +55,4 @@ public class MainContentAdapter extends RecyclerView.Adapter<MainContentAdapter.
             password = (TextView) itemView.findViewById(R.id.password);
         }
     }
-
 }

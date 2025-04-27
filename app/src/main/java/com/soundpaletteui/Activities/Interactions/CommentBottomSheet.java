@@ -31,7 +31,6 @@ import java.util.List;
 
 // Displays all of the comments in a post
 public class CommentBottomSheet extends BottomSheetDialogFragment {
-
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
     private UserModel user;

@@ -13,7 +13,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 // Handles API calls for post interactions like commenting, liking, and saving posts
-
 public class PostInteractionClient {
     private static PostInteractionApiEndpoints postInteractionApiEndpoints;
 

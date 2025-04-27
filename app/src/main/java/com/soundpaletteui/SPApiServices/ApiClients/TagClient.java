@@ -12,7 +12,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 // Handles API calls for Tags (user tags, post tags, users tagged in posts)
-
 public class TagClient {
     private static TagApiEndpoints tagEndpoints;
     public TagClient(Retrofit retrofit) {

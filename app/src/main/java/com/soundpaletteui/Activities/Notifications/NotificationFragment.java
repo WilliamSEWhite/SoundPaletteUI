@@ -29,12 +29,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+// Displays the user's notification screen, loading and showing a list of notifications using RecyclerView.
 public class NotificationFragment  extends Fragment {
-
     private RecyclerView recyclerViewNotifications;
     private List<NotificationModel> allNotifications = new ArrayList<>();
     private final NotificationClient notificationClient = SPWebApiRepository.getInstance().getNotificationClient();
-
 
     @Nullable
     @Override
@@ -51,20 +50,22 @@ public class NotificationFragment  extends Fragment {
         return rootView;
     }
 
-
+    // Initializes UI elements, background, and starts loading notifications
     private void initComponents(View view) {
         // Get and configure the emoji background
         com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView emojiBackground = view.findViewById(R.id.emojiBackground);
         emojiBackground.setPatternType(com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView.PATTERN_GRID);
         emojiBackground.setAlpha(0.2f);
+
+        // Apply gradient background based on dark mode
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(view.getContext());
         UISettings.applyBrightnessGradientBackground(view, 165f, isDarkMode);
 
+        // Set up RecyclerView again if the view was refreshed
         recyclerViewNotifications = view.findViewById(R.id.recyclerViewNotifications);
         recyclerViewNotifications.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
         new GetNotificationsTask().execute();
-        //new GetNotificationsTask().execute();
     }
 
 
@@ -84,26 +85,15 @@ public class NotificationFragment  extends Fragment {
             if (notificationList == null) {
                 notificationList = new ArrayList<>();
             }
+
+            // Update local list and refresh the RecyclerView
             allNotifications.clear();
             allNotifications.addAll(notificationList);
             setupRecyclerView();
         }
     }
 
-    private void getAllNotifications() {
-        allNotifications.clear();
-
-        Date now = new Date();
-        allNotifications.add(new NotificationModel(1, 1, "Duet with Destiny", "has a new message!", now));
-        allNotifications.add(new NotificationModel(2, 3, "user3", "followed you!", now));
-        allNotifications.add(new NotificationModel(3, 3, "user3", "liked your post!", now));
-        allNotifications.add(new NotificationModel(4, 3, "user3", "tagged in a post!", now));
-        allNotifications.add(new NotificationModel(5, 3, "user3", "comment on your post!", now));
-
-        setupRecyclerView();
-    }
-
-
+    // Sets up the RecyclerView adapter with the loaded notifications
     private void setupRecyclerView() {
         recyclerViewNotifications.setAdapter(new NotificationAdapter(allNotifications));
     }

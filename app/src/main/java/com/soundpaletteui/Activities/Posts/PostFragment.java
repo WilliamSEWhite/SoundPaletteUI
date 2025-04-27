@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+// Displays a list of posts using different algorithms (like trending, popular, saved, etc.)
+// Handles fetching posts, displaying them in a RecyclerView, refreshing, and loading more posts as you scroll.
 public class PostFragment extends Fragment {
     private static final String ARG_ALGO_TYPE = "AlgorithmType";
     private static final String ARG_SEARCH_TERM = "SearchTerm";
@@ -62,23 +64,22 @@ public class PostFragment extends Fragment {
     private NestedScrollView nestedSV;
 
 
-    // New Instance of a PostFragment with algorithmType only
+    // Creates a new instance PostFragment with just the algorithm type
     public static PostFragment newInstance(String algorithmType) {
         return newInstance(algorithmType, null, false, -1f);
     }
 
-    // New Instance of a PostFragment with algorithmType and searchTerm (may also be a userId)
+    // Creates a new instance PostFragment with algorithm type and a search term (like username or tag)
     public static PostFragment newInstance(String algorithmType, String searchTerm) {
         return newInstance(algorithmType, searchTerm, false,-1f);
     }
 
-
-    // New Instance of a PostFragment with algorithmType, searchTerm, and  showEditButton
+    // Creates a new instance PostFragment with algorithm type, search term, and a flag for showing the edit button
     public static PostFragment newInstance(String algorithmType, String searchTerm, boolean showEditButton) {
         return newInstance(algorithmType, searchTerm, showEditButton,-1f);
     }
 
-    // New Instance of a PostFragment with algorithmType, searchTerm, showEditButton and baseHue
+    // Creates a fully customized PostFragment with algorithm type, search term, edit button flag, and base hue
     public static PostFragment newInstance(String algorithmType, String searchTerm, boolean showEditButton, float baseHue) {
         PostFragment fragment = new PostFragment();
         Bundle args = new Bundle();
@@ -111,15 +112,12 @@ public class PostFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_post, container, false);
 
-        if (baseHue >= 0f) {
-//            UISettings.applyBrightnessGradientBackground(view, baseHue);
-        }
         recyclerView = view.findViewById(R.id.recyclerView);
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         noPosts = view.findViewById(R.id.list_empty);
-//        loading = view.findViewById(R.id.loading);
         nestedSV = view.findViewById(R.id.idNestedSV);
 
+        // Set up scrolling to load more posts when reaching the bottom
         nestedSV.setOnScrollChangeListener(new NestedScrollView.OnScrollChangeListener() {
             @Override
             public void onScrollChange(NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) {
@@ -134,6 +132,7 @@ public class PostFragment extends Fragment {
         recyclerView.setRecycledViewPool(new RecyclerView.RecycledViewPool()); // Add this line
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
+        // Set up pull-to-refresh
         SwipeRefreshLayout.OnRefreshListener swipeRefreshListner = new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -142,8 +141,6 @@ public class PostFragment extends Fragment {
             }
         };
 
-
-        // SetOnRefreshListener on SwipeRefreshLayout
         swipeRefreshLayout.setOnRefreshListener(swipeRefreshListner);
         swipeRefreshLayout.post(new Runnable() {
             @Override public void run() {
@@ -156,11 +153,12 @@ public class PostFragment extends Fragment {
         return view;
     }
 
-    // Gets Posts from the client
+    // AsyncTask to fetch posts from the server in the background
     private class GetPostsTask extends AsyncTask<Void, Void, List<PostModel>> {
         @Override
         protected List<PostModel> doInBackground(Void... voids) {
 
+            // Select how to fetch posts based on the algorithm type
             List<PostModel> posts = null;
             try {
                 switch (algoType) {
@@ -226,7 +224,7 @@ public class PostFragment extends Fragment {
         MediaPlayerManager.getInstance().release();
     }
 
-    // Sets the RecyclerView by sending through a List of all PostModels
+    // Updates the RecyclerView with the latest posts
     private void setupRecyclerView() {
         if(allPosts.isEmpty()){
             swipeRefreshLayout.setVisibility(GONE);
@@ -245,20 +243,4 @@ public class PostFragment extends Fragment {
         swipeRefreshLayout.setRefreshing(false);
 
     }
-
-    private void setRandomGradientBackground(View rootView) {
-        Random random = new Random();
-        int alpha = 128 + random.nextInt(128);
-        int red   = random.nextInt(256);
-        int green = random.nextInt(256);
-        int blue  = random.nextInt(256);
-        int randomColor = Color.argb(alpha, red, green, blue);
-        GradientDrawable gradientDrawable = new GradientDrawable(
-                GradientDrawable.Orientation.TOP_BOTTOM,
-                new int[]{Color.WHITE, randomColor}
-        );
-        gradientDrawable.setGradientType(GradientDrawable.LINEAR_GRADIENT);
-        rootView.setBackground(gradientDrawable);
-    }
-
 }

@@ -38,7 +38,6 @@ import pl.droidsonroids.gif.GifImageView;
 
 // Represents the Home screen fragment for exploring and following content.
 public class HomeFragment extends Fragment {
-
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
     private String userId;
@@ -56,8 +55,6 @@ public class HomeFragment extends Fragment {
     private final int TRANSPARENT_ALPHA = 77;
     private final int FULL_ALPHA = 255;
     public boolean darkMode;
-
-    // Track currently selected tab; default to "explore"
     private String selectedTab = "explore";
 
     // Listener for dark mode preference changes

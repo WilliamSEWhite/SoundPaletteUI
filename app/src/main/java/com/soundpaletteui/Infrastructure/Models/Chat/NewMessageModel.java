@@ -9,8 +9,7 @@ public class NewMessageModel {
     private String message;
     @SerializedName("ChatRoomId")
     private int chatRoomId;
-    public NewMessageModel(int userId, String message, int chatRoomId)
-    {
+    public NewMessageModel(int userId, String message, int chatRoomId) {
         this.userId = userId;
         this.message = message;
         this.chatRoomId = chatRoomId;

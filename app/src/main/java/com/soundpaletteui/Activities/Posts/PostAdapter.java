@@ -59,6 +59,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+// Displays posts as text, image, or audio, and lets users interact (like, comment, save, edit, delete)
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private List<PostModel> postList;
     private Context context;
@@ -70,11 +71,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private static final int TEXT_POST = 1;
     private static final int AUDIO_POST = 2;
     private static final int IMAGE_POST = 3;
-
-    public PostAdapter(List<PostModel> postList) {
-        this.postList = postList;
-        this.showEditButton = false;
-    }
 
     public PostAdapter(List<PostModel> postList, boolean showEditButton) {
         this.postList = postList;
@@ -94,12 +90,19 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         PostModel post = postList.get(position);
         int postId = post.getPostId();
         Log.d("PostAdapter", "PostId: " + postId);
+
+        // Set text for username and caption
         holder.postUsername.setText(post.getUsername());
         holder.postCaption.setText(post.getPostCaption());
+
+        // Clear previous views
         holder.postFragmentDisplay.removeAllViews();
+
+        // Update like and comment counts
         holder.postLikeValue.setText(String.valueOf(post.getLikeCount()));
         holder.postCommentValue.setText(String.valueOf(post.getCommentCount()));
 
+        // Display post based on its type
         LayoutInflater inflater = LayoutInflater.from(context);
         View fragmentView;
 
@@ -126,16 +129,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             ImageView postImageDisplay = fragmentView.findViewById(R.id.postImageDisplay);
             int fileId = post.getFileId();
             ImageUtils.getPostImage(fileId, SPWebApiRepository.getInstance().getFileClient().getPostFile(fileId), postImageDisplay, context);
-            //String imageName = post.getPostContent().getPostTextContent().replace(".png", "").replace(".jpg", "");
-
-            // Assigns the image here
-            /*Glide.with(context)
-                    .load(context.getResources().getIdentifier(imageName, "drawable", context.getPackageName()))
-                    .thumbnail(0.1f)
-                    .override(400, 400)
-                    .dontAnimate()
-                    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
-                    .into(postImageDisplay);*/
 
         // Sets Post to display audio type posts
         } else if (post.getPostType() == AUDIO_POST) {
@@ -148,8 +141,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             audioSeekBar.setMax(100);
             String audioSource = post.getPostContent().getPostTextContent();
 
+            // Play or pause audio when clicked
             playPauseButton.setOnClickListener(v ->
-                    //MediaPlayerManager.getInstance().playPause(audioSource, playPauseButton, audioSeekBar)
                     FileUtils.getPostAudio(fileId,
                             SPWebApiRepository.getInstance().getFileClient().getPostFile(fileId),
                             context,
@@ -157,6 +150,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                             audioSeekBar)
             );
 
+            // Allow seeking within the audio
             audioSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -242,11 +236,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.postFragmentDisplay.addView(fragmentView);
     }
 
+    // Returns the number of posts in the list
     @Override
     public int getItemCount() {
         return postList.size();
     }
 
+    // ViewHolder class caches the views for better performance
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         TextView postUsername, postCaption, postLikeValue, postCommentValue;
         ViewGroup postFragmentDisplay;
@@ -276,6 +272,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         private final PostModel post;
         private final Context context;
 
+        // Connects to API Server to toggle the post as isDeleted() == TRUE
         public DeletePostAsync(PostModel post, Context context) {
             this.post = post;
             this.context = context;
@@ -315,7 +312,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         new ToggleLikeAsync().execute(post);
     }
 
-
+    // Connects to API Server to add a record of user liking/unliking a post
     private class ToggleLikeAsync extends AsyncTask<PostModel, Void, Void> {
         protected Void doInBackground(PostModel... post) {
             PostInteractionClient client = SPWebApiRepository.getInstance().getPostInteractionClient();
@@ -336,6 +333,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         new ToggleSavedAsync().execute(post);
     }
 
+    // Connects to API Server to add a record of user saving/unsaving a post
     private class ToggleSavedAsync extends AsyncTask<PostModel, Void, Void> {
         protected Void doInBackground(PostModel... post) {
             PostInteractionClient client = SPWebApiRepository.getInstance().getPostInteractionClient();

@@ -80,33 +80,26 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+// Handles editing a user's profile, including changing their picture, information, and tags.
+// Connects to the API to fetch and update user data, and updates the screen with the new information.
 public class ProfileEditFragment extends Fragment {
-
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
-    private int userId;
     private UserModel user;
     private UserInfoModel userInfo;
     private UserProfileModel userProfile;
     private UserClient userClient;
     private View rootView;
-    private EditText profile_user;
-    private EditText profile_email;
-    private EditText profile_phone;
-    private EditText profile_bio;
-    private int profile_location;
-    Button btnCancel;
-    Button btnSave;
-    private String userName;
     private Spinner location;
+    private int userId, profile_location, fragId;
+    private EditText profile_user, profile_email, profile_phone, profile_bio;
+    private Button btnCancel,  btnSave, btnAddTags;
     private ArrayList<LocationModel> countries;
     private TagClient tagClient;
     private RecyclerView recyclerView;
     private TagBasicAdapter adapter;
     private List<TagModel> tagList;
-    private Button btnAddTags;
     private ImageButton btnEditImage;
-    private int fragId;     // from which fragment did I come from
     private ImageView imageView;
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private static final int PICK_IMAGE_REQUEST = 1001;
@@ -158,7 +151,7 @@ public class ProfileEditFragment extends Fragment {
         refreshTagList();
     }
 
-    /** initialize components for the fragment */
+    // Initialize components for the fragment
     private void initComponents() throws IOException {
         // Get arguments instead of Intent
         user = AppSettings.getInstance().getUser();
@@ -199,25 +192,23 @@ public class ProfileEditFragment extends Fragment {
         getTags();
     }
 
-    /** loads the profile image **/
+    // Loads the profile image
     private void loadProfileImage() {
-//        Call<FileModel> call = fileClient.getProfileImage(userId);
-//        ImageUtils.getProfileImage(userId, call, imageView, requireContext());
         ImageUtils.getProfileImageByUsername(AppSettings.getInstance().getUsername(),
                 imageView,
                 requireContext());
     }
-    /** upload profile image */
+    // Upload profile image
     private void uploadProfileImage() {
         ImageUtils.uploadProfileImage(imageUri, userId, fileClient, requireContext());
     }
 
-    /** edit the profile image */
+    // Edit the profile image
     private void editProfileImage() {
         ImageUtils.pickImageFromGallery(requireContext(), pickImageLauncher);
     }
 
-    /** refreshes the list of user tags */
+    // Refreshes the list of user tags
     private void refreshTagList() {
         if (getArguments() != null && getArguments().containsKey("selectedTags")) {
             ArrayList<TagModel> selectedTags = getArguments().getParcelableArrayList("selectedTags");
@@ -233,7 +224,7 @@ public class ProfileEditFragment extends Fragment {
         }
     }
 
-    /** edit the user tags */
+    // Edit the user tags
     private void editUserTags(Fragment newFragment, String tag) {
         Bundle bundle = new Bundle();
         bundle.putInt("nav", 1);
@@ -242,7 +233,7 @@ public class ProfileEditFragment extends Fragment {
         Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
     }
 
-    /** get the list of user tags */
+    // Get the list of user tags
     private void getTags() {
         new Thread(() -> {
             try {
@@ -259,19 +250,19 @@ public class ProfileEditFragment extends Fragment {
         }).start();
     }
 
-    /** save user profile and return to user profile fragment */
+    // Save user profile and return to user profile fragment
     private void saveProfileEdit() {
         uploadProfileImage();
         saveUserProfile();
         returnToProfile();
     }
 
-    /** saves user profile */
+    // Saves user profile
     private void saveUserProfile(){
         new UpdateUserInfoAsync().execute();
     }
 
-    /** updates the user fields in the fragment */
+    // Updates the user fields in the fragment
     private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             String picLocation;
@@ -308,7 +299,7 @@ public class ProfileEditFragment extends Fragment {
         }
     }
 
-    /** returns to profile fragment */
+    // Returns to profile fragment
     private void returnToProfile() {
         if(!isAdded()) {
             return;
@@ -318,7 +309,7 @@ public class ProfileEditFragment extends Fragment {
         Navigation.replaceFragment(fragmentManager, profileFragment, "PROFILE_FRAGMENT", R.id.mainScreenFrame);
     }
 
-    /** gets the user info */
+    // Gets the user info
     private void getUser() {
         new Thread(() -> {
             try {
@@ -333,12 +324,12 @@ public class ProfileEditFragment extends Fragment {
         }).start();
     }
 
-    /** gets the list of countries */
+    // Gets the list of countries
     private void getCountries() {
         new GetLocationsAsync().execute();
     }
 
-    /** pull country list from the database */
+    // Pull country list from the database
     private void initCountries(){
         int i = userInfo.getLocationId();
         CountrySelectAdapter adapter = new CountrySelectAdapter(requireContext(),
@@ -349,7 +340,7 @@ public class ProfileEditFragment extends Fragment {
         location.setSelection(i-1);
     }
 
-    /** get locations for the spinner */
+    // Get locations for the spinner
     private class GetLocationsAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             try {
@@ -372,7 +363,7 @@ public class ProfileEditFragment extends Fragment {
         }
     }
 
-    /** populates the fields in the fragment */
+    //Populates the fields in the fragment
     private void populateView() {
         userList.clear();
         userList.add(user);

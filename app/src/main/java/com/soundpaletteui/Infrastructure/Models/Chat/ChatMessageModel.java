@@ -13,12 +13,10 @@ public class ChatMessageModel {
     private String sentBy;
     @SerializedName("SentDate")
     private Date sentDate;
-
     @SerializedName("IsActiveUser")
     private boolean isActiveUser;
 
-    public ChatMessageModel(int messageId, String message, String sentBy, Date sentDate, boolean isActiveUser)
-    {
+    public ChatMessageModel(int messageId, String message, String sentBy, Date sentDate, boolean isActiveUser) {
         this.messageId = messageId;
         this.message = message;
         this.sentBy = sentBy;
@@ -26,7 +24,6 @@ public class ChatMessageModel {
         this.isActiveUser = isActiveUser;
     }
 
-    public int getMessageId() { return messageId; };
     public String getMessage() { return message; };
     public String getSentBy() { return sentBy; };
     public Date getSentDate() { return sentDate; };

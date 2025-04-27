@@ -7,7 +7,6 @@ import java.util.Objects;
 
 public class ChatroomModel {
     @SerializedName("ChatRoomId")
-
     private int chatRoomId;
     @SerializedName("ChatRoomName")
     private String chatRoomName;
@@ -20,8 +19,7 @@ public class ChatroomModel {
     @SerializedName("IsGroupChat")
     private Boolean isGroupChat;
 
-    public ChatroomModel(int chatRoomId, String chatRoomName, String lastMessage, Date lastMessageDate, String lastMessageBy, boolean isGroupChat)
-    {
+    public ChatroomModel(int chatRoomId, String chatRoomName, String lastMessage, Date lastMessageDate, String lastMessageBy, boolean isGroupChat) {
         this.chatRoomId = chatRoomId;
         this.chatRoomName = chatRoomName;
         this.lastMessage = lastMessage;

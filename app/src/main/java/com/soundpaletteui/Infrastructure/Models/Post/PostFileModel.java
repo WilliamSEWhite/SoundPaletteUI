@@ -3,7 +3,7 @@ package com.soundpaletteui.Infrastructure.Models.Post;
 import com.google.gson.annotations.SerializedName;
 import com.soundpaletteui.Infrastructure.Models.FileModel;
 
-/** wrapper class for file metadata and post data */
+// Wrapper class for file metadata and post data
 public class PostFileModel {
     @SerializedName("Post")
     public NewPostModel Post;

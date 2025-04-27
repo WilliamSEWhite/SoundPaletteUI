@@ -77,12 +77,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+// Displays the Create Post screen where users can create text, image, or audio posts, tag users and topics, select colours, and publish to the app.
 public class CreatePostFragment extends Fragment {
-
-    private int postPrompt, postType;
+    private int postPrompt, postType, userId;
     private UserModel user;
     private List<TagModel> tags;
-    private int userId;
     private List<String> selectedUsers = new ArrayList<>();
     private List<String> searchResults = new ArrayList<>();
     private List<TagModel> selectedTags = new ArrayList<>();
@@ -117,6 +116,7 @@ public class CreatePostFragment extends Fragment {
 
     public CreatePostFragment() {}
 
+    // Create a new instance of CreatePostFragment, passing in a post prompt
     public static CreatePostFragment newInstance(int postPrompt) {
         CreatePostFragment fragment = new CreatePostFragment();
         Bundle args = new Bundle();
@@ -128,15 +128,19 @@ public class CreatePostFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Get the information sent to this fragment
         if (getArguments() != null) {
             postPrompt = getArguments().getInt("postPrompt", -1);
             Log.d("CreatePostFragment", "postPrompt: " + postPrompt);
         }
 
+        // Setup for text posts OR media posts (image/audio)
         if (postPrompt == 1) {
             Log.d("CreatePostFragment", "Text Post");
             postType = 1;
         } else {
+
             // Set up the media picker so user can select an image or audio file
             mediaPickerLauncher = registerForActivityResult(
                     new ActivityResultContracts.StartActivityForResult(),
@@ -182,6 +186,8 @@ public class CreatePostFragment extends Fragment {
     // Get the name of the file
     private String getFileNameFromUri(Uri uri) {
         String result = null;
+
+        // If the file uses the "content" format, get the display name
         if ("content".equals(uri.getScheme())) {
             try (Cursor cursor = requireContext().getContentResolver().query(uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
@@ -192,10 +198,13 @@ public class CreatePostFragment extends Fragment {
                 }
             }
         }
+
+        // If null, fall back to the last part of the file path
         if (result == null) {
             result = uri.getLastPathSegment();
         }
 
+        // Remove ".png" and ".jpg" file endings
         result = result.toLowerCase().replace(".png", "").replace(".jpg", "");
         return result;
     }
@@ -205,18 +214,26 @@ public class CreatePostFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post_create, container, false);
+
         LinearLayout rootLayout = rootView.findViewById(R.id.root_layout);
+
+        // Apply the background settings
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
         UISettings.applyBrightnessGradientBackground(rootLayout, 275f, isDarkMode);
 
+        // Set the emoji background
         com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView emojiBg = rootView.findViewById(R.id.emojiBackground);
         emojiBg.setPatternType(EmojiBackgroundView.PATTERN_RADIAL);
         emojiBg.setAlpha(0.65f);
+
+        // Get the current user's information
         user = AppSettings.getInstance().getUser();
         userId = user.getUserId();
 
+        // Load the content area depending on post type (text or media)
         loadPostContent(rootView, postType);
 
+        // Set up the caption input and checkboxes
         postCaption = rootView.findViewById(R.id.caption);
         isMatureCheckbox = rootView.findViewById(R.id.isMature);
         followerOnlyCheckbox = rootView.findViewById(R.id.isFollowing);
@@ -226,6 +243,8 @@ public class CreatePostFragment extends Fragment {
         tagSearchInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count)             {
+
+                // Search for matching tags if user types more than 3 letters
                 if(s.length()>3){
                     searchTagsAsync(s.toString());
                 }
@@ -234,9 +253,15 @@ public class CreatePostFragment extends Fragment {
             }
             @Override public void afterTextChanged(Editable s) {}
         });
+
+        // Set up RecyclerViews for tag search results and selected tags
         postTagSearchResult = rootView.findViewById(R.id.postTagSearchResult);
         selectedPostTags = rootView.findViewById(R.id.selectedPostTags);
+
+        // Load the starting list of tags
         new GetTagsAsync().execute();
+
+        // Set up the tag search adapter
         tagSearchAdapter = new TagSearchAdapter(searchTags, tag -> {
             if (!selectedTags.contains(tag)) {
                 selectedTags.add(tag);
@@ -246,6 +271,7 @@ public class CreatePostFragment extends Fragment {
             }
         });
 
+        // Set up the selected tags adapter
         selectedTagsAdapter = new TagSelectedAdapter(selectedTags, tag -> {
             selectedTags.remove(tag);
             searchTags.add(tag);
@@ -253,6 +279,7 @@ public class CreatePostFragment extends Fragment {
             tagSearchAdapter.notifyDataSetChanged();
         });
 
+        // Set up RecyclerViews with the adapters
         postTagSearchResult.setLayoutManager(new LinearLayoutManager(getContext()));
         postTagSearchResult.setAdapter(tagSearchAdapter);
         selectedPostTags.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
@@ -263,14 +290,19 @@ public class CreatePostFragment extends Fragment {
         userSearchInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count)             {
+                // Search for matching users if user types more than 3 letters
                 if(s.length()>3){
                     searchUsersAsync(s.toString());
                 }
             }
             @Override public void afterTextChanged(Editable s) {}
         });
+
+        // Set up RecyclerViews for user search results and selected users
         userSearchResult = rootView.findViewById(R.id.userSearchResult);
         selectedUserTags = rootView.findViewById(R.id.selectedUserTags);
+
+        // Set up the user search adapter
         userSearchAdapter = new UserSearchAdapter(searchResults, user -> {
             if (!selectedUsers.contains(user)) {
                 selectedUsers.add(user);
@@ -280,6 +312,7 @@ public class CreatePostFragment extends Fragment {
             }
         });
 
+        // Set up the selected users adapter
         selectedUsersAdapter = new UserSelectedAdapter(selectedUsers, user -> {
             selectedUsers.remove(user);
             searchResults.add(user);
@@ -287,12 +320,14 @@ public class CreatePostFragment extends Fragment {
             userSearchAdapter.notifyDataSetChanged();
         });
 
+        // Set up RecyclerViews with the adapters
         userSearchResult.setLayoutManager(new LinearLayoutManager(getContext()));
         userSearchResult.setAdapter(userSearchAdapter);
+
         selectedUserTags.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
         selectedUserTags.setAdapter(selectedUsersAdapter);
 
-        // PREVIEW BUTTON
+        // Preview Button that provides the user a preview of their post
         previewButton = rootView.findViewById(R.id.previewButton);
         previewButton.setOnClickListener(v -> {
             getNewPostDetails(postType);
@@ -304,7 +339,7 @@ public class CreatePostFragment extends Fragment {
             showPostPreview(newPost);
         });
 
-        // POST BUTTON
+        // Post button that send the PostModel to API Server
         postButton = rootView.findViewById(R.id.postButton);
         postButton.setOnClickListener(v -> {
             getNewPostDetails(postType);
@@ -314,12 +349,16 @@ public class CreatePostFragment extends Fragment {
         return rootView;
     }
 
+    // Sets up the content input area depending on if the post is text, image, or audio
     private void loadPostContent(View rootView, int postType) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         FrameLayout postContentContainer = rootView.findViewById(R.id.postContentContainer);
+        View postContentView;
+
+        // Clear anything that was in the content container
         postContentContainer.removeAllViews();
 
-        View postContentView;
+        // Load the layout for a text post
         if (postType == 1) {
             postContentView = inflater.inflate(R.layout.fragment_post_create_text, postContentContainer, false);
             backgroundColourDisplay = postContentView.findViewById(R.id.backgroundColourDisplay);
@@ -329,12 +368,15 @@ public class CreatePostFragment extends Fragment {
             backgroundColourSelector.setOnClickListener(v -> openColourPicker(true));
             fontColourSelector.setOnClickListener(v -> openColourPicker(false));
             postTextContext = postContentView.findViewById(R.id.textContent);
+
+        // Load the layout for a media post (image or audio)
         } else {
             postContentView = inflater.inflate(R.layout.fragment_post_create_media, postContentContainer, false);
             mediaButton = postContentView.findViewById(R.id.mediaButton);
             postMediaContext = postContentView.findViewById(R.id.mediaContent);
 
             mediaButton.setOnClickListener(v -> {
+                // Check if the app has permission to access media
                 boolean hasPermissions;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     hasPermissions = hasPermission(Manifest.permission.READ_MEDIA_IMAGES)
@@ -343,6 +385,7 @@ public class CreatePostFragment extends Fragment {
                     hasPermissions = hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE);
                 }
 
+                // Ask for permission if needed
                 if (!hasPermissions) {
                     Toast.makeText(requireContext(), "Permission needed to access your media files.", Toast.LENGTH_SHORT).show();
                     requestMediaPermissions();
@@ -351,6 +394,7 @@ public class CreatePostFragment extends Fragment {
 
                 Toast.makeText(requireContext(), "Scanning media folders...", Toast.LENGTH_SHORT).show();
 
+                // List of folders to scan
                 String[] foldersToScan = new String[]{
                         "/sdcard/Pictures",
                         "/sdcard/DCIM/Camera",
@@ -382,6 +426,8 @@ public class CreatePostFragment extends Fragment {
                 );
             });
         }
+
+        // Add the selected post content view to the screen
         postContentContainer.addView(postContentView);
     }
 

@@ -12,8 +12,7 @@ public class NewChatroomModel {
     @SerializedName("CreatedById")
     public int createdById;
 
-    public NewChatroomModel(String name, List<String> users, int createdById)
-    {
+    public NewChatroomModel(String name, List<String> users, int createdById) {
         this.name = name;
         this.users = users;
         this.createdById = createdById;

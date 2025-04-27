@@ -14,23 +14,20 @@ public class UserSearchModel {
         this.username = username;
         this.followerCount = followerCount;
         this.isFollowing = isFollowing;
-
     }
 
     public String getUsername() {
         return username;
     }
-
     public int getFollowerCount() {
         return followerCount;
     }
 
-    public boolean isFollowing() {
-        return isFollowing;
-    }
-
     public void setIsFollowing(boolean isFollowing){
         this.isFollowing = isFollowing;
+    }
 
+    public boolean isFollowing() {
+        return isFollowing;
     }
 }

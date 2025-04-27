@@ -22,5 +22,4 @@ public class ChatroomInfoModel {
     public String getChatroomName() { return chatroomName; }
     public List<String> getChatroomMembers() { return chatroomMembers; }
 
-
 }

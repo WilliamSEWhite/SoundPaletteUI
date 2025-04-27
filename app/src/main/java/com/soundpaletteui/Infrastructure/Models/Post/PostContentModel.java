@@ -5,14 +5,12 @@ import com.soundpaletteui.Infrastructure.Models.FileModel;
 
 public class PostContentModel {
     @SerializedName("PostTextContent")
-
     private String postTextContent;
     @SerializedName("BackgroundColour")
     private String backgroundColour;
 
     @SerializedName("FontColour")
     private String fontColour;
-
 
     public PostContentModel(String postTextContent, String backgroundColour, String fontColour) {
         this.postTextContent = postTextContent;

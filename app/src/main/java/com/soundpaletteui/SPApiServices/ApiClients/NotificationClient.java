@@ -19,7 +19,6 @@ import retrofit2.Retrofit;
 
 // Handles notification-related API calls for the SoundPalette app, including retrieving
 // notifications, managing notification settings, and checking for new activity
-
 public class NotificationClient {
     private NotificationApiEndpoints apiEndpoints;
 

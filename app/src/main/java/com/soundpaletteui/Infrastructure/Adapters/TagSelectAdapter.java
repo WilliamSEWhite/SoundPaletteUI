@@ -29,7 +29,6 @@ public class TagSelectAdapter extends RecyclerView.Adapter {
         this.context = context;
     }
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         TextView tagName;
         CheckBox checkBox;
 
@@ -83,5 +82,4 @@ public class TagSelectAdapter extends RecyclerView.Adapter {
         }
         return selected;
     }
-
 }

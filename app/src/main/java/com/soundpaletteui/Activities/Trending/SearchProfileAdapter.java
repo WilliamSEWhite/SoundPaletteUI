@@ -28,7 +28,6 @@ import com.soundpaletteui.Infrastructure.Utilities.ImageUtils;
 import com.soundpaletteui.SPApiServices.ApiClients.ChatClient;
 import com.soundpaletteui.SPApiServices.ApiClients.UserClient;
 import com.soundpaletteui.Infrastructure.Models.Chat.ChatroomModelLite;
-import com.soundpaletteui.Infrastructure.Models.User.UserProfileModelLite;
 import com.soundpaletteui.SPApiServices.SPWebApiRepository;
 import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 import com.soundpaletteui.R;
@@ -36,17 +35,22 @@ import com.soundpaletteui.R;
 import java.io.IOException;
 import java.util.ArrayList;
 
+// Adapter for displaying a list of user profiles with options to view, follow/unfollow, or send a message.
 public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdapter.ProfileViewHolder> {
-
+    // List of profiles to display
     private final ArrayList<UserSearchModel> profileList;
+
+    // Context for fragment navigation
     private Context context;
 
+    // Constructor for setting up the adapter
     public SearchProfileAdapter(ArrayList<UserSearchModel> profileList) {
         this.profileList = profileList;
     }
 
     @NonNull
     @Override
+    // Creates a new ViewHolder for a user profile
     public ProfileViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         context = parent.getContext();
         View view = LayoutInflater.from(context).inflate(R.layout.adapter_search_profile, parent, false);
@@ -54,50 +58,53 @@ public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdap
     }
 
     @Override
+    // Binds the user's profile information to the ViewHolder
     public void onBindViewHolder(@NonNull ProfileViewHolder holder, int position) {
         UserSearchModel userView = profileList.get(position);
         final String username = userView.getUsername();
         final int followers = userView.getFollowerCount();
 
+        // Set username and follower count
         holder.usernameDisplay.setText(username);
         holder.followerDisplay.setText(String.valueOf(followers));
         holder.followButton.setChecked(userView.isFollowing());
 
-        // Profile Button
+        // Open profile when profile button is clicked
         holder.profileButton.setOnClickListener(v -> {
             ProfileViewFragment profileFragment = ProfileViewFragment.newInstance(username);
             FragmentManager fragmentManager = ((FragmentActivity) context).getSupportFragmentManager();
             Navigation.replaceFragment(fragmentManager, profileFragment, "ProfileViewFragment", R.id.mainScreenFrame);
         });
 
+        // Set button text based on following state
         holder.followButton.setText(userView.isFollowing() ? "Unfollow" : "Follow");
 
-        // Follow/Unfollow Toggle
+        // Toggle follow/unfollow when button is clicked
         holder.followButton.setOnClickListener(v -> {
             boolean isCurrentlyFollowing = userView.isFollowing();
             new ToggleFollowAsync(userView, !isCurrentlyFollowing).execute();
         });
 
-        // Message Button
+        // Open message screen when message button is clicked
         holder.messageButton.setOnClickListener(v -> {
             new OpenPrivateMessageAsync(username).execute();
         });
 
+        // Load profile image
         new Thread(() -> {
-            // update UI on main thread
             new Handler(Looper.getMainLooper()).post(() -> {
-                ImageUtils.getProfileImageByUsername(username,
-                        holder.imageView,
-                        context);
+                ImageUtils.getProfileImageByUsername(username, holder.imageView, context);
             });
         }).start();
     }
 
     @Override
+    // Returns the number of profiles
     public int getItemCount() {
         return profileList.size();
     }
 
+    // ViewHolder class to hold the view for each user profile
     public static class ProfileViewHolder extends RecyclerView.ViewHolder {
         TextView usernameDisplay, followerDisplay;
         Button profileButton, messageButton;
@@ -106,6 +113,8 @@ public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdap
 
         public ProfileViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            // Link views to layout items
             usernameDisplay = itemView.findViewById(R.id.usernameDisplay);
             followerDisplay = itemView.findViewById(R.id.followerDisplay);
             profileButton = itemView.findViewById(R.id.profileButton);
@@ -115,13 +124,13 @@ public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdap
         }
     }
 
-    // Replace current fragment on screen
+    // Replaces the main fragment with the given one
     private void replaceMainFragment(Fragment newFragment) {
         FragmentManager fragmentManager = ((FragmentActivity) context).getSupportFragmentManager();
         Navigation.replaceFragment(fragmentManager, newFragment, "CHATROOM_FRAGMENT", R.id.mainScreenFrame);
     }
 
-    // AsyncTask for toggling follow/unfollow
+    // AsyncTask for toggling follow/unfollow status
     private class ToggleFollowAsync extends AsyncTask<Void, Void, Boolean> {
         private final UserSearchModel profile;
         private final boolean shouldFollow;
@@ -151,12 +160,12 @@ public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdap
         protected void onPostExecute(Boolean success) {
             if (success) {
                 profile.setIsFollowing(shouldFollow);
-                notifyDataSetChanged(); // Refresh UI
+                notifyDataSetChanged(); // Refresh the UI to reflect follow state
             }
         }
     }
 
-    // AsyncTask to open private message chatroom
+    // AsyncTask to open or create a private message chatroom
     private class OpenPrivateMessageAsync extends AsyncTask<Void, Void, ChatroomModelLite> {
         private final String username;
 
@@ -183,6 +192,7 @@ public class SearchProfileAdapter extends RecyclerView.Adapter<SearchProfileAdap
         }
     }
 
+    // Opens the chatroom fragment
     private void openChatroom(ChatroomModelLite chatroom) {
         ChatroomFragment chatroomFragment = ChatroomFragment.newInstance(chatroom.getChatroomId(), chatroom.getName());
         replaceMainFragment(chatroomFragment);

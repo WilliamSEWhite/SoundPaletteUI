@@ -1,5 +1,9 @@
+// SearchFragment.java
+// Displays the search screen where users can browse trending posts, tags, and users, and perform searches.
+
 package com.soundpaletteui.Activities.Trending;
 
+// (Static imports for view visibility constants)
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
@@ -13,15 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,13 +46,20 @@ import pl.droidsonroids.gif.GifImageView;
 
 public class SearchFragment extends Fragment {
 
+    // RecyclerView and adapters
     private RecyclerView recyclerView;
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
+
+    // Current user and client
     private UserModel user;
     private UserClient userClient;
+
+    // Search bar and selected tab tracking
     private EditText inputSearch;
     private String selectedTab = "posts";
+
+    // Views for tabs
     private View framePosts;
     private GifImageView gifPosts;
     private TextView textPosts;
@@ -66,17 +69,20 @@ public class SearchFragment extends Fragment {
     private View frameUsers;
     private GifImageView gifUsers;
     private TextView textUsers;
+
+    // Alpha values for visual effect
     private final int FULL_ALPHA = 255;
     private final int TRANSPARENT_ALPHA = 77;
+
+    // Trending time range selection
     private LinearLayout trendingRange;
     private Handler gifHandler = new Handler(Looper.getMainLooper());
     private Spinner trendingSpinner;
-    String range = "Past Week";
+    String range = "Past Week";  // Default trending range
 
+    public SearchFragment() {}
 
-    public SearchFragment() {
-    }
-
+    // Create a new instance of SearchFragment
     public static SearchFragment newInstance(int userId) {
         return new SearchFragment();
     }
@@ -90,209 +96,49 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        // Inflate layout wrapped in a FrameLayout with EmojiBackgroundView
+        // Inflate the layout
         View rootView = inflater.inflate(R.layout.fragment_search, container, false);
 
+        // Apply background settings
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
         UISettings.applyBrightnessGradientBackground(rootView, 330f, isDarkMode);
+
         final View rootLayout = rootView.findViewById(R.id.root_layout);
 
         EmojiBackgroundView emojiBackground = rootView.findViewById(R.id.emojiBackground);
         emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
         emojiBackground.setAlpha(0.65f);
 
+        // Set up all views
         initComponents(rootView);
 
+        // Set up frames for tabs
         framePosts = rootView.findViewById(R.id.frame_posts);
         gifPosts = rootView.findViewById(R.id.gif_posts);
         textPosts = rootView.findViewById(R.id.postsToggle);
+
         frameTags = rootView.findViewById(R.id.frame_tags);
         gifTags = rootView.findViewById(R.id.gif_tags);
         textTags = rootView.findViewById(R.id.tagsToggle);
+
         frameUsers = rootView.findViewById(R.id.frame_users);
         gifUsers = rootView.findViewById(R.id.gif_users);
         textUsers = rootView.findViewById(R.id.usersToggle);
+
         trendingRange = rootView.findViewById(R.id.trending_range_select);
         trendingSpinner = rootView.findViewById(R.id.trending_range);
 
         inputSearch = rootView.findViewById(R.id.inputSearch);
         ImageButton buttonSearch = rootView.findViewById(R.id.buttonSearch);
 
-        framePosts.setOnClickListener(v -> {
+        // Set up click listeners for each tab
+        setupTabListeners(rootView, emojiBackground, rootLayout, isDarkMode);
 
-            emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
+        // Set up the trending range spinner
+        setupTrendingSpinner();
 
-            selectedTab = "posts";
-            try {
-                final GifDrawable postsGifDrawable = (GifDrawable) gifPosts.getDrawable();
-                framePosts.getBackground().mutate().setAlpha(FULL_ALPHA);
-                frameTags.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-                frameUsers.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-
-                postsGifDrawable.start();
-                gifHandler.postDelayed(() -> postsGifDrawable.stop(), 800);
-            } catch (ClassCastException e) {
-                e.printStackTrace();
-                Toast.makeText(requireContext(),
-                        "Error casting Posts GIF to GifDrawable",
-                        Toast.LENGTH_SHORT).show();
-            }
-            try {
-                if (gifTags.getDrawable() instanceof GifDrawable) {
-                    ((GifDrawable) gifTags.getDrawable()).stop();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                if (gifUsers.getDrawable() instanceof GifDrawable) {
-                    ((GifDrawable) gifUsers.getDrawable()).stop();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            gifPosts.setAlpha(1.0f);
-            gifTags.setAlpha(0.3f);
-            gifUsers.setAlpha(0.3f);
-
-            setButtonTextSelected(textPosts, true);
-            setButtonTextSelected(textTags, false);
-            setButtonTextSelected(textUsers, false);
-
-
-            setPostFragment();
-            UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
-        });
-        frameTags.setOnClickListener(v -> {
-            trendingRange.setVisibility(GONE);
-
-            emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
-
-            selectedTab = "tags";
-            try {
-                final GifDrawable tagsGifDrawable = (GifDrawable) gifTags.getDrawable();
-                frameTags.getBackground().mutate().setAlpha(FULL_ALPHA);
-                framePosts.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-                frameUsers.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-
-                tagsGifDrawable.start();
-                gifHandler.postDelayed(() -> tagsGifDrawable.stop(), 800);
-            } catch (ClassCastException e) {
-                e.printStackTrace();
-                Toast.makeText(requireContext(),
-                        "Error casting Tagsd GIF to GifDrawable",
-                        Toast.LENGTH_SHORT).show();
-            }
-            try {
-                if (gifPosts.getDrawable() instanceof GifDrawable) {
-                    ((GifDrawable) gifPosts.getDrawable()).stop();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                if (gifUsers.getDrawable() instanceof GifDrawable) {
-                    ((GifDrawable) gifUsers.getDrawable()).stop();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            gifTags.setAlpha(1.0f);
-            gifPosts.setAlpha(0.3f);
-            gifUsers.setAlpha(0.3f);
-
-            setButtonTextSelected(textTags, true);
-            setButtonTextSelected(textPosts, false);
-            setButtonTextSelected(textUsers, false);
-
-
-            setTagsFragment();
-            UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
-        });
-        frameUsers.setOnClickListener(v -> {
-            trendingRange.setVisibility(GONE);
-
-            emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
-
-            selectedTab = "users";
-            try {
-                final GifDrawable usersGifDrawable = (GifDrawable) gifUsers.getDrawable();
-                frameUsers.getBackground().mutate().setAlpha(FULL_ALPHA);
-                framePosts.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-                frameTags.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-
-                usersGifDrawable.start();
-                gifHandler.postDelayed(() -> usersGifDrawable.stop(), 800);
-            } catch (ClassCastException e) {
-                e.printStackTrace();
-                Toast.makeText(requireContext(),
-                        "Error casting users GIF to GifDrawable",
-                        Toast.LENGTH_SHORT).show();
-            }
-            try {
-                if (gifTags.getDrawable() instanceof GifDrawable) {
-                    ((GifDrawable) gifTags.getDrawable()).stop();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            try {
-                if (gifPosts.getDrawable() instanceof GifDrawable) {
-                    ((GifDrawable) gifPosts.getDrawable()).stop();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            gifUsers.setAlpha(1.0f);
-            gifPosts.setAlpha(0.3f);
-            gifTags.setAlpha(0.3f);
-
-            setButtonTextSelected(textUsers, true);
-            setButtonTextSelected(textPosts, false);
-            setButtonTextSelected(textTags, false);
-
-
-            setUsersFragment();
-            UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
-        });
-        inputSearch.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count)             {
-                if(s.length()<1 && Objects.equals(selectedTab, "posts")){
-                    setPostFragment();
-                }
-            }
-            @Override public void afterTextChanged(Editable s) {}
-        });
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this.getContext(),
-                R.array.trending_ranges,
-                android.R.layout.simple_spinner_item
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        trendingSpinner.setAdapter(adapter);
-        trendingSpinner.setSelection(0);
-
-        trendingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id)
-            {
-                Object selectedRange = parent.getItemAtPosition(pos);
-                String range = (String) selectedRange;
-                setPostFragment();
-            }
-
-            public void onNothingSelected(AdapterView<?> parent)
-            {
-
-            }
-        });
-        framePosts.performClick();
-
-
+        // Set up the search button
         buttonSearch.setOnClickListener(v -> {
-
             switch(selectedTab){
                 case "posts":
                     setPostFragment();
@@ -306,68 +152,195 @@ public class SearchFragment extends Fragment {
             }
         });
 
+        // When the search input changes, reload posts if needed
+        inputSearch.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() < 1 && Objects.equals(selectedTab, "posts")) {
+                    setPostFragment();
+                }
+            }
+            @Override public void afterTextChanged(Editable s) {}
+        });
+
+        // Default to clicking posts first
+        framePosts.performClick();
+
         return rootView;
     }
+
+    // Set the text style depending on if a tab is selected
     private void setButtonTextSelected(TextView textView, boolean isSelected) {
         if (isSelected) {
-//            textView.setTypeface(null, Typeface.BOLD);
             textView.setTextSize(20);
         } else {
-//            textView.setTypeface(null, Typeface.NORMAL);
             textView.setTextSize(18);
         }
     }
+
+    // Initialize basic components
     private void initComponents(View view) {
         user = AppSettings.getInstance().getUser();
         userList = new ArrayList<>();
         mainContentAdapter = new MainContentAdapter(userList);
     }
 
-    private void setPostFragment(){
+    // Set up the listeners for tab buttons
+    private void setupTabListeners(View rootView, EmojiBackgroundView emojiBackground, View rootLayout, boolean isDarkMode) {
+        framePosts.setOnClickListener(v -> {
+            handleTabSwitch("posts", emojiBackground, rootLayout, isDarkMode);
+            setPostFragment();
+        });
+
+        frameTags.setOnClickListener(v -> {
+            trendingRange.setVisibility(GONE);
+            handleTabSwitch("tags", emojiBackground, rootLayout, isDarkMode);
+            setTagsFragment();
+        });
+
+        frameUsers.setOnClickListener(v -> {
+            trendingRange.setVisibility(GONE);
+            handleTabSwitch("users", emojiBackground, rootLayout, isDarkMode);
+            setUsersFragment();
+        });
+    }
+
+    // Handles switching between tabs visually and logically
+    private void handleTabSwitch(String newTab, EmojiBackgroundView emojiBackground, View rootLayout, boolean isDarkMode) {
+        selectedTab = newTab;
+        emojiBackground.setPatternType(EmojiBackgroundView.PATTERN_GRID);
+
+        // Reset all alphas
+        framePosts.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
+        frameTags.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
+        frameUsers.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
+
+        // Highlight selected frame
+        switch (newTab) {
+            case "posts":
+                framePosts.getBackground().mutate().setAlpha(FULL_ALPHA);
+                playGif(gifPosts);
+                stopGif(gifTags);
+                stopGif(gifUsers);
+                break;
+            case "tags":
+                frameTags.getBackground().mutate().setAlpha(FULL_ALPHA);
+                playGif(gifTags);
+                stopGif(gifPosts);
+                stopGif(gifUsers);
+                break;
+            case "users":
+                frameUsers.getBackground().mutate().setAlpha(FULL_ALPHA);
+                playGif(gifUsers);
+                stopGif(gifTags);
+                stopGif(gifPosts);
+                break;
+        }
+
+        // Highlight selected text
+        setButtonTextSelected(textPosts, newTab.equals("posts"));
+        setButtonTextSelected(textTags, newTab.equals("tags"));
+        setButtonTextSelected(textUsers, newTab.equals("users"));
+
+        // Reapply background gradient
+        UISettings.applyBrightnessGradientBackground(rootLayout, 330f, isDarkMode);
+    }
+
+    // Plays a GIF animation
+    private void playGif(GifImageView gif) {
+        try {
+            final GifDrawable gifDrawable = (GifDrawable) gif.getDrawable();
+            gifDrawable.start();
+            gifHandler.postDelayed(gifDrawable::stop, 800);
+            gif.setAlpha(1.0f);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Stops a GIF animation
+    private void stopGif(GifImageView gif) {
+        try {
+            if (gif.getDrawable() instanceof GifDrawable) {
+                ((GifDrawable) gif.getDrawable()).stop();
+                gif.setAlpha(0.3f);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Sets up the trending spinner
+    private void setupTrendingSpinner() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                requireContext(),
+                R.array.trending_ranges,
+                android.R.layout.simple_spinner_item
+        );
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        trendingSpinner.setAdapter(adapter);
+        trendingSpinner.setSelection(0);
+
+        trendingSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+                Object selectedRange = parent.getItemAtPosition(pos);
+                range = (String) selectedRange;
+                setPostFragment();
+            }
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+    }
+
+    // Loads the PostFragment based on search or trending
+    private void setPostFragment() {
         String algoType;
         String searchTerm = inputSearch.getText().toString();
 
-        if(searchTerm.isEmpty()){
+        if (searchTerm.isEmpty()) {
             algoType = "trending";
             trendingRange.setVisibility(VISIBLE);
             searchTerm = range;
-        }
-        else{
+        } else {
             algoType = "search";
             trendingRange.setVisibility(GONE);
         }
+
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         PostFragment postFragment = PostFragment.newInstance(algoType, searchTerm);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
     }
-    private void setTagsFragment(){
+
+    // Loads the Tags search fragment
+    private void setTagsFragment() {
         String searchTerm = inputSearch.getText().toString();
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         SearchTagsFragment searchTagsFragment = SearchTagsFragment.newInstance(searchTerm);
         transaction.replace(R.id.postFragment, searchTagsFragment);
         transaction.commit();
-
     }
 
-    public void viewPostsByTag(String tagId){
+    // View posts related to a tag
+    public void viewPostsByTag(String tagId) {
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
-        PostFragment postFragment = PostFragment.newInstance("tag", String.valueOf(tagId));
+        PostFragment postFragment = PostFragment.newInstance("tag", tagId);
         transaction.replace(R.id.postFragment, postFragment);
         transaction.commit();
     }
 
-    private void setUsersFragment(){
+    // Loads the Users search fragment
+    private void setUsersFragment() {
         String searchTerm = inputSearch.getText().toString();
-
         FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
         SearchProfileFragment searchProfileFragment = SearchProfileFragment.newInstance(searchTerm);
         transaction.replace(R.id.postFragment, searchProfileFragment);
         transaction.commit();
     }
+
     @Override
     public void onPause() {
         super.onPause();
+        // Release any media playing when leaving the fragment
         MediaPlayerManager.getInstance().release();
     }
 }

@@ -15,8 +15,8 @@ import com.soundpaletteui.R;
 
 import java.util.List;
 
+// Adapter used to display and manage notification settings with toggle switches in a RecyclerView.
 public class NotificationSettingsAdapter extends RecyclerView.Adapter<com.soundpaletteui.Activities.Notifications.NotificationSettingsAdapter.NotificationSettingsViewHolder> {
-
     private List<NotificationSettingModel> notificationSettingList;
     private Context context;
 
@@ -34,22 +34,26 @@ public class NotificationSettingsAdapter extends RecyclerView.Adapter<com.soundp
 
     @Override
     public void onBindViewHolder(@NonNull NotificationSettingsAdapter.NotificationSettingsViewHolder holder, int position) {
+        // Get the current notification setting
         NotificationSettingModel setting = notificationSettingList.get(position);
         holder.notificationSettingName.setText(setting.getNotificationSettingName());
 
+        // Set the name and toggle button state
         holder.toggleButton.setChecked(setting.getValue());
 
+        // Update the setting value when the toggle is switched
         holder.toggleButton.setOnCheckedChangeListener((buttonView, isChecked) -> {
             setting.setValue(isChecked);
         });
     }
 
+    // Return the total number of settings
     @Override
     public int getItemCount() {
         return notificationSettingList != null ? notificationSettingList.size() : 0;
     }
 
-
+    // Holds and reuses the views for each notification setting item
     public static class NotificationSettingsViewHolder extends RecyclerView.ViewHolder {
         TextView notificationSettingName;
         ToggleButton toggleButton;

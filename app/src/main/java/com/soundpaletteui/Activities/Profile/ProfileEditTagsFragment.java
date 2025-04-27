@@ -34,18 +34,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Handles editing the user's tags inside their profile settings.
+// Shows a list of available tags, lets the user select them, and saves the changes.
 public class ProfileEditTagsFragment extends Fragment {
-
     private RecyclerView recyclerView;
     private TagSelectAdapter adapter;
     private List<TagModel> globalTags;
     private List<TagModel> userTags;
     private TagClient tagClient;
     private UserModel user;
-    private UserClient userClient;
-    private int userId;
     private Button btnDone;
-    private int fragId;     // from which fragment did I come from?
+    private int fragId;
     private ShapeableImageView imageView;
 
     @Override
@@ -57,12 +56,16 @@ public class ProfileEditTagsFragment extends Fragment {
         // Apply dark mode gradient background
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(view.getContext());
         UISettings.applyBrightnessGradientBackground(view, 50f, isDarkMode);
+
+        // Load the user's profile picture
         loadProfileImage();
 
+        // Set up buttons, recycler view, and other components
         initComponents(view);
         return view;
     }
 
+    // Sets up the views and loads initial data
     private void initComponents(View view) {
         user = AppSettings.getInstance().getUser();
         tagClient = SPWebApiRepository.getInstance().getTagClient();
@@ -77,9 +80,11 @@ public class ProfileEditTagsFragment extends Fragment {
         globalTags = new ArrayList<>();
         userTags = new ArrayList<>();
 
+        // Start loading tags
         getTags();
     }
 
+    // Loads the user's profile picture
     private void loadProfileImage() {
         new Thread(() -> {
             // update UI on main thread
@@ -91,7 +96,9 @@ public class ProfileEditTagsFragment extends Fragment {
         }).start();
     }
 
+    // Called when the user taps the Done button
     private void done() {
+        // If there are no tags selected, show a message
         if (globalTags == null || globalTags.isEmpty()) {
             Toast.makeText(requireActivity(), "No tags were selected", Toast.LENGTH_SHORT).show();
             return;
@@ -101,12 +108,16 @@ public class ProfileEditTagsFragment extends Fragment {
             Toast.makeText(requireActivity(), "No tags were selected", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Collect all the tags that the user selected
         List<TagModel> selectedTags = new ArrayList<>();
         for(TagModel tag : globalTags) {
             if(tag.isSelected()) {
                 selectedTags.add(tag);
             }
         }
+
+        // Collect all the tags that the user selected
         new Thread(() -> {
             try {
                 tagClient.updateTags(user.getUserId(), selectedTags);
@@ -124,6 +135,7 @@ public class ProfileEditTagsFragment extends Fragment {
             }
         }).start();
 
+        // Navigate the user back to the correct screen after saving
         Bundle args = new Bundle();
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         switch(fragId) {
@@ -139,6 +151,7 @@ public class ProfileEditTagsFragment extends Fragment {
         }
     }
 
+    // Fetches all available tags and the user's selected tags
     private void getTags() {
         new Thread(() -> {
             try {
@@ -151,6 +164,8 @@ public class ProfileEditTagsFragment extends Fragment {
                         }
                     }
                 }
+
+                // Update the UI with the tag list
                 Activity activity = getActivity();
                 if(activity != null) {
                     activity.runOnUiThread(() -> {

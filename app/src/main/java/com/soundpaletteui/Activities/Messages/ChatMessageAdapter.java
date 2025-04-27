@@ -32,7 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-// Adapter for displaying chat messages
+// Adapter for displaying messages inside the chatroom
 public class ChatMessageAdapter extends RecyclerView.Adapter<ChatMessageAdapter.ChatMessageViewHolder> {
     private final List<ChatMessageModel> messageList;
     private final UserModel user;

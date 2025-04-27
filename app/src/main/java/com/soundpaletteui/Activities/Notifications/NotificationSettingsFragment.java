@@ -1,5 +1,6 @@
 package com.soundpaletteui.Activities.Notifications;
 
+import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -35,6 +36,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Displays the Notification Settings screen where users can enable or disable different types of notifications.
 public class NotificationSettingsFragment extends Fragment {
     private Button saveButton;
     private RecyclerView recyclerViewNotifications;
@@ -53,26 +55,31 @@ public class NotificationSettingsFragment extends Fragment {
         recyclerViewNotifications.setLayoutManager(new GridLayoutManager(getContext(), 1));
         initComponents(rootView);
 
+        // Save button to commit notification settings changes
         saveButton = rootView.findViewById(R.id.saveButton);
         saveButton.setOnClickListener(v -> {
-            //notificationClient.setNotificationSettings(allNotificationSettings);
-
-            Log.d("NOTIFICATION SETTINGS", "Trying to save notifications...");
-            Toast.makeText(requireContext(), "Notification settings saved!", Toast.LENGTH_SHORT).show();
-
-            for (NotificationSettingModel notif : allNotificationSettings) {
-                String status = notif.getValue() ? "ON" : "OFF";
-                Log.d("NOTIFICATION SETTINGS", notif.getNotificationSettingName() + " " + status);
+            try {
+                notificationClient.setNotificationSettings(allNotificationSettings);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
 
-            // Navigate back
-            NotificationFragment notificationFragment = new NotificationFragment();
-            FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
-            Navigation.replaceFragment(requireActivity().getSupportFragmentManager(),
-                    transaction,
-                    notificationFragment,
-                    "NEW_NOTIFICATION_FRAGMENT",
-                    R.id.mainScreenFrame);
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Success")
+                    .setMessage("Notification settings saved!")
+                    .setPositiveButton("OK", (dialog, which) -> {
+                        dialog.dismiss();
+
+                        // Navigate back to NotificationFragment *after* user clicks OK
+                        NotificationFragment notificationFragment = new NotificationFragment();
+                        FragmentTransaction transaction = requireActivity().getSupportFragmentManager().beginTransaction();
+                        Navigation.replaceFragment(requireActivity().getSupportFragmentManager(),
+                                transaction,
+                                notificationFragment,
+                                "NEW_NOTIFICATION_FRAGMENT",
+                                R.id.mainScreenFrame);
+                    })
+                    .show();
         });
 
         return rootView;
@@ -86,14 +93,15 @@ public class NotificationSettingsFragment extends Fragment {
         boolean isDarkMode = DarkModePreferences.isDarkModeEnabled(view.getContext());
         UISettings.applyBrightnessGradientBackground(view, 165f, isDarkMode);
 
+        // Set up RecyclerView layout
         recyclerViewNotifications = view.findViewById(R.id.recyclerViewNotifications);
         recyclerViewNotifications.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
-        getAllNotificationSettings();
-        //new GetNotificationSettingsTask().execute();
+        // Fetch notification settings from the API Server
+        new GetNotificationSettingsTask().execute();
     }
 
-    // Get the notification list
+    // AsyncTask to fetch notification settings from server (currently unused)
     private class GetNotificationSettingsTask extends AsyncTask<Void, Void, List<NotificationSettingModel>> {
         @Override
         protected List<NotificationSettingModel> doInBackground(Void... voids) {
@@ -115,13 +123,7 @@ public class NotificationSettingsFragment extends Fragment {
         }
     }
 
-    private void getAllNotificationSettings() {
-        allNotificationSettings.clear();
-
-        setupRecyclerView();
-    }
-
-
+    // Binds the adapter to the RecyclerView to display settings
     private void setupRecyclerView() {
         recyclerViewNotifications.setAdapter(new NotificationSettingsAdapter(allNotificationSettings));
     }

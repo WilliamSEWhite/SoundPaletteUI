@@ -29,13 +29,13 @@ import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Response;
 
+// Handles letting the user select tags they are interested in after registering.
+// Displays all available tags, allows the user to select them, and saves the selections.
 public class RegisterTagsActivity extends AppCompatActivity {
-
     private RecyclerView recyclerView;
     private TagSelectAdapter adapter;
     private List<TagModel> tagList;
     private FrameLayout frameSave;
-
     private AppSettings appSettings;
     private UserModel user;
     private TagClient tagClient;
@@ -45,7 +45,7 @@ public class RegisterTagsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register_tags);
 
-        // 1) Apply gradient + emoji background
+        // Apply gradient + emoji background
         View root = findViewById(R.id.root_layout);
         boolean isDark = DarkModePreferences.isDarkModeEnabled(this);
         UISettings.applyBrightnessGradientBackground(root, 280f, isDark);
@@ -57,6 +57,7 @@ public class RegisterTagsActivity extends AppCompatActivity {
         initComponents();
     }
 
+    // Initializes views, adapters, and listeners
     private void initComponents() {
         appSettings = AppSettings.getInstance();
         user = appSettings.getUser();
@@ -72,6 +73,7 @@ public class RegisterTagsActivity extends AppCompatActivity {
         frameSave.setOnClickListener(v -> saveSelectedTags());
     }
 
+    // Fetches all available tags from the server
     private void getTags() {
         new Thread(() -> {
             try {
@@ -89,16 +91,20 @@ public class RegisterTagsActivity extends AppCompatActivity {
         }).start();
     }
 
+    // Saves the tags the user selected to the server
     private void saveSelectedTags() {
         if (adapter == null) {
             Toast.makeText(this, "No tags were selected", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        // Collect all the selected tags
         List<TagModel> selected = new ArrayList<>();
         for (TagModel t : tagList) {
             if (t.isSelected()) selected.add(t);
         }
 
+        // Save the selected tags
         new Thread(() -> {
             try {
                 Response<ResponseBody> resp =
@@ -120,6 +126,7 @@ public class RegisterTagsActivity extends AppCompatActivity {
             }
         }).start();
 
+        // Move to the main screen after saving
         Intent i = new Intent(this, MainScreenActivity.class);
         i.putExtra("userId", user.getUserId());
         startActivity(i);

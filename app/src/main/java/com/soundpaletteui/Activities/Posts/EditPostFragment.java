@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Displays the Edit Post screen where users can update the caption, content, colours, tags, and users of an existing post.
 public class EditPostFragment extends Fragment {
     private int postId;
     private PostModel currentPost;
@@ -75,6 +76,7 @@ public class EditPostFragment extends Fragment {
     private String fontHex = "#000000";
     private boolean selectingBackground = true;
 
+    // Creates a new instance of EditPostFragment with the information about which post to edit
     public static EditPostFragment newInstance(int postId) {
         EditPostFragment fragment = new EditPostFragment();
         Bundle args = new Bundle();
@@ -86,19 +88,23 @@ public class EditPostFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Get the post ID that was sent to this screen
         if (getArguments() != null) {
             postId = getArguments().getInt("POST_ID");
         }
+
+        // Get the current user
         user = AppSettings.getInstance().getUser();
         userId = user.getUserId();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // 1) inflate the new wrapped layout
+        // Inflate the new wrapped layout
         View rootView = inflater.inflate(R.layout.fragment_post_create, container, false);
 
-        // 2) apply emoji + hue gradient
+        // Apply emoji + hue gradient
         View rootLayout = rootView.findViewById(R.id.root_layout);
         boolean isDark = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
         UISettings.applyBrightnessGradientBackground(rootLayout, 260f, isDark);
@@ -107,7 +113,7 @@ public class EditPostFragment extends Fragment {
         emojiBg.setPatternType(com.soundpaletteui.Infrastructure.Utilities.EmojiBackgroundView.PATTERN_SPIRAL);
         emojiBg.setAlpha(0.65f);
 
-        // 3) wire up preview button & start loading the post
+        // Wire up preview button & start loading the post
         previewButton = rootView.findViewById(R.id.previewButton);
         previewButton.setOnClickListener(v -> showPostPreview());
         new LoadPostTask(rootView).execute();
@@ -116,6 +122,7 @@ public class EditPostFragment extends Fragment {
     }
 
 
+    // Loads the post information from the server in the background
     private class LoadPostTask extends AsyncTask<Void, Void, PostModel> {
         private final View rootView;
         LoadPostTask(View rootView) { this.rootView = rootView; }
@@ -133,11 +140,14 @@ public class EditPostFragment extends Fragment {
 
         @Override
         protected void onPostExecute(PostModel post) {
+            // Load the post
             if (post != null) {
                 currentPost = post;
                 loadPostContent(rootView, currentPost.getPostType());
                 populateFields(rootView);
                 showPostPreview(); // Show preview on load
+
+            // If post does not exist, show an alert and go back
             } else {
                 if (getContext() != null) {
                     new AlertDialog.Builder(getContext())
@@ -157,6 +167,7 @@ public class EditPostFragment extends Fragment {
         }
     }
 
+    // Shows a live preview of the post based on current inputs
     private void showPostPreview() {
         if (currentPost == null || currentPost.getPostContent() == null) {
             Toast.makeText(getContext(), "Cannot preview post. Post data is missing.", Toast.LENGTH_SHORT).show();
@@ -196,7 +207,8 @@ public class EditPostFragment extends Fragment {
         username.setText(previewPost.getUsername());
         caption.setText(previewPost.getPostCaption());
 
-        if (previewPost.getPostType() == 1) {
+        // Depending on the post type, load the correct preview
+        if (previewPost.getPostType() == 1) {           // Text posts
             View postTextView = inflater.inflate(R.layout.adapter_posts_text, fragmentDisplay, false);
             TextView textContent = postTextView.findViewById(R.id.postTextDisplay);
             textContent.setText(previewPost.getPostContent().getPostTextContent());
@@ -208,21 +220,15 @@ public class EditPostFragment extends Fragment {
             }
             fragmentDisplay.addView(postTextView);
         }
-        else if(previewPost.getPostType() == 3) {
+        else if(previewPost.getPostType() == 3) {       // Image posts
             View postContentView = inflater.inflate(R.layout.adapter_posts_image, fragmentDisplay, false);
 
             // Get file name (so it can source it from drawables)
             try {
                 ImageView postImageDisplay = postContentView.findViewById(R.id.postImageDisplay);
-                //Log.d("CreatePostFragment", "selectedUri: " + selectedUri);
                 ImageUtils.getPostImage(SPWebApiRepository.getInstance().getFileClient().getPostFile(previewPost.getFileId()), postImageDisplay, requireContext());
-                //int imageResource = getResources().getIdentifier(postContent, "drawable", getContext().getPackageName());
-                //Log.d("CreatePostFragment", "Going to load "+postContent+ "#" +imageResource);
-                //postImageDisplay.setImageResource(imageResource);
-            } catch (Exception e) {
-                //Log.e("CreatePostFragment", "Failed to load image from URI: " + postContent, e);
-            }
-            //postContentModel = new PostContentModel(postContent, null, null);
+            } catch (Exception e) {}
+
             fragmentDisplay.addView(postContentView);
         }
 
@@ -231,13 +237,14 @@ public class EditPostFragment extends Fragment {
         previewContainer.addView(previewView);
     }
 
+    // Loads the correct layout depending on the type of post
     private void loadPostContent(View rootView, int postType) {
         LayoutInflater inflater = LayoutInflater.from(getContext());
         FrameLayout postContentContainer = rootView.findViewById(R.id.postContentContainer);
         postContentContainer.removeAllViews();
 
         View postContentView = null;
-        if (postType == 1) {
+        if (postType == 1) {            // Text post
             postContentView = inflater.inflate(R.layout.fragment_post_create_text, postContentContainer, false);
             backgroundColourDisplay = postContentView.findViewById(R.id.backgroundColourDisplay);
             fontColourDisplay = postContentView.findViewById(R.id.fontColourDisplay);
@@ -247,7 +254,7 @@ public class EditPostFragment extends Fragment {
             backgroundColourSelector.setOnClickListener(v -> openColourPicker(true));
             fontColourSelector.setOnClickListener(v -> openColourPicker(false));
         }
-        else if (postType == 3) {
+        else if (postType == 3) {       // Image post
             postContentView = inflater.inflate(R.layout.adapter_posts_image, postContentContainer, false);
             ImageView postImageDisplay = postContentView.findViewById(R.id.postImageDisplay);
             int fileId = currentPost.getFileId();
@@ -259,7 +266,7 @@ public class EditPostFragment extends Fragment {
         else {
             postContentView = inflater.inflate(R.layout.fragment_post_create_media, postContentContainer, false);
 
-// Disable file selection for audio/image posts
+            // Disable file selection for audio/image posts
             TextView mediaContent = postContentView.findViewById(R.id.mediaContent);
             ImageButton mediaButton = postContentView.findViewById(R.id.mediaButton);
             LinearLayout linearLayout = postContentView.findViewById(R.id.linearLayout);
@@ -283,6 +290,7 @@ public class EditPostFragment extends Fragment {
         postContentContainer.addView(postContentView);
     }
 
+    // Fills in the inputs with the post's current information
     private void populateFields(View rootView) {
         captionInput = rootView.findViewById(R.id.caption);
         textContentInput = rootView.findViewById(R.id.textContent);
@@ -293,21 +301,26 @@ public class EditPostFragment extends Fragment {
         userSearchResult = rootView.findViewById(R.id.userSearchResult);
         selectedUserTags = rootView.findViewById(R.id.selectedUserTags);
 
+        // Set caption, checkboxes, and content
         captionInput.setText(currentPost.getPostCaption());
         isMatureCheckbox.setChecked(currentPost.getIsLiked());
         followerOnlyCheckbox.setChecked(currentPost.getIsSaved());
 
+        // if text post and there is a PostContent
+        // then Set the font and background colour
         if (currentPost.getPostType() == 1 && currentPost.getPostContent() != null) {
             textContentInput.setText(currentPost.getPostContent().getPostTextContent());
             backgroundHex = currentPost.getPostContent().getBackgroundColour();
             fontHex = currentPost.getPostContent().getFontColour();
             if (backgroundColourDisplay != null) backgroundColourDisplay.setBackgroundColor(Color.parseColor(backgroundHex));
             if (fontColourDisplay != null) fontColourDisplay.setBackgroundColor(Color.parseColor(fontHex));
-        }
-        else {
+
+        // See the message there are no posts
+        } else {
             currentPost.setPostCaption(captionInput.getText().toString());
         }
 
+        // Sets up the adapters for tags and users
         selectedTags = new ArrayList<>(currentPost.getPostTags());
         selectedUsers = new ArrayList<>(currentPost.getPostUserTags());
 
@@ -332,6 +345,7 @@ public class EditPostFragment extends Fragment {
         selectedPostTags.setLayoutManager(new LinearLayoutManager(getContext()));
         selectedPostTags.setAdapter(selectedTagsAdapter);
 
+        // User search adapter
         userSearchAdapter = new UserSearchAdapter(searchResults, user -> {
             if (!selectedUsers.contains(user)) {
                 selectedUsers.add(user);
@@ -353,6 +367,7 @@ public class EditPostFragment extends Fragment {
         selectedUserTags.setLayoutManager(new LinearLayoutManager(getContext()));
         selectedUserTags.setAdapter(selectedUsersAdapter);
 
+        // Load the full list of tags
         new GetTagsAsync() {
             @Override
             protected void onPostExecute(Void result) {
@@ -361,22 +376,25 @@ public class EditPostFragment extends Fragment {
             }
         }.execute();
 
+        // Make the preview button visible
         Button previewButton = rootView.findViewById(R.id.previewButton);
         previewButton.setVisibility(View.VISIBLE);
         previewButton.performClick();
 
+        // Set up the save button
         Button postButton = rootView.findViewById(R.id.postButton);
-        postButton.setText("SAVE");
+        postButton.setText("Save");
         postButton.setOnClickListener(v -> updatePost());
     }
 
+    // Updates the post with the new information entered by the user
     private void updatePost() {
         String caption = captionInput.getText().toString().trim();
         String content = (textContentInput != null) ? textContentInput.getText().toString().trim() : "";
         boolean isMature = isMatureCheckbox.isChecked();
         boolean isPremium = followerOnlyCheckbox.isChecked();
 
-        Log.d("EditPostFragment", "content: " + content);
+        // Make sure the caption and content are not empty
         if (currentPost.getPostCaption().isEmpty() || (currentPost.getPostType() == 1 && content.isEmpty())) {
             new AlertDialog.Builder(requireContext())
                     .setTitle("Invalid Input")
@@ -386,8 +404,10 @@ public class EditPostFragment extends Fragment {
             return;
         }
 
+        // Create updated content model
         PostContentModel updatedContent = new PostContentModel(content, backgroundHex, fontHex);
-        Log.d("EditPostFragment", "caption: " + caption);
+
+        // Create the updated post model
         PostModel updatedPost = new PostModel(
                 currentPost.getPostId(), caption, selectedTags, updatedContent,
                 currentPost.getCreatedDate(), currentPost.getUsername(),
@@ -398,6 +418,7 @@ public class EditPostFragment extends Fragment {
         new UpdatePostTask().execute(updatedPost);
     }
 
+    // Async task to save the updated post to the server
     private class UpdatePostTask extends AsyncTask<PostModel, Void, Boolean> {
         @Override
         protected Boolean doInBackground(PostModel... post) {
@@ -421,6 +442,7 @@ public class EditPostFragment extends Fragment {
         }
     }
 
+    // Opens a colour picker for either background or font colour
     private void openColourPicker(boolean background) {
         selectingBackground = background;
         new ColorPickerDialog.Builder(requireContext())
@@ -442,6 +464,7 @@ public class EditPostFragment extends Fragment {
                 .show();
     }
 
+    // Async task to get all available tags
     private class GetTagsAsync extends AsyncTask<Void, Void, Void> {
         protected Void doInBackground(Void... d) {
             try {

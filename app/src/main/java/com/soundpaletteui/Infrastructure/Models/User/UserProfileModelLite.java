@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserProfileModelLite {
-
     @SerializedName("UserProfileId")
     private int userProfileId;
     @SerializedName("Username")
@@ -44,12 +43,7 @@ public class UserProfileModelLite {
         System.out.println("bio from model: " + bio);
     }
 
-    /** setter methods */
-    public void setIsFollowing(boolean isFollowing) {
-        this.isFollowing = isFollowing;
-    }
-
-    /** getter methods */
+    //Getter methods
     public String getUsername() {
         return username;
     }
@@ -72,4 +66,10 @@ public class UserProfileModelLite {
         return userTags;
     }
     public int getUserProfileId() { return userProfileId; }
+
+    // Setter methods
+    public void setIsFollowing(boolean isFollowing) {
+        this.isFollowing = isFollowing;
+    }
+
 }

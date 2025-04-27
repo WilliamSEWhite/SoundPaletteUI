@@ -54,38 +54,30 @@ public class PostModel {
         this.fileId = fileId;
     }
 
-    // Getters
     public int getPostId() {
         return postId;
     }
-
     public String getPostCaption() {
         return postCaption;
     }
     public void setPostCaption(String postCaption) {
         this.postCaption = postCaption;
     }
-
     public List<TagModel> getPostTags() {
         return postTags;
     }
-
     public List<String> getPostUserTags() {
         return postUserTags;
     }
-
     public PostContentModel getPostContent() {
         return postContent;
     }
-
     public Date getCreatedDate() {
         return createdDate;
     }
-
     public String getUsername() {
         return createdByUsername;
     }
-
     public int getPostType() {
         return postType;
     }
@@ -98,18 +90,18 @@ public class PostModel {
     public boolean getIsLiked() {
         return isLiked;
     }
-    public void setIsLiked(boolean isLiked) {
-        this.isLiked = isLiked;
-    }
     public boolean getIsSaved() {
         return isSaved;
     }
     public int getFileId() { return fileId; }
+
+    public void setIsLiked(boolean isLiked) {
+        this.isLiked = isLiked;
+    }
     public void setIsSaved(boolean isSaved) {
         this.isSaved = isSaved;
     }
     public void setLikeCount(int likeCount) {this.likeCount = likeCount;}
     public void setCommentCount(int count) {this.commentCount = count;}
-    public void setFileId(int fileId) { this.fileId = fileId; }
 
 }

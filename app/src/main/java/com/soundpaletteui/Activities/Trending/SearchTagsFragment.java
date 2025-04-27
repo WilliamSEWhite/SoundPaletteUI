@@ -27,11 +27,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Displays a list of tags based on a search term. Handles both browsing all tags and searching specific ones.
 public class SearchTagsFragment extends Fragment {
     private static final String ARG_SEARCH_TERM = "tagsearchterm";
     private String searchTerm;
     private List<TagModel> tags = new ArrayList<>();
     private RecyclerView recyclerView;
+
     public static SearchTagsFragment newInstance(String searchTerm) {
         SearchTagsFragment fragment = new SearchTagsFragment();
         Bundle args = new Bundle();
@@ -43,6 +45,8 @@ public class SearchTagsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Get the search term that was sent to this screen
         if (getArguments() != null) {
             searchTerm = getArguments().getString(ARG_SEARCH_TERM);
         }
@@ -58,18 +62,17 @@ public class SearchTagsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
-        if(searchTerm.isEmpty()){
+        // Depending on if a search term exists, either search or load all tags
+        if (searchTerm.isEmpty()){
             new GetTagsAsync().execute();
-
-        }
-        else{
+        } else{
             new SearchTagsAsync().execute();
         }
 
         return view;
     }
 
-    // Gets Profiles from the client
+    // Async task for searching tags based on a search term
     private class SearchTagsAsync extends AsyncTask<Void, Void, List<TagModel>> {
         @Override
         protected List<TagModel> doInBackground(Void... voids) {
@@ -93,6 +96,8 @@ public class SearchTagsFragment extends Fragment {
             setupRecyclerView();
         }
     }
+
+    // Async task for getting all tags (no search term)
     private class GetTagsAsync extends AsyncTask<Void, Void, List<TagModel>> {
         @Override
         protected List<TagModel> doInBackground(Void... voids) {
@@ -126,6 +131,7 @@ public class SearchTagsFragment extends Fragment {
             recyclerView.getAdapter().notifyDataSetChanged();
         }
     }
+
     // Pauses the media player when user leaves the fragment
     @Override
     public void onPause() {

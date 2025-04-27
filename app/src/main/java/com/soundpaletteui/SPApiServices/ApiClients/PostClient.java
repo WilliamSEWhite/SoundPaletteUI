@@ -20,7 +20,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 
 // Handles API requests for creating, retrieving, updating, deleting, and searching posts in SoundPalette.
-
 public class PostClient {
     private static PostApiEndpoints postApiEndpoints;
 

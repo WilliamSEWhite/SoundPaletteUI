@@ -57,26 +57,21 @@ import androidx.recyclerview.widget.LinearSnapHelper;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
-// Displays and manages a user's profile, including posts and saved content.
+// Displays and manages a user's profile, including viewing their posts, saved items, and tags.
+// Handles profile information updates, dark mode settings, and navigation to notifications and edit screens.
 public class ProfileFragment extends Fragment {
-
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
     private String userId;
     private UserModel user;
     private UserClient userClient;
-    private View framePosts;
-    private GifImageView gifPosts;
-    private TextView usernameDisplay, profileBio, textPosts;
-    private View frameSaved;
-    private GifImageView gifSaved;
-    private TextView textSaved;
+    private View framePosts, frameSaved, notificationDot;
+    private GifImageView gifPosts, gifSaved;
+    private TextView usernameDisplay, profileBio, textPosts, textSaved;
     private Handler gifHandler = new Handler(Looper.getMainLooper());
     private final int FULL_ALPHA = 255;
     private final int TRANSPARENT_ALPHA = 77;
-    /** buttons */
-    Button viewNotificationButton, btnEditSaved;
-    /** Tag stuff */
+    private Button viewNotificationButton, btnEditSaved;
     private LinearLayoutManager linearLayoutManager;
     private TagClient tagClient;
     private RecyclerView recyclerView;
@@ -90,7 +85,6 @@ public class ProfileFragment extends Fragment {
     private boolean darkMode;
     private String selectedTab = "posts";
     EmojiBackgroundView emojiBackground;
-    private View notificationDot;
 
 
     private SharedPreferences.OnSharedPreferenceChangeListener darkModeListener =
@@ -126,7 +120,7 @@ public class ProfileFragment extends Fragment {
         sp.unregisterOnSharedPreferenceChangeListener(darkModeListener);
     }
 
-    /** refreshes profile data when resuming fragment */
+    // Refreshes profile data when resuming fragment
     @Override
     public void onResume() {
         super.onResume();
@@ -164,12 +158,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    public void setTheme(boolean darkM) {
-        darkMode = darkM;
-        updateUI();
-    }
-
-    /** Initializes views and loads user data. */
+    // Initializes views and loads user data.
     private void initComponents(View rootView) {
         final View rootLayout = rootView.findViewById(R.id.root_layout);
         darkMode = DarkModePreferences.isDarkModeEnabled(rootView.getContext());
@@ -179,7 +168,6 @@ public class ProfileFragment extends Fragment {
 
         notificationDot = rootView.findViewById(R.id.notificationDot);
 
-
         // Get arguments instead of Intent
         user = AppSettings.getInstance().getUser();
         userList = new ArrayList<>();
@@ -188,8 +176,6 @@ public class ProfileFragment extends Fragment {
 
         tagClient = SPWebApiRepository.getInstance().getTagClient();
         tagList = new ArrayList<>();
-
-        //fileClient = SPWebApiRepository.getInstance().getFileClient();
 
         viewNotificationButton = rootView.findViewById(R.id.viewNotificationButton);
         btnEditSaved = rootView.findViewById(R.id.editSavedButton);
@@ -227,9 +213,6 @@ public class ProfileFragment extends Fragment {
         profileBio = rootView.findViewById(R.id.profileBio);
         profileFollowersDisplay = rootView.findViewById(R.id.profileFollowersDisplay);
         profileFollowingDisplay = rootView.findViewById(R.id.profileFollowingsDisplay);
-
-        //viewNotificationButton.setBackgroundColor(Color.parseColor("#FFD700"));
-        //btnEditSaved.setBackgroundColor(Color.parseColor("#FFD700"));
 
         // Post Button Actions
         framePosts.setOnClickListener(v -> {
@@ -307,7 +290,7 @@ public class ProfileFragment extends Fragment {
         getTags();
     }
 
-    /** loads the profile image **/
+    // Loads the profile image
     private void loadProfileImage() {
         new Thread(() -> {
             // update UI on main thread
@@ -319,17 +302,12 @@ public class ProfileFragment extends Fragment {
         }).start();
     }
 
-    /** move to edit profile fragment */
-    private void editProfile(Fragment newFragment, String tag) {
-        FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-        Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
-    }
-
+    // Calls function to get user bio text
     private void getProfileBio() {
         getUserBio();
     }
 
-    /** populates the user bio field */
+    // Populates the user bio field
     private void getUserBio() {
         new Thread(() -> {
             UserProfileModel userProfile;
@@ -338,13 +316,13 @@ public class ProfileFragment extends Fragment {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-            // update UI on main thread
+            // Update UI on main thread
             new Handler(Looper.getMainLooper()).post(() -> {
                 if(userProfile == null) {
                     profileBio.setText("Please fill in your bio...");
                     return;
                 }
-                // check if the bio field is empty or null and respond accordingly
+                // Check if the bio field is empty or null and respond accordingly
                 if(userProfile.getBio() == null || userProfile.getBio().trim().isEmpty()) {
                     profileBio.setText("I still need to fill out my bio...");
                 } else {
@@ -356,12 +334,13 @@ public class ProfileFragment extends Fragment {
         }).start();
     }
 
+    // Opens the Edit Saved screen
     private void editSaved(Fragment newFragment, String tag) {
         FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
         Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
     }
 
-    /** edit user tags */
+    // Edit user tags
     private void viewNotifications(Fragment newFragment, String tag) {
         Bundle bundle = new Bundle();
         bundle.putInt("nav", 0);
@@ -370,7 +349,7 @@ public class ProfileFragment extends Fragment {
         Navigation.replaceFragment(fragmentManager, newFragment, tag, R.id.mainScreenFrame);
     }
 
-    /** auto scrolls the horizontal list of tags */
+    // Auto scrolls the horizontal list of tags
     private void startAutoScroll() {
         tagScrollHandler.postDelayed(new Runnable() {
             @Override
@@ -386,7 +365,7 @@ public class ProfileFragment extends Fragment {
         }, 2000);
     }
 
-    /** refreshes the user tag list in the recycler view */
+    // Refreshes the user tag list in the recycler view
     private void refreshTagList() {
         if (getArguments() != null && getArguments().containsKey("selectedTags")) {
             ArrayList<TagModel> selectedTags = getArguments().getParcelableArrayList("selectedTags");
@@ -401,7 +380,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
-    /** retrieves the list of tags from the user profile */
+    // Retrieves the list of tags from the user profile
     private void getTags() {
         new Thread(() -> {
             try {
@@ -431,22 +410,19 @@ public class ProfileFragment extends Fragment {
                 transaction, postFragment,
                 "POST_FRAGMENT",
                 R.id.postFragment);
-        /*transaction.replace(R.id.postFragment, postFragment);
-        transaction.commit();*/
     }
 
     // Sets the style of a TextView to selected or unselected.
     private void setButtonTextSelected(TextView textView, boolean isSelected) {
         if (isSelected) {
-//            textView.setTypeface(null, Typeface.BOLD);
             textView.setTextSize(20);
         } else {
-//            textView.setTypeface(null, Typeface.NORMAL);
             textView.setTextSize(18);
         }
     }
 
     @Override
+    //Releases MediaPlayer resources when the fragment is paused
     public void onPause() {
         super.onPause();
         MediaPlayerManager.getInstance().release();

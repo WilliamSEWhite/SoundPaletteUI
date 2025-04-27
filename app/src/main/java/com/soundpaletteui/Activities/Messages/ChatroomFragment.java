@@ -38,7 +38,6 @@ import java.util.List;
 
 // Fragment that handles displaying and sending messages inside a chatroom
 public class ChatroomFragment extends Fragment {
-
     private static final String ARG_CHATROOM_ID = "chatRoomId";
     private static final String ARG_CHATROOM_NAME = "chatRoomName";
     private int chatRoomId;

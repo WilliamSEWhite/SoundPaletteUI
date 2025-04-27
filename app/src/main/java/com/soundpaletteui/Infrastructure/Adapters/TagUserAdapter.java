@@ -17,7 +17,7 @@ import com.soundpaletteui.Infrastructure.Utilities.Navigation;
 
 import java.util.List;
 
-// Adapter class for displaying tagged users
+// Adapter for displaying a list of tagged users. Allows the user to click and view the profile of a tagged user.
 public class TagUserAdapter extends RecyclerView.Adapter<TagUserAdapter.ViewHolder> {
     private List<String> tagList;
     private FragmentManager fragmentManager;
@@ -28,6 +28,7 @@ public class TagUserAdapter extends RecyclerView.Adapter<TagUserAdapter.ViewHold
         this.context = context;
     }
 
+    // ViewHolder class to hold each tagged user's view
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tagName;
 
@@ -45,11 +46,13 @@ public class TagUserAdapter extends RecyclerView.Adapter<TagUserAdapter.ViewHold
         return new ViewHolder(view);
     }
 
+    // Bind the username to the ViewHolder and set up click behaviour
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         String username = tagList.get(position);
         holder.tagName.setText("@" + username);
 
+        // Open the selected user's profile when their tag is clicked
         holder.itemView.setOnClickListener(v -> {
             ProfileViewFragment profileFragment = ProfileViewFragment.newInstance(username);
             FragmentManager fragmentManager = ((FragmentActivity) context).getSupportFragmentManager();

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Random;
 
 // Displays animated emoji backgrounds with different patterns
-
 public class EmojiBackgroundView extends View {
     public static final int PATTERN_GRID = 0;
     public static final int PATTERN_SPIRAL = 1;

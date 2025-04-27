@@ -41,7 +41,6 @@ import java.util.Objects;
 
 // Displays the Edit Chatroom screen where user can update name, members, or leave chatroom
 public class EditChatroomFragment extends Fragment {
-
     private static final String ARG_CHATROOM_ID = "chatRoomId";
     private int chatRoomId;
     private UserClient userClient;
@@ -111,7 +110,8 @@ public class EditChatroomFragment extends Fragment {
         saveButton         = rootView.findViewById(R.id.saveButton);
         leaveButton        = rootView.findViewById(R.id.leaveChatroomButton);
 
-        // Adapters
+
+        // Sets up the adapter for searching and adding a user to a chatroom
         userSearchAdapter = new UserSearchAdapter(searchResults, username -> {
             List<String> currentMembers = chatroomInfo.getChatroomMembers();
             if (!currentMembers.contains(username)) membersToAdd.add(username);
@@ -123,6 +123,7 @@ public class EditChatroomFragment extends Fragment {
             }
         });
 
+        // Sets up the adapter selects users to be in the chatroom
         selectedUsersAdapter = new UserSelectedAdapter(selectedUsers, username -> {
             List<String> currentMembers = chatroomInfo.getChatroomMembers();
             if (currentMembers.contains(username)) membersToRemove.add(username);
@@ -132,6 +133,7 @@ public class EditChatroomFragment extends Fragment {
             selectedUsersAdapter.notifyDataSetChanged();
         });
 
+        // Set up RecyclerViews
         userSearchResults.setLayoutManager(new LinearLayoutManager(getContext()));
         userSearchResults.setAdapter(userSearchAdapter);
 
@@ -142,13 +144,21 @@ public class EditChatroomFragment extends Fragment {
         );
         selectedUsersView.setAdapter(selectedUsersAdapter);
 
-        // Search TextWatcher
+
+        // Set up search input behaviour
         userSearchInput.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
-            @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            // Every time the user types or deletes a character:
+            @Override
+            public void onTextChanged(CharSequence s, int st, int b, int c) {
+                // Only search when input is more than 3 characters
                 if (s.length() > 3) searchUsersAsync(s.toString());
             }
-            @Override public void afterTextChanged(Editable s) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {}
         });
 
         // Save & Leave buttons

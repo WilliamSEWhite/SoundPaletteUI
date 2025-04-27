@@ -36,8 +36,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Adapter for displaying a list of tags. Allows users to tap a tag and see posts related to that tag.
 public class SearchTagsAdapter extends RecyclerView.Adapter<SearchTagsAdapter.TagsViewHolder> {
-
     private final List<TagModel> tags;
     private Context context;
 
@@ -54,23 +54,32 @@ public class SearchTagsAdapter extends RecyclerView.Adapter<SearchTagsAdapter.Ta
     }
 
     @Override
+    // Binds the tag information to the ViewHolder
     public void onBindViewHolder(@NonNull TagsViewHolder holder, int position) {
         TagModel tag = tags.get(position);
         final String tagName = tag.getTagName();
 
+        // Set the tag name
         holder.tagNameDisplay.setText(tagName);
-        holder.tagContainer.setOnClickListener(v -> seePostsForTag(tag.getTagId()));
-    }
 
-    private void seePostsForTag(int tagId){
-        ((MainScreenActivity) context).viewPostsByTags(String.valueOf(tagId));
+        // When a tag is clicked, show posts related to that tag
+        holder.tagContainer.setOnClickListener(
+                v -> seePostsForTag(tag.getTagId())
+        );
     }
 
     @Override
+    // Returns the number of tags
     public int getItemCount() {
         return tags.size();
     }
 
+    // Opens the posts related to a selected tag
+    private void seePostsForTag(int tagId){
+        ((MainScreenActivity) context).viewPostsByTags(String.valueOf(tagId));
+    }
+
+    // ViewHolder class to hold the tag views
     public static class TagsViewHolder extends RecyclerView.ViewHolder {
         TextView tagNameDisplay;
         LinearLayout tagContainer;

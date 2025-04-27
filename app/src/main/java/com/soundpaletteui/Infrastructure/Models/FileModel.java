@@ -6,7 +6,6 @@ import com.google.type.DateTime;
 import java.util.Date;
 
 public class FileModel {
-
     @SerializedName("ByteArrayContent")
     private String ByteArrayContent;
     @SerializedName("FileTypeId")
@@ -30,6 +29,7 @@ public class FileModel {
         FileTypeId = fileTypeId;
         FileUrl = fileUrl;
     }
+
     public FileModel(String byteArrayContent, int userId, String fileName, int fileTypeId, String fileUrl) {
         ByteArrayContent = byteArrayContent;
         UserId = userId;
@@ -37,14 +37,14 @@ public class FileModel {
         FileTypeId = fileTypeId;
         FileUrl = fileUrl;
     }
-    public FileModel(int userId, String fileName, int fileTypeId)
-    {
+
+    public FileModel(int userId, String fileName, int fileTypeId) {
         UserId = userId;
         FileName = fileName;
         FileTypeId = fileTypeId;
     }
-    public FileModel(int fileTypeId, int userId, String fileName, String fileUrl, Date createdDate, Date publishDate, boolean isActive)
-    {
+
+    public FileModel(int fileTypeId, int userId, String fileName, String fileUrl, Date createdDate, Date publishDate, boolean isActive) {
         FileTypeId = fileTypeId;
         UserId = userId;
         FileName = fileName;
@@ -59,4 +59,5 @@ public class FileModel {
     public String getFileName() { return FileName; }
     public String getFileUrl() { return FileUrl; }
     public boolean getIsActive() { return IsActive; }
+
 }

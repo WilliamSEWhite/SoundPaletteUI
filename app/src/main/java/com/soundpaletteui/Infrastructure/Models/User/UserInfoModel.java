@@ -18,24 +18,10 @@ public class UserInfoModel {
     public String Email;
     @SerializedName("Phone")
     public String Phone;
-    //public Date DOB;
     @SerializedName("DOB")
     public Date Dob;
     @SerializedName("DateCreated")
     public String dateCreated;
-    //public Date DateCreated;
-
-    /* may need this later **
-    public UserInfoModel(int userInfoId, int userId, int locationId, String email, String phone, Date dOB, Date dateCreated)
-    {
-        UserInfoId = userInfoId;
-        UserId = userId;
-        LocationId = locationId;
-        Email = email;
-        Phone = phone;
-        DOB = dOB;
-        DateCreated = dateCreated;
-    }*/
 
     public UserInfoModel(int userId, int locationId, String email, String phone, Date dob, String dateCreated) {
         UserId = userId;
@@ -46,15 +32,8 @@ public class UserInfoModel {
         this.dateCreated = dateCreated;
         System.out.println("Location in Model 1: " + LocationId);
     }
-    /* may use later, maybe not **
-    public UserInfoModel(int userId, String email, String phone, int locationId) {
-        UserId = userId;
-        Email = email;
-        Phone = phone;
-        LocationId = locationId;
-    }*/
 
-    /** constructor for update user profile */
+    // Constructor for update user profile
     public UserInfoModel(int userId, int locationId, String email, String phone, Date dob) {
         UserId = userId;
         Email = email;
@@ -67,15 +46,12 @@ public class UserInfoModel {
     public int getLocationId() {
         return LocationId;
     }
-
     public String getEmail() {
         return Email;
     }
-
     public String getPhone() {
         return Phone;
     }
-
     public Date getDob() {
         return Dob;
     }

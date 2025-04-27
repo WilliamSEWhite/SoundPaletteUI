@@ -18,7 +18,7 @@ import com.soundpaletteui.R;
 
 import java.util.List;
 
-// Adapter class for displaying chatrooms
+// Adapter class for displaying indvidual chatrooms in a RecyclerView
 public class ChatroomAdapter extends RecyclerView.Adapter<ChatroomAdapter.ChatroomViewHolder> {
     private List<ChatroomModel> chatroomList;
     private Context context;

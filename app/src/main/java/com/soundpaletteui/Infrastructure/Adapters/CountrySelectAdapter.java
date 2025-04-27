@@ -12,7 +12,7 @@ import com.soundpaletteui.R;
 
 import java.util.ArrayList;
 
-// Displays location options in the spinner (when user creates/edits their account)
+// Adapter for displaying location options (like countries) in a dropdown list when a user creates or edits their account.
 public class CountrySelectAdapter extends ArrayAdapter<LocationModel> {
     private Context context;
     private ArrayList<LocationModel> values;
@@ -25,27 +25,31 @@ public class CountrySelectAdapter extends ArrayAdapter<LocationModel> {
     }
 
     @Override
+    // Returns the number of location options
     public int getCount(){
         return values.size();
     }
 
     @Override
+    // Returns a location at a given position
     public LocationModel getItem(int position){
         return values.get(position);
     }
 
     @Override
+    // Returns the ID of a location (here, just the position)
     public long getItemId(int position){
         return position;
     }
 
+    // Returns all the location values
     public ArrayList<LocationModel> getValues() {
         return values;
     }
 
     @Override
+    // Displays the selected item inside the spinner (collapsed view)
     public View getView(int position, View convertView, ViewGroup parent) {
-
         View currentItemView = convertView;
 
         if (currentItemView == null) {
@@ -58,6 +62,7 @@ public class CountrySelectAdapter extends ArrayAdapter<LocationModel> {
     }
 
     @Override
+    // Displays each option in the dropdown list (when the spinner is expanded)
     public View getDropDownView(int position, View convertView,
                                 ViewGroup parent) {
         View currentItemView = convertView;

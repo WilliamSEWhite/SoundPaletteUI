@@ -37,7 +37,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// Displays the New Chatroom screen to create a new chatroom and add users
+// Displays the New Chatroom creation screen where users can name a chatroom, search for users, select members, and create a new chatroom.
 public class NewChatroomFragment extends Fragment {
     private EditText chatroomNameEdit, userSearchInput;
     private RecyclerView userSearchResults, selectedUsersView;
@@ -55,6 +55,7 @@ public class NewChatroomFragment extends Fragment {
 
     public NewChatroomFragment() {}
 
+    // Creates a new instance of NewChatroomFragment
     public static NewChatroomFragment newInstance() {
         return new NewChatroomFragment();
     }
@@ -67,7 +68,7 @@ public class NewChatroomFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_chatroom_setup, container, false);
 
-        // Apply the same brightness-gradient & emoji background as Search
+        // Apply gradient and emoji background
         View rootLayout = rootView.findViewById(R.id.root_layout);
         boolean isDark = DarkModePreferences.isDarkModeEnabled(rootLayout.getContext());
         UISettings.applyBrightnessGradientBackground(rootLayout, 200f, isDark);
@@ -76,19 +77,19 @@ public class NewChatroomFragment extends Fragment {
         emojiBg.setPatternType(EmojiBackgroundView.PATTERN_SPIRAL);
         emojiBg.setAlpha(0.65f);
 
-        // Your existing initialization
+        // Initialize UI components
         chatroomNameEdit   = rootView.findViewById(R.id.chatroomNameEdit);
         userSearchInput    = rootView.findViewById(R.id.userSearchInput);
         userSearchResults  = rootView.findViewById(R.id.userSearchResults);
         selectedUsersView  = rootView.findViewById(R.id.selectedUsersView);
         saveButton         = rootView.findViewById(R.id.saveButton);
 
-        // Load user and clients
+        // Load current user and API clients
         currentUser = AppSettings.getInstance().getUser();
         userClient  = SPWebApiRepository.getInstance().getUserClient();
         chatClient  = SPWebApiRepository.getInstance().getChatClient();
 
-        // Set up adapters for searching and selecting users
+        // Set up user search results adapter
         userSearchAdapter = new UserSearchAdapter(searchResults, username -> {
             if (!selectedUsers.contains(username)) {
                 selectedUsers.add(username);
@@ -96,40 +97,42 @@ public class NewChatroomFragment extends Fragment {
             }
         });
 
+        // Set up selected users adapter
         selectedUsersAdapter = new UserSelectedAdapter(selectedUsers, username -> {
             selectedUsers.remove(username);
             selectedUsersAdapter.notifyDataSetChanged();
         });
 
+        // Set up RecyclerViews
         userSearchResults.setLayoutManager(new LinearLayoutManager(getContext()));
         userSearchResults.setAdapter(userSearchAdapter);
 
         selectedUsersView.setLayoutManager(
-                new LinearLayoutManager(getContext(),
-                        LinearLayoutManager.HORIZONTAL,
-                        false)
+                new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false)
         );
         selectedUsersView.setAdapter(selectedUsersAdapter);
 
-        // Search users when typing
+        // Add a TextWatcher to the search bar to search users as user types
         userSearchInput.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
-            @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (s.length() > 2) searchUsersAsync(s.toString());
             }
             @Override public void afterTextChanged(Editable s) {}
         });
 
-        // Handle Save button click
+        // Save button click: Validate selection and create the chatroom
         saveButton.setOnClickListener(v -> {
             String roomName = chatroomNameEdit.getText().toString().trim();
             if (selectedUsers.isEmpty()) {
+                // Show error if no users selected
                 new AlertDialog.Builder(getContext())
                         .setTitle("Error")
                         .setMessage("Chatroom users cannot be empty.")
                         .setPositiveButton("OK", null)
                         .show();
             } else {
+                // Start AsyncTask to create the chatroom
                 new CreateChatroomTaskAsync().execute(roomName);
             }
         });
@@ -137,25 +140,31 @@ public class NewChatroomFragment extends Fragment {
         return rootView;
     }
 
-    // AsyncTask to create a new chatroom
-    private class CreateChatroomTaskAsync
-            extends AsyncTask<String, Void, ChatroomModelLite> {
+    // AsyncTask class to create a new chatroom in the background
+    private class CreateChatroomTaskAsync extends AsyncTask<String, Void, ChatroomModelLite> {
         @Override
         protected ChatroomModelLite doInBackground(String... params) {
             try {
                 String name = params[0];
+
+                // Add selected users plus current user to the chatroom
                 List<String> users = new ArrayList<>(selectedUsers);
                 users.add(currentUser.getUsername());
+
+                // Create chatroom through the API
                 return chatClient.createChatroom(
                         new NewChatroomModel(name, users, AppSettings.getInstance().getUserId())
                 );
             } catch (IOException e) {
+                // Return null if there's an error
                 return null;
             }
         }
+
         @Override
         protected void onPostExecute(ChatroomModelLite chatroom) {
             if (chatroom != null) {
+                // If created successfully, navigate to the new ChatroomFragment
                 FragmentManager fm = requireActivity().getSupportFragmentManager();
                 FragmentTransaction tx = fm.beginTransaction();
                 tx.replace(
@@ -164,6 +173,7 @@ public class NewChatroomFragment extends Fragment {
                 );
                 tx.addToBackStack(null).commit();
             } else {
+                // Otherwise, show an error
                 new AlertDialog.Builder(getContext())
                         .setTitle("Error")
                         .setMessage("Could not create chatroom.")
@@ -173,21 +183,23 @@ public class NewChatroomFragment extends Fragment {
         }
     }
 
-    // Searches for users based on search input
+    // Searches for users asynchronously based on the input term
     private void searchUsersAsync(String searchTerm) {
         new Thread(() -> {
             try {
-                List<String> results =
-                        SPWebApiRepository.getInstance()
-                                .getUserClient()
-                                .searchUsersLite(searchTerm);
+                List<String> results = SPWebApiRepository.getInstance()
+                        .getUserClient()
+                        .searchUsersLite(searchTerm);
 
+                // Update the UI with the search results
                 requireActivity().runOnUiThread(() -> {
                     searchResults.clear();
                     searchResults.addAll(results);
                     userSearchAdapter.notifyDataSetChanged();
                 });
-            } catch (IOException e) {/* log if needed */}
+            } catch (IOException e) {
+                // Handle or log error if needed
+            }
         }).start();
     }
 }

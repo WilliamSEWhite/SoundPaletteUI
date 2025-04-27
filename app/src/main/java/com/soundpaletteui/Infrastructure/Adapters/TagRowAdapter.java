@@ -47,7 +47,4 @@ public class TagRowAdapter extends ArrayAdapter<TagModel> {
         // Return the recyclable view
         return currentItemView;
     }
-    private void updateTagIsSelected(TagModel tag){
-
-    }
 }

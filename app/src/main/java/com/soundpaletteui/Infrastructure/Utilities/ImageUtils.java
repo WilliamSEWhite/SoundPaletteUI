@@ -32,7 +32,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 // Handles uploading, fetching, and displaying images in the app
-
 public class ImageUtils {
 
     // Upload profile image

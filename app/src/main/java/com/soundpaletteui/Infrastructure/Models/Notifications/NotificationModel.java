@@ -24,7 +24,6 @@ public class NotificationModel {
         this.createdDate = createdDate;
     }
 
-
     public int getNotificationTypeId() { return notificationTypeId; }
     public int getReferenceId() { return referenceId; }
     public String getReferenceName() { return referenceName; }

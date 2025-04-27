@@ -65,19 +65,12 @@ import retrofit2.Response;
 
 // Displays ANOTHER user's profile
 public class ProfileViewFragment extends Fragment {
-
     private MainContentAdapter mainContentAdapter;
     private List<UserModel> userList;
-//    private int userId;
-//    private UserModel user;
     private static int viewUserId;
     UserProfileModelLite profile;
-    private UserModel viewUser;
     private UserProfileModelLite viewProfile;
-//    private UserClient userClient;
-//    private UserClient viewUserClient;
     private static String viewUsername;
-    /** Tag stuff */
     private LinearLayoutManager linearLayoutManager;
     private TagClient tagClient;
     private RecyclerView recyclerView;
@@ -85,31 +78,21 @@ public class ProfileViewFragment extends Fragment {
     private List<TagModel> tagList;
     private Handler tagScrollHandler;
     private int scrollPosition;
-    private TextView profileUsernameDisplay;
-    private TextView profileBioDisplay;
-    private TextView profileFollowersDisplay;
-    private TextView profileFollowingDisplay;
+    private TextView profileUsernameDisplay,profileBioDisplay,profileFollowersDisplay,profileFollowingDisplay;
     private CheckBox followButton;
     private Button messageButton;
-    private View framePosts;
-    private GifImageView gifPosts;
-    private TextView textPosts;
-    private View frameTagged;
-    private GifImageView gifTagged;
-    private TextView textTagged;
+    private View framePosts,frameTagged;
+    private GifImageView gifPosts,gifTagged;
+    private TextView textPosts,textTagged;
     private Handler gifHandler = new Handler(Looper.getMainLooper());
     private final int FULL_ALPHA = 255;
     private final int TRANSPARENT_ALPHA = 77;
     private ImageView imageView;
-//    private ActivityResultLauncher<Intent> pickImageLauncher;
-//    private FileClient fileClient;
-//    private Uri imageUri;
     private Drawable defaultProfileImage;
     private UserClient client;
 
     public ProfileViewFragment() {
     }
-
 
     // New Instance of a ProfileViewFragment with specified UserId
     public static ProfileViewFragment newInstance(int postUserId) {
@@ -123,7 +106,6 @@ public class ProfileViewFragment extends Fragment {
     public static ProfileViewFragment newInstance(String postUsername) {
         ProfileViewFragment fragment = new ProfileViewFragment();
         viewUsername = postUsername;
-        //Log.d("ProfileViewFragment", "Loading Username: " + postUsername);
         return fragment;
     }
 
@@ -142,7 +124,7 @@ public class ProfileViewFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_profile_view, container, false);
 
-        // 1) Apply gradient + emoji
+        // Apply gradient + emoji
         View root = rootView.findViewById(R.id.root_layout);
         boolean isDark = DarkModePreferences.isDarkModeEnabled(root.getContext());
         UISettings.applyBrightnessGradientBackground(root, 20f, isDark);
@@ -161,7 +143,6 @@ public class ProfileViewFragment extends Fragment {
 
     // Initializes views and loads user data and viewUser
     private void initComponents(View view) throws IOException {
-//        Log.d("ProfileViewFragment", "viewUserName: " + viewUsername);
         client = SPWebApiRepository.getInstance().getUserClient();
 
         imageView = view.findViewById(R.id.profilePicture);
@@ -211,7 +192,6 @@ public class ProfileViewFragment extends Fragment {
                 final GifDrawable postsGifDrawable = (GifDrawable) gifPosts.getDrawable();
                 framePosts.getBackground().mutate().setAlpha(FULL_ALPHA);
                 frameTagged.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-//                UISettings.applyBrightnessGradientBackground(rootView, 50f);
                 postsGifDrawable.start();
                 gifHandler.postDelayed(() -> postsGifDrawable.stop(), 800);
             } catch (ClassCastException e) {
@@ -243,7 +223,6 @@ public class ProfileViewFragment extends Fragment {
                 final GifDrawable savedGifDrawable = (GifDrawable) gifTagged.getDrawable();
                 frameTagged.getBackground().mutate().setAlpha(FULL_ALPHA);
                 framePosts.getBackground().mutate().setAlpha(TRANSPARENT_ALPHA);
-//                UISettings.applyBrightnessGradientBackground(rootView, 60f);
                 savedGifDrawable.start();
                 gifHandler.postDelayed(() -> savedGifDrawable.stop(), 800);
             } catch (ClassCastException e) {
@@ -270,7 +249,7 @@ public class ProfileViewFragment extends Fragment {
         loadProfileImage();
     }
 
-    /** loads the profile image **/
+    // Loads the profile image
     private void loadProfileImage() {
         if(viewUsername != null) {
             ImageUtils.getProfileImageByUsername(viewUsername, imageView, requireContext());
@@ -327,16 +306,17 @@ public class ProfileViewFragment extends Fragment {
             followButton.setChecked(viewProfile.isFollowing());
             followButton.setText(viewProfile.isFollowing() ? "Unfollow" : "Follow");
             getTags();
-        }//end onPostExecute
+        }
     }
 
-    // Connect to API Server to perform "Follow" actions
+    // Handles the follow/unfollow action
     private void toggleFollow(UserProfileModelLite profile, boolean isFollowing) {
         profile.setIsFollowing(isFollowing);
         new ToggleFollowAsync().execute(profile);
 
     }
 
+    // Performs the API request to follow/unfollow
     private class ToggleFollowAsync extends AsyncTask<UserProfileModelLite, Void, Void> {
         protected Void doInBackground(UserProfileModelLite... profiles) {
             UserProfileModelLite profile = profiles[0];
@@ -360,15 +340,18 @@ public class ProfileViewFragment extends Fragment {
         }
     }
 
+    // Opens a private message chatroom with the user
     private void openPrivateMessage(){
         new OpenPrivateMessageAsync().execute();
     }
 
+    // Opens the ChatroomFragment
     private void openChatroom(ChatroomModelLite chatroom){
         ChatroomFragment chatroomFragment = ChatroomFragment.newInstance(chatroom.getChatroomId(), chatroom.getName());
         replaceMainFragment(chatroomFragment);
     }
 
+    // Connects to API and gets the private chatroom
     private class OpenPrivateMessageAsync extends AsyncTask<Void, Void, ChatroomModelLite> {
         protected ChatroomModelLite doInBackground(Void ...v) {
             ChatClient client = SPWebApiRepository.getInstance().getChatClient();

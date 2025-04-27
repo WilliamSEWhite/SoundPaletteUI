@@ -16,8 +16,7 @@ public class NotificationSettingModel {
     @SerializedName("UserId")
     private int userId;
 
-    public NotificationSettingModel(int notificationSettingId, boolean value, String settingName, int notificationTypeId, int userId)
-    {
+    public NotificationSettingModel(int notificationSettingId, boolean value, String settingName, int notificationTypeId, int userId) {
         this.notificationSettingId = notificationSettingId;
         this.value = value;
         this.settingName = settingName;

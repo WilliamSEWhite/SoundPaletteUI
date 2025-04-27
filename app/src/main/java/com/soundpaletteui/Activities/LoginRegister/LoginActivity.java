@@ -33,8 +33,6 @@ import java.util.Objects;
 
 // Manages user login and registration actions within the app.
 public class LoginActivity extends AppCompatActivity {
-
-    // UI components
     private EditText usernameBox;
     private EditText passwordBox;
     private FrameLayout frameRegister, frameLogin;

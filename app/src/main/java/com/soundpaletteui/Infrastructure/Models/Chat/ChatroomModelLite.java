@@ -14,7 +14,7 @@ public class ChatroomModelLite {
         this.name = name;
     }
 
-    public int getChatroomId(){return chatroomId;}
-    public String getName(){return name;}
+    public int getChatroomId(){ return chatroomId; }
+    public String getName(){ return name; }
 
 }

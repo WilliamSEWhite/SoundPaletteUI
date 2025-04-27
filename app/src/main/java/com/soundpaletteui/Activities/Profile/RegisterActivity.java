@@ -65,43 +65,33 @@ import java.util.Locale;
 import pl.droidsonroids.gif.GifDrawable;
 import pl.droidsonroids.gif.GifImageView;
 
+// Handles the user registration screen, where users can fill out their profile information,
+// Select a profile picture, and save their account details to the database.
 public class RegisterActivity extends AppCompatActivity {
-
-//    private static final int PICK_IMAGE_REQUEST = 1;
     AppSettings appSettings = AppSettings.getInstance();
-//    private EditText txtUsername;           // username
-    private EditText txtEmail;              // email address
-    private EditText txtPhone;              // phone number (optional)
-//    private EditText txtDob;                // date of birth
-//    private ImageButton btnCalendar;        // date of birth button
-//    private Button btnClear;                // clear user data button
-    private Button btnSave;                 // save button
-    private Uri imageUri;                   // image URI from external source
-    private ImageView profileImage;         // object to display the image
-    private String currentPhotoPath;        // current photo path
-    private Spinner locationSpinner;               // country
-    private ArrayList<LocationModel> countries;             // list of countries
+    private EditText txtEmail, txtPhone;
+    private Uri imageUri;
+    private ImageView profileImage;
+    private Spinner locationSpinner;
+    private ArrayList<LocationModel> countries;
     private Intent intent;
     private UserModel user;
-    private static final int PICK_IMAGE_REQUEST = 1;
     private Date dob;
     private UserClient userClient;
     private int userId;
     private UserProfileModel userProfileModel;
     private FrameLayout frameSave;
     private GifImageView gifSave;
-    private TextView textSave;
     private ActivityResultLauncher<Intent> pickImageLauncher;
     private FileClient fileClient;
-    /**
-     * Sets up the layout and calls initialization.
-     */
+
+    // Sets up the layout and calls initialization.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        // — Apply emoji + brightness gradient exactly like Search/Create‑Post
+        // Apply emoji + brightness gradient exactly like Search/Create‑Post
         View root = findViewById(R.id.root_layout);
         boolean isDark = DarkModePreferences.isDarkModeEnabled(this);
         UISettings.applyBrightnessGradientBackground(root, 280f, isDark);
@@ -111,6 +101,7 @@ public class RegisterActivity extends AppCompatActivity {
         emojiBg.setAlpha(0.65f);
 
         initComponents();
+
         // launches the image picker
         pickImageLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -127,7 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
         );
     }
 
-    /** initializes components in the UI */
+    // Initializes components in the UI
     private void initComponents() {
         txtEmail       = findViewById(R.id.registerEmail);
         txtPhone       = findViewById(R.id.registerPhone);
@@ -143,7 +134,7 @@ public class RegisterActivity extends AppCompatActivity {
         userProfileModel = new UserProfileModel(user.getUserId(),
                 "I haven't updated my bio yet…", "/dev/null");
 
-        // pick DOB
+        // Set up the date picker for date of birth
         findViewById(R.id.pick_date).setOnClickListener(v -> {
             if (dob == null) dob = new Date();
             int y = dob.getYear() + 1900, m = dob.getMonth(), d = dob.getDate();
@@ -154,13 +145,15 @@ public class RegisterActivity extends AppCompatActivity {
                                 .format(dob));
             }, y, m, d).show();
         });
-        
+
+        // Set up click to edit the profile image
         profileImage.setOnClickListener(v -> editProfileImage());
+
+        // Save button click
         frameSave.setOnClickListener(v -> {
             try {
                 final GifDrawable saveGif = (GifDrawable) gifSave.getDrawable();
                 frameSave.getBackground().mutate().setAlpha(255);
-//                UISettings.applyBrightnessGradientBackground(findViewById(R.id.root_layout), 60f);
                 saveGif.start();
                 new android.os.Handler().postDelayed(() -> saveGif.stop(), 800);
             } catch (ClassCastException e) {
@@ -171,7 +164,7 @@ public class RegisterActivity extends AppCompatActivity {
             uploadProfileImage();
         });
 
-        // get data from previous activity
+        // Get data from previous activity
         intent = getIntent();
         userId = intent.getIntExtra("userId", 0);
         userClient = SPWebApiRepository.getInstance().getUserClient();
@@ -180,56 +173,54 @@ public class RegisterActivity extends AppCompatActivity {
         userProfileModel = new UserProfileModel(user.getUserId(), "", "/dev/null");
     }
 
-    /** upload profile image */
+    // Upload profile image
     private void uploadProfileImage() {
         ImageUtils.uploadProfileImage(imageUri, user.getUserId(), fileClient, this);
     }
 
-    /** edit the profile image */
+    // Edit the profile image
     private void editProfileImage() {
         ImageUtils.pickImageFromGallery(this, pickImageLauncher);
     }
 
-    /** loads the image */
+    // Loads the image
     private void loadImage() {
         Glide.with(this).load(imageUri).into(profileImage);
     }
 
-    /** initialize Spinner with list of countries */
+    // Initialize Spinner with list of countries
     private void getCountries() {
         new GetLocationsAsync().execute();
     }
 
-    /** pulls countries from the database for the spinner */
+    // Pulls countries from the database for the spinner
     private void initCountries(){
         CountrySelectAdapter adapter = new CountrySelectAdapter(this,
                 android.R.layout.simple_spinner_item,
                 countries);
         locationSpinner = (Spinner) findViewById(R.id.registerLocation);
         locationSpinner.setAdapter(adapter); // Set the custom adapter to the spinner
+
         // You can create an anonymous listener to handle the event when is selected an spinner item
         locationSpinner.setSelection(0);                              //retain previously selected value
     }
 
-    /** save information to database */
+    // Save information to database
     private void saveUserInfo() {
-        // write saving code here
         new UpdateUserInfoAsync().execute();
         Toast.makeText(RegisterActivity.this, "User profile saved ", Toast.LENGTH_SHORT).show();
     }
 
-    /** clear text fields in register activity */
+    // Clear text fields in register activity
     private void onRegistrationComplete() {
-        //Intent i = new Intent(RegisterActivity.this, MainScreenActivity.class);
         Intent i = new Intent(RegisterActivity.this, RegisterTagsActivity.class);
         startActivity(i);
         finish();
 
     }
 
-    /** displays the image in the register screen */
+    // Displays the image in the register screen
     private void displayImage(Uri imageUri) {
-        //Log.d("RegisterActivity", "Image Uri: " + imageUri);
         if (imageUri != null) {
             Glide.with(this)
                     .load(imageUri)
@@ -243,12 +234,12 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    /** gets user data */
+    // Gets user data
     private void getUser() {
         new GetUserAsync().execute();
     }
 
-    /** asynchronous call to the database for the user data */
+    // Async call to the database for the user data
     private class GetUserAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             try {
@@ -257,14 +248,14 @@ public class RegisterActivity extends AppCompatActivity {
                 throw new RuntimeException(e);
             }
             return null;
-        }//end doInBackground
+        }
 
         protected void onPostExecute(Void v) {
             //populateView();
-        }//end onPostExecute
+        }
     }
 
-    /** async call to pull countries from the database */
+    // Async call to pull countries from the database
     private class GetLocationsAsync extends AsyncTask<Void,Void, Void> {
         protected Void doInBackground(Void... d) {
             try {
@@ -276,7 +267,8 @@ public class RegisterActivity extends AppCompatActivity {
             }
             return null;
         }
-        /** init country spinner after data retrieval */
+
+        // Init country spinner after data retrieval
         @Override
         protected void onPostExecute(Void v) {
             if(countries != null && !countries.isEmpty()) {
@@ -286,10 +278,10 @@ public class RegisterActivity extends AppCompatActivity {
                 Toast.makeText(RegisterActivity.this, "Failed to load countries!",
                         Toast.LENGTH_SHORT).show();
             }
-        }//end onPostExecute
+        }
     }
 
-    /** updates user profile information to the database */
+    // Updates user profile information to the database
     private class UpdateUserInfoAsync extends AsyncTask<Void,Void, Void> {
         @Override
         protected Void doInBackground(Void... d) {
@@ -322,7 +314,7 @@ public class RegisterActivity extends AppCompatActivity {
             return null;
         }
 
-        /** updates UI after user info update */
+        // Updates UI after user info update
         protected void onPostExecute(Void v) {
             onRegistrationComplete();
         }//end onPostExecute

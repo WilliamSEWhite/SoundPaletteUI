@@ -18,7 +18,6 @@ import java.util.List;
 
 // Adapter class for displaying a basic list of tags
 public class TagBasicAdapter extends RecyclerView.Adapter {
-
     private List<TagModel> tagList;
     private Context context;
 
@@ -27,7 +26,6 @@ public class TagBasicAdapter extends RecyclerView.Adapter {
         this.context = context;
     }
     public static class ViewHolder extends RecyclerView.ViewHolder {
-
         TextView tagName;
 
         public ViewHolder(@NonNull View itemView) {
@@ -51,23 +49,12 @@ public class TagBasicAdapter extends RecyclerView.Adapter {
 
         TagModel tag = tagList.get(position);
         viewHolder.tagName.setText(tag.getTagName());
-
-
     }
 
-    /** gets the size of the tag list */
+    // Gets the size of the tag list
     public int getItemCount() {
         return tagList != null ? tagList.size() : 0;
     }
-
-    /** returns the selected tags */
-    /*public ArrayList<TagModel> getSelectedTags() {
-        ArrayList<TagModel> selected = new ArrayList<>();
-        for(TagModel tag : selected) {
-            selected.add(tag);
-        }
-        return selected;
-    }*/
 
 }
 

@@ -9,7 +9,6 @@ public class TagModel implements Parcelable {
     private int TagId;
     private String TagName;
     private boolean isSelected;
-
     public int getTagId(){ return TagId; }
     public String getTagName() { return TagName; }
     public boolean isSelected() { return isSelected; }
@@ -37,9 +36,7 @@ public class TagModel implements Parcelable {
     public int describeContents() {
         return 0;
     }
-
     @Override
-    public void writeToParcel(@NonNull Parcel dest, int flags) {
+    public void writeToParcel(@NonNull Parcel dest, int flags) {}
 
-    }
 }

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+// Displays a list of user profiles based on a search term. Handles fetching profiles and showing them in a RecyclerView.
 public class SearchProfileFragment extends Fragment {
     private static final String ARG_SEARCH_TERM = "usernameSearch";
     private String usernameSearch;
@@ -56,13 +57,15 @@ public class SearchProfileFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 1));
 
+        // Start loading profiles based on the search term
         new SearchProfileFragment.GetProfilesTask().execute();
         return view;
     }
 
-    // Gets Profiles from the client
+    // Async task for getting user profiles from the server
     private class GetProfilesTask extends AsyncTask<Void, Void, List<UserSearchModel>> {
         @Override
+        // Search for users with the provided search term
         protected List<UserSearchModel> doInBackground(Void... voids) {
             List<UserSearchModel> profiles = null;
             try {
@@ -75,11 +78,13 @@ public class SearchProfileFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<UserSearchModel> profiles) {
+            // If something went wrong, make sure the list isn't null
             if (profiles == null) {
                 Log.w("Search Profule Fragment", "Received null profile list, initializing empty list");
                 profiles = new ArrayList<>();
             }
-            Log.d("Search Profule Fragment", "Fetched dummy posts: " + profiles.size());
+
+            // Update the list of all profiles and refresh the RecyclerView
             allProfiles.clear();
             allProfiles.addAll(profiles);
             setupRecyclerView();
